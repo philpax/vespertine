@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Vespertine", "Vespertine\Vespertine.vcxproj", "{FE2BDD64-8D0B-40D0-BBC4-C9FA667B03A7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Afterdawn", "Afterdawn\Afterdawn.vcxproj", "{7D8C29B8-7A58-4C67-9410-BF8A82724C4C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FE2BDD64-8D0B-40D0-BBC4-C9FA667B03A7} = {FE2BDD64-8D0B-40D0-BBC4-C9FA667B03A7}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FE2BDD64-8D0B-40D0-BBC4-C9FA667B03A7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FE2BDD64-8D0B-40D0-BBC4-C9FA667B03A7}.Debug|Win32.Build.0 = Debug|Win32
+		{FE2BDD64-8D0B-40D0-BBC4-C9FA667B03A7}.Release|Win32.ActiveCfg = Release|Win32
+		{FE2BDD64-8D0B-40D0-BBC4-C9FA667B03A7}.Release|Win32.Build.0 = Release|Win32
+		{7D8C29B8-7A58-4C67-9410-BF8A82724C4C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7D8C29B8-7A58-4C67-9410-BF8A82724C4C}.Debug|Win32.Build.0 = Debug|Win32
+		{7D8C29B8-7A58-4C67-9410-BF8A82724C4C}.Release|Win32.ActiveCfg = Release|Win32
+		{7D8C29B8-7A58-4C67-9410-BF8A82724C4C}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
