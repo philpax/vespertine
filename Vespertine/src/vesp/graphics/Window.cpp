@@ -2,6 +2,7 @@
 #include "vesp/math/Vector.hpp"
 
 #include <SDL.h>
+#include <SDL_syswm.h>
 
 namespace vesp { namespace graphics {
 
@@ -30,6 +31,33 @@ namespace vesp { namespace graphics {
 	void Window::SetSize(IVec2 size)
 	{
 		SDL_SetWindowSize(this->window_, size.x, size.y);
+	}
+
+	IVec2 Window::GetPosition()
+	{
+		IVec2 ret;
+		SDL_GetWindowPosition(this->window_, &ret.x, &ret.y);
+		return ret;
+	}
+
+	IVec2 Window::GetSize()
+	{
+		IVec2 ret;
+		SDL_GetWindowSize(this->window_, &ret.x, &ret.y);
+		return ret;
+	}
+
+	void* Window::GetSystemRepresentation()
+	{
+		SDL_SysWMinfo info;
+		SDL_VERSION(&info.version);
+		SDL_GetWindowWMInfo(this->window_, &info);
+		return info.info.win.window;
+	}
+
+	bool Window::IsFullscreen()
+	{
+		return (SDL_GetWindowFlags(this->window_) & SDL_WINDOW_FULLSCREEN);
 	}
 
 	void Window::Pulse()

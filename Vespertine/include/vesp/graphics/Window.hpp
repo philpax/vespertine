@@ -16,6 +16,13 @@ namespace vesp { namespace graphics {
 		void SetPosition(IVec2 position);
 		void SetSize(IVec2 size);
 
+		IVec2 GetPosition();
+		IVec2 GetSize();
+
+		void* GetSystemRepresentation();
+
+		bool IsFullscreen();
+
 		void Pulse();
 
 	private:
