@@ -3,6 +3,8 @@
 #include "vesp/util/GlobalSystem.hpp"
 #include "vesp/Types.hpp"
 
+#include <atlbase.h>
+
 struct IDXGISwapChain;
 struct ID3D11Device;
 struct ID3D11DeviceContext;
@@ -18,14 +20,18 @@ namespace vesp { namespace graphics {
 		Engine(StringPtr title);
 		~Engine();
 
+		void Initialize();
 		void Pulse();
+
+		ID3D11Device* GetDevice();
+		ID3D11DeviceContext* GetImmediateContext();
 
 	private:
 		std::unique_ptr<Window> window_;
-		IDXGISwapChain* swapChain_;
-		ID3D11Device* device_;
-		ID3D11DeviceContext* immediateContext_;
-		ID3D11RenderTargetView* renderTargetView_;
+		CComPtr<IDXGISwapChain> swapChain_;
+		CComPtr<ID3D11Device> device_;
+		CComPtr<ID3D11DeviceContext> immediateContext_;
+		CComPtr<ID3D11RenderTargetView> renderTargetView_;
 	};
 
 } }

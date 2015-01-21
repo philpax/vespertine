@@ -22,6 +22,7 @@ namespace vesp
 		}
 
 		graphics::Engine::Create(name);
+		graphics::Engine::Get()->Initialize();
 
 		return true;
 	}

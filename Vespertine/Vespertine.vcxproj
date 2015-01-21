@@ -80,6 +80,8 @@
   <ItemGroup>
     <ClInclude Include="include\vesp\EventManager.hpp" />
     <ClInclude Include="include\vesp\graphics\Engine.hpp" />
+    <ClInclude Include="include\vesp\graphics\Shader.hpp" />
+    <ClInclude Include="include\vesp\graphics\Vertex.hpp" />
     <ClInclude Include="include\vesp\graphics\Window.hpp" />
     <ClInclude Include="include\vesp\Log.hpp" />
     <ClInclude Include="include\vesp\Main.hpp" />
@@ -93,6 +95,7 @@
   <ItemGroup>
     <ClCompile Include="src\vesp\EventManager.cpp" />
     <ClCompile Include="src\vesp\graphics\Engine.cpp" />
+    <ClCompile Include="src\vesp\graphics\Shader.cpp" />
     <ClCompile Include="src\vesp\graphics\Window.cpp" />
     <ClCompile Include="src\vesp\Log.cpp" />
     <ClCompile Include="src\vesp\Main.cpp" />
