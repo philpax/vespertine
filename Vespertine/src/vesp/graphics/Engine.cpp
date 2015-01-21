@@ -34,10 +34,10 @@ namespace vesp { namespace graphics {
 
 		ID3D11Texture2D* backBuffer;
 		// error handling
-		swapChain_->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
-		device_->CreateRenderTargetView(backBuffer, nullptr, &renderTargetView_);
+		this->swapChain_->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
+		this->device_->CreateRenderTargetView(backBuffer, nullptr, &this->renderTargetView_);
 		backBuffer->Release();
-		immediateContext_->OMSetRenderTargets(1, &renderTargetView_, nullptr);
+		this->immediateContext_->OMSetRenderTargets(1, &this->renderTargetView_, nullptr);
 	
 		D3D11_VIEWPORT vp;
 		vp.Width = (float)size.x;
@@ -46,7 +46,7 @@ namespace vesp { namespace graphics {
 		vp.MaxDepth = 1.0f;
 		vp.TopLeftX = 0;
 		vp.TopLeftY = 0;
-		immediateContext_->RSSetViewports(1, &vp);
+		this->immediateContext_->RSSetViewports(1, &vp);
 	}
 
 	Engine::~Engine()
@@ -58,8 +58,8 @@ namespace vesp { namespace graphics {
 		this->window_->Pulse();
 
 		float clearColour[4] = { 0.75f, 0.0f, 1.0f, 1.0f };
-		immediateContext_->ClearRenderTargetView(renderTargetView_, clearColour);
-		swapChain_->Present(0, 0);
+		this->immediateContext_->ClearRenderTargetView(renderTargetView_, clearColour);
+		this->swapChain_->Present(0, 0);
 	}
 
 } }

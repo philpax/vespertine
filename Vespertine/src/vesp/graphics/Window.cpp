@@ -51,6 +51,7 @@ namespace vesp { namespace graphics {
 	{
 		SDL_SysWMinfo info;
 		SDL_VERSION(&info.version);
+		// TODO error handling
 		SDL_GetWindowWMInfo(this->window_, &info);
 		return info.info.win.window;
 	}
