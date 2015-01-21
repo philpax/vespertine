@@ -1,6 +1,8 @@
 #include "vesp/Main.hpp"
-#include "vesp/graphics/Engine.hpp"
 #include "vesp/Log.hpp"
+#include "vesp/EventManager.hpp"
+
+#include "vesp/graphics/Engine.hpp"
 
 #include <SDL.h>
 
@@ -10,6 +12,8 @@ namespace vesp
 	{
 		logger::Initialise("log.txt");
 		Log(LogType::Info, "Vespertine (%s %s)", __DATE__, __TIME__);
+
+		EventManager::Create();
 
 		if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
 		{
@@ -28,6 +32,8 @@ namespace vesp
 
 		SDL_Quit();
 
+		EventManager::Destroy();
+
 		Log(LogType::Info, "Vespertine shutting down");
 		logger::Shutdown();
 	}
@@ -45,6 +51,7 @@ namespace vesp
 				{
 				case SDL_QUIT:
 					running = false;
+					EventManager::Get()->Fire("Quit");
 					break;
 				};
 			}

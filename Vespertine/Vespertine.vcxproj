@@ -78,6 +78,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\vesp\EventManager.hpp" />
     <ClInclude Include="include\vesp\graphics\Engine.hpp" />
     <ClInclude Include="include\vesp\graphics\Window.hpp" />
     <ClInclude Include="include\vesp\Log.hpp" />
@@ -86,13 +87,16 @@
     <ClInclude Include="include\vesp\Types.hpp" />
     <ClInclude Include="include\vesp\Util.hpp" />
     <ClInclude Include="include\vesp\util\GlobalSystem.hpp" />
+    <ClInclude Include="include\vesp\util\MurmurHash.hpp" />
     <ClInclude Include="include\vesp\util\SizeOfArray.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\vesp\EventManager.cpp" />
     <ClCompile Include="src\vesp\graphics\Engine.cpp" />
     <ClCompile Include="src\vesp\graphics\Window.cpp" />
     <ClCompile Include="src\vesp\Log.cpp" />
     <ClCompile Include="src\vesp\Main.cpp" />
+    <ClCompile Include="src\vesp\util\MurmurHash.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
