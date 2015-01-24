@@ -1,9 +1,11 @@
 #include "vesp/graphics/Engine.hpp"
 #include "vesp/graphics/Window.hpp"
 #include "vesp/graphics/Shader.hpp"
-#include "vesp/graphics/Vertex.hpp"
+#include "vesp/graphics/Buffer.hpp"
+
 #include "vesp/math/Vector.hpp"
 #include "vesp/Log.hpp"
+#include "vesp/Util.hpp"
 
 #include <d3d11.h>
 
@@ -11,7 +13,12 @@ namespace vesp { namespace graphics {
 
 	VertexShader* vertexShader = nullptr;
 	PixelShader* pixelShader = nullptr;
-	ID3D11Buffer* buffer = nullptr;
+	VertexBuffer* buffer = nullptr;
+
+	IDXGISwapChain* Engine::SwapChain;
+	ID3D11Device* Engine::Device;
+	ID3D11DeviceContext* Engine::ImmediateContext;
+	ID3D11RenderTargetView* Engine::RenderTargetView;
 
 	Engine::Engine(StringPtr title)
 	{
@@ -20,10 +27,14 @@ namespace vesp { namespace graphics {
 
 	Engine::~Engine()
 	{
-		buffer->Release();
-
+		delete buffer;
 		delete pixelShader;
 		delete vertexShader;
+
+		RenderTargetView->Release();
+		ImmediateContext->Release();
+		SwapChain->Release();
+		Device->Release();
 	}
 	
 	void Engine::Initialize()
@@ -46,15 +57,15 @@ namespace vesp { namespace graphics {
 
 		// todo error handling
 		D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
-			0, nullptr, 0, D3D11_SDK_VERSION, &desc, &this->swapChain_,
-			&this->device_, nullptr, &this->immediateContext_);
+			0, nullptr, 0, D3D11_SDK_VERSION, &desc, &SwapChain,
+			&Device, nullptr, &ImmediateContext);
 
 		ID3D11Texture2D* backBuffer;
 		// error handling
-		this->swapChain_->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
-		this->device_->CreateRenderTargetView(backBuffer, nullptr, &this->renderTargetView_);
+		SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
+		Device->CreateRenderTargetView(backBuffer, nullptr, &RenderTargetView);
 		backBuffer->Release();
-		this->immediateContext_->OMSetRenderTargets(1, &this->renderTargetView_.p, nullptr);
+		ImmediateContext->OMSetRenderTargets(1, &RenderTargetView, nullptr);
 	
 		D3D11_VIEWPORT vp;
 		vp.Width = (float)size.x;
@@ -63,7 +74,7 @@ namespace vesp { namespace graphics {
 		vp.MaxDepth = 1.0f;
 		vp.TopLeftX = 0;
 		vp.TopLeftY = 0;
-		this->immediateContext_->RSSetViewports(1, &vp);
+		ImmediateContext->RSSetViewports(1, &vp);
 
 		D3D11_INPUT_ELEMENT_DESC layout[] =
 		{
@@ -94,26 +105,11 @@ namespace vesp { namespace graphics {
 			Vec3( -0.5f, -0.5f, 0.5f ),
 		};
 
-		D3D11_BUFFER_DESC bd;
-		ZeroMemory( &bd, sizeof(bd) );
-		bd.Usage = D3D11_USAGE_DEFAULT;
-		bd.ByteWidth = sizeof( Vertex ) * 3;
-		bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		bd.CPUAccessFlags = 0;
-		D3D11_SUBRESOURCE_DATA InitData;
-		ZeroMemory( &InitData, sizeof(InitData) );
-		InitData.pSysMem = vertices;
-		HRESULT hr = device_->CreateBuffer( &bd, &InitData, &buffer );
-		if( FAILED( hr ) )
-			return;
-
-		// Set vertex buffer
-		UINT stride = sizeof( Vertex );
-		UINT offset = 0;
-		immediateContext_->IASetVertexBuffers( 0, 1, &buffer, &stride, &offset );
+		buffer = new VertexBuffer();
+		buffer->Create(vertices, util::SizeOfArray(vertices));
 
 		// Set primitive topology
-		immediateContext_->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
+		ImmediateContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 	}
 
 	void Engine::Pulse()
@@ -121,23 +117,14 @@ namespace vesp { namespace graphics {
 		this->window_->Pulse();
 
 		float clearColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
-		this->immediateContext_->ClearRenderTargetView(renderTargetView_, clearColour);
+		ImmediateContext->ClearRenderTargetView(RenderTargetView, clearColour);
 		
 		vertexShader->Activate();
 		pixelShader->Activate();
-		this->immediateContext_->Draw(3, 0);
+		buffer->Use(0);
+		ImmediateContext->Draw(3, 0);
 		
-		this->swapChain_->Present(0, 0);
-	}
-
-	ID3D11Device* Engine::GetDevice()
-	{
-		return this->device_;
-	}
-
-	ID3D11DeviceContext* Engine::GetImmediateContext()
-	{
-		return this->immediateContext_;
+		SwapChain->Present(0, 0);
 	}
 
 } }

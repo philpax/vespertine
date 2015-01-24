@@ -23,15 +23,13 @@ namespace vesp { namespace graphics {
 		void Initialize();
 		void Pulse();
 
-		ID3D11Device* GetDevice();
-		ID3D11DeviceContext* GetImmediateContext();
+		static IDXGISwapChain* SwapChain;
+		static ID3D11Device* Device;
+		static ID3D11DeviceContext* ImmediateContext;
+		static ID3D11RenderTargetView* RenderTargetView;
 
 	private:
 		std::unique_ptr<Window> window_;
-		CComPtr<IDXGISwapChain> swapChain_;
-		CComPtr<ID3D11Device> device_;
-		CComPtr<ID3D11DeviceContext> immediateContext_;
-		CComPtr<ID3D11RenderTargetView> renderTargetView_;
 	};
 
 } }

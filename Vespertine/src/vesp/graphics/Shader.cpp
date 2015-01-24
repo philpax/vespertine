@@ -63,7 +63,7 @@ namespace vesp { namespace graphics {
 
 		if (!blob) return false;
 
-		auto device = Engine::Get()->GetDevice();
+		auto device = Engine::Device;
 
 		HRESULT hr = device->CreateVertexShader(
 			blob->GetBufferPointer(), blob->GetBufferSize(), 
@@ -92,7 +92,7 @@ namespace vesp { namespace graphics {
 
 	void VertexShader::Activate()
 	{
-		auto immediateContext = Engine::Get()->GetImmediateContext();
+		auto immediateContext = Engine::ImmediateContext;
 		immediateContext->IASetInputLayout(this->inputLayout_);
 		immediateContext->VSSetShader(this->shader_, nullptr, 0);
 	}
@@ -110,7 +110,7 @@ namespace vesp { namespace graphics {
 
 		if (!blob) return false;
 
-		HRESULT hr = Engine::Get()->GetDevice()->CreatePixelShader(
+		HRESULT hr = Engine::Device->CreatePixelShader(
 			blob->GetBufferPointer(), blob->GetBufferSize(), 
 			nullptr, &this->shader_);
 
@@ -119,7 +119,7 @@ namespace vesp { namespace graphics {
 
 	void PixelShader::Activate()
 	{
-		Engine::Get()->GetImmediateContext()->PSSetShader(
+		Engine::ImmediateContext->PSSetShader(
 			this->shader_, nullptr, 0);
 	}
 
