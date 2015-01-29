@@ -1,19 +1,29 @@
+#pragma warning(disable: 4005)
 #include "vesp/graphics/Engine.hpp"
 #include "vesp/graphics/Window.hpp"
 #include "vesp/graphics/Shader.hpp"
 #include "vesp/graphics/Buffer.hpp"
 
 #include "vesp/math/Vector.hpp"
+#include "vesp/math/Matrix.hpp"
+
 #include "vesp/Log.hpp"
-#include "vesp/Util.hpp"
 
 #include <d3d11.h>
 
 namespace vesp { namespace graphics {
 
-	VertexShader* vertexShader = nullptr;
-	PixelShader* pixelShader = nullptr;
-	VertexBuffer* buffer = nullptr;
+	struct VertexConstant
+	{
+		Mat4 model;
+		Mat4 view;
+		Mat4 projection;
+	} vertexConstantData;
+
+	VertexShader vertexShader("vs");
+	PixelShader pixelShader("ps");
+	VertexBuffer vertexBuffer;
+	ConstantBuffer<VertexConstant> constantBuffer;
 
 	IDXGISwapChain* Engine::SwapChain;
 	ID3D11Device* Engine::Device;
@@ -27,10 +37,6 @@ namespace vesp { namespace graphics {
 
 	Engine::~Engine()
 	{
-		delete buffer;
-		delete pixelShader;
-		delete vertexShader;
-
 		RenderTargetView->Release();
 		ImmediateContext->Release();
 		SwapChain->Release();
@@ -79,34 +85,66 @@ namespace vesp { namespace graphics {
 		D3D11_INPUT_ELEMENT_DESC layout[] =
 		{
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		};
 		UINT numElements = ARRAYSIZE( layout );
 
-		vertexShader = new VertexShader("vs");
-		vertexShader->Load(
-			"float4 main( float4 Pos : POSITION ) : SV_POSITION"
+		vertexShader.Load(
+			"cbuffer VertexConstantBuffer : register(b0)"
 			"{"
-			"	return Pos;"
+			"	float4x4 model;"
+			"	float4x4 view;"
+			"	float4x4 projection;"
+			"};"
+			"struct VertexIn"
+			"{"
+			"	float3 position : POSITION;"
+			"	float3 colour : COLOR;"
+			"};"
+			"struct PixelIn"
+			"{"
+			"	float4 position : SV_POSITION;"
+			"	float3 colour : COLOR;"
+			"};"
+			"PixelIn main(VertexIn input)"
+			"{"
+			"	PixelIn output;"
+			"	output.position = float4(input.position, 1.0);"
+			"	output.position = mul(model, float4(input.position, 1.0));"
+			"	output.position = mul(view, output.position);"
+			"	output.position = mul(projection, output.position);"
+			"	output.colour = input.colour;"
+			"	return output;"
 			"}",
 			layout, numElements);
 
-		pixelShader = new PixelShader("ps");
-		pixelShader->Load(
-			"float4 main( float4 Pos : SV_POSITION ) : SV_Target"
+		pixelShader.Load(
+			"struct PixelIn"
 			"{"
-			"	return float4( 1.0f, 1.0f, 0.0f, 1.0f );"
+			"	float4 position : SV_POSITION;"
+			"	float3 colour : COLOR;"
+			"};"
+			"float4 main(PixelIn input) : SV_Target"
+			"{"
+			"	return float4(input.colour, 1.0);"
 			"}"
 		);
 
 		Vertex vertices[] =
 		{
-			Vec3( 0.0f, 0.5f, 0.5f ),
-			Vec3( 0.5f, -0.5f, 0.5f ),
-			Vec3( -0.5f, -0.5f, 0.5f ),
+			{Vec3(0.0f, 0.5f, 0.5f), Vec3(1.0f, 0.0f, 0.0f)},
+			{Vec3(0.5f, -0.5f, 0.5f), Vec3(0.0f, 1.0f, 0.0f)},
+			{Vec3(-0.5f, -0.5f, 0.5f), Vec3(0.0f, 0.0f, 1.0f)},
 		};
 
-		buffer = new VertexBuffer();
-		buffer->Create(vertices, util::SizeOfArray(vertices));
+		vertexBuffer.Create(vertices, util::SizeOfArray(vertices));
+
+		vertexConstantData.model = glm::mat4();
+		vertexConstantData.view = glm::mat4();
+		vertexConstantData.projection = math::DXPerspective(
+			60.0f, this->window_->GetAspectRatio(), 0.1f, 1000.0f);
+
+		constantBuffer.Create(&vertexConstantData, 1);
 
 		// Set primitive topology
 		ImmediateContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
@@ -119,9 +157,16 @@ namespace vesp { namespace graphics {
 		float clearColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 		ImmediateContext->ClearRenderTargetView(RenderTargetView, clearColour);
 		
-		vertexShader->Activate();
-		pixelShader->Activate();
-		buffer->Use(0);
+		vertexConstantData.view = glm::mat4();
+		vertexConstantData.view = glm::translate(vertexConstantData.view, 
+			glm::vec3(0.0f, 0.0f, sin(this->timer_.GetSeconds()) + 0.75f));
+
+		constantBuffer.Load(&vertexConstantData, 1);
+		constantBuffer.UseVS(0);
+
+		vertexShader.Activate();
+		pixelShader.Activate();
+		vertexBuffer.Use(0);
 		ImmediateContext->Draw(3, 0);
 		
 		SwapChain->Present(0, 0);

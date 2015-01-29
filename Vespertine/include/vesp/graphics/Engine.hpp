@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vesp/util/GlobalSystem.hpp"
+#include "vesp/Util.hpp"
 #include "vesp/Types.hpp"
 
 #include <atlbase.h>
@@ -30,6 +30,7 @@ namespace vesp { namespace graphics {
 
 	private:
 		std::unique_ptr<Window> window_;
+		util::Timer timer_;
 	};
 
 } }
