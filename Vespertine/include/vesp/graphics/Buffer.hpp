@@ -92,6 +92,13 @@ namespace vesp { namespace graphics {
 		{
 			Engine::ImmediateContext->Unmap(this->buffer_, 0);
 		}
+
+		void Load(T* data, U32 count)
+		{
+			auto p = this->Map();
+			memcpy(p, data, sizeof(T) * count);
+			this->Unmap();
+		}
 	};
 
 } }

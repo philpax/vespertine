@@ -1,3 +1,4 @@
+#pragma warning(disable: 4005)
 #include "vesp/graphics/Buffer.hpp"
 
 namespace vesp { namespace graphics {
