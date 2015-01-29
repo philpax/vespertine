@@ -2,6 +2,7 @@
 
 #include "vesp/util/GlobalSystem.hpp"
 #include "vesp/Types.hpp"
+#include "vesp/Containers.hpp"
 
 namespace vesp
 {
@@ -15,6 +16,7 @@ namespace vesp
 
 			void Write(U8 const* data, U32 const count);
 			U32 Read(U8* data, U32 const count);
+			U32 Size();
 
 		private:
 			FILE* file_;
@@ -23,5 +25,7 @@ namespace vesp
 		File Open(StringPtr fileName, StringPtr mode);
 		void Close(File const& file);
 		bool Exists(StringPtr fileName);
+
+		void Read(StringPtr fileName, Vector<StringByte>& output);
 	};
 }

@@ -17,6 +17,17 @@ namespace vesp
 		return fread(data, 1, count, this->file_);
 	}
 
+	U32 Filesystem::File::Size()
+	{
+		auto currentPosition = ftell(this->file_);
+
+		fseek(this->file_, 0, SEEK_END);
+		auto count = ftell(this->file_);
+		fseek(this->file_, currentPosition, SEEK_SET);
+
+		return count;
+	}
+
 	Filesystem::File Filesystem::Open(StringPtr fileName, StringPtr mode)
 	{
 		File file;
@@ -33,5 +44,18 @@ namespace vesp
 	bool Filesystem::Exists(StringPtr fileName)
 	{
 		return GetFileAttributes(fileName) != INVALID_FILE_ATTRIBUTES;
+	}
+
+	void Filesystem::Read(StringPtr fileName, Vector<StringByte>& output)
+	{
+		auto file = this->Open(fileName, "r");
+		
+		auto size = file.Size();
+		output.clear();
+		output.resize(size + 1);
+		file.Read(reinterpret_cast<U8*>(output.data()), size);
+		output[size] = '\0';
+
+		this->Close(file);
 	}
 }
