@@ -28,9 +28,9 @@ namespace vesp
 
 	void Log(LogType type, StringPtr fmt, ...)
 	{
-		StringByte tempBuffer[512];
-		StringByte finalBuffer[1024];
-		StringByte timeBuffer[32];
+		static StringByte tempBuffer[4096];
+		static StringByte finalBuffer[4500];
+		static StringByte timeBuffer[32];
 
 		time_t rawTime;
 		tm timeInfo;
