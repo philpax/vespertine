@@ -7,7 +7,7 @@ int main()
 	if (!vesp::Initialize(gameBuildId))
 		return 1;
 
-	vesp::Log(vesp::LogType::Info, gameBuildId);
+	LogInfo(gameBuildId);
 
 	vesp::Loop();
 

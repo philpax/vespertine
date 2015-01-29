@@ -29,7 +29,7 @@ namespace vesp { namespace graphics {
 			target = "vs_4_0";
 			break;
 		default:
-			Log(LogType::Error, "Unsupported shader type! Type: %d", this->type_);
+			LogError("Unsupported shader type! Type: %d", this->type_);
 			return nullptr;
 		}
 
@@ -44,7 +44,7 @@ namespace vesp { namespace graphics {
 		if (FAILED(hr))
 		{
 			auto error = static_cast<StringPtr>(errorBlob->GetBufferPointer());
-			Log(LogType::Error, "Failed to compile shader %s! Error: %s",
+			LogError("Failed to compile shader %s! Error: %s",
 				this->name_, error);
 
 			if (output) output->Release();
@@ -76,7 +76,7 @@ namespace vesp { namespace graphics {
 
 		if (FAILED(hr))
 		{
-			Log(LogType::Error, "Failed to create shader %s! Error: %d",
+			LogError("Failed to create shader %s! Error: %d",
 				this->name_, hr);
 			return false;
 		}
@@ -87,7 +87,7 @@ namespace vesp { namespace graphics {
 
 		if (FAILED(hr))
 		{
-			Log(LogType::Error, "Failed to load shader %s! Error (CreateInputLayout): %d",
+			LogError("Failed to load shader %s! Error (CreateInputLayout): %d",
 				this->name_, hr);
 			return false;
 		}

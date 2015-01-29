@@ -33,10 +33,10 @@ namespace vesp
 		Filesystem::File logFile_;
 	};
 
-#define Log(type, fmt, ...) Logger::Get()->WriteLog(type, fmt, __VA_ARGS__)
-#define LogInfo(fmt, ...) Log(LogType::Info, fmt, __VA_ARGS__)
-#define LogWarn(fmt, ...) Log(LogType::Warn, fmt, __VA_ARGS__)
-#define LogError(fmt, ...) Log(LogType::Error, fmt, __VA_ARGS__)
-#define LogFatal(fmt, ...) Log(LogType::Fatal, fmt, __VA_ARGS__)
+#define Log(type, fmt, ...) vesp::Logger::Get()->WriteLog(type, fmt, __VA_ARGS__)
+#define LogInfo(fmt, ...) Log(vesp::LogType::Info, fmt, __VA_ARGS__)
+#define LogWarn(fmt, ...) Log(vesp::LogType::Warn, fmt, __VA_ARGS__)
+#define LogError(fmt, ...) Log(vesp::LogType::Error, fmt, __VA_ARGS__)
+#define LogFatal(fmt, ...) Log(vesp::LogType::Fatal, fmt, __VA_ARGS__)
 
 }

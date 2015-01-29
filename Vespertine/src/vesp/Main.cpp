@@ -14,13 +14,13 @@ namespace vesp
 		Filesystem::Create();
 
 		Logger::Create("log.txt");
-		Log(LogType::Info, "Vespertine (%s %s)", __DATE__, __TIME__);
+		LogInfo("Vespertine (%s %s)", __DATE__, __TIME__);
 
 		EventManager::Create();
 
 		if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
 		{
-			Log(LogType::Fatal, "Failed to initialize SDL, error: %s", SDL_GetError());
+			LogFatal("Failed to initialize SDL, error: %s", SDL_GetError());
 			return false;
 		}
 
@@ -38,7 +38,7 @@ namespace vesp
 
 		EventManager::Destroy();
 
-		Log(LogType::Info, "Vespertine shutting down");
+		LogInfo("Vespertine shutting down");
 		Logger::Destroy();
 
 		Filesystem::Destroy();

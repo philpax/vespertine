@@ -32,7 +32,7 @@ namespace vesp { namespace graphics {
 			HRESULT hr = Engine::Device->CreateBuffer(&desc, &initData, &this->buffer_);
 			if (FAILED(hr))
 			{
-				Log(LogType::Error, 
+				LogError( 
 					"Failed to create buffer (count: %d, flags: %d, usage: %d, error: %X)", 
 					count, bindFlags, usage, hr);
 
