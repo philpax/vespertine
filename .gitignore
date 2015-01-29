@@ -31,3 +31,4 @@ obj/
 *.exp
 *.bsc
 *.DS_Store
+/log.txt

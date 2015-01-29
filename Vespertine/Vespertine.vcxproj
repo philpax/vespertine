@@ -78,6 +78,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\vesp\Containers.hpp" />
     <ClInclude Include="include\vesp\EventManager.hpp" />
     <ClInclude Include="include\vesp\Filesystem.hpp" />
     <ClInclude Include="include\vesp\graphics\Buffer.hpp" />
