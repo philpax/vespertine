@@ -93,6 +93,7 @@
     <ClInclude Include="include\vesp\util\GlobalSystem.hpp" />
     <ClInclude Include="include\vesp\util\MurmurHash.hpp" />
     <ClInclude Include="include\vesp\util\SizeOfArray.hpp" />
+    <ClInclude Include="include\vesp\util\Timer.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\vesp\EventManager.cpp" />
