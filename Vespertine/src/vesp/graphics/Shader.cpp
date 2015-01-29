@@ -1,3 +1,4 @@
+#pragma warning(disable: 4005)
 #include "vesp/graphics/Shader.hpp"
 #include "vesp/graphics/Engine.hpp"
 #include "vesp/Log.hpp"
@@ -18,7 +19,7 @@ namespace vesp { namespace graphics {
 		HRESULT hr = S_OK;
 		U32 shaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
 
-		StringPtr target = "";
+		StringPtr target = nullptr;
 		switch (this->type_)
 		{
 		case ShaderType::Pixel:
@@ -27,6 +28,9 @@ namespace vesp { namespace graphics {
 		case ShaderType::Vertex:
 			target = "vs_4_0";
 			break;
+		default:
+			Log(LogType::Error, "Unsupported shader type! Type: %d", this->type_);
+			return nullptr;
 		}
 
 		CComPtr<ID3DBlob> errorBlob = nullptr;
@@ -39,8 +43,9 @@ namespace vesp { namespace graphics {
 
 		if (FAILED(hr))
 		{
+			auto error = static_cast<StringPtr>(errorBlob->GetBufferPointer());
 			Log(LogType::Error, "Failed to compile shader %s! Error: %s",
-				this->name_, errorBlob->GetBufferPointer());
+				this->name_, error);
 
 			if (output) output->Release();
 		}
