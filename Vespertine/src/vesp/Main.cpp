@@ -1,6 +1,7 @@
 #include "vesp/Main.hpp"
 #include "vesp/Log.hpp"
 #include "vesp/EventManager.hpp"
+#include "vesp/Filesystem.hpp"
 
 #include "vesp/graphics/Engine.hpp"
 
@@ -10,7 +11,9 @@ namespace vesp
 {
 	bool Initialize(StringPtr name)
 	{
-		logger::Initialise("log.txt");
+		Filesystem::Create();
+
+		Logger::Create("log.txt");
 		Log(LogType::Info, "Vespertine (%s %s)", __DATE__, __TIME__);
 
 		EventManager::Create();
@@ -36,7 +39,9 @@ namespace vesp
 		EventManager::Destroy();
 
 		Log(LogType::Info, "Vespertine shutting down");
-		logger::Shutdown();
+		Logger::Destroy();
+
+		Filesystem::Destroy();
 	}
 
 	void Loop()

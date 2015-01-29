@@ -1,32 +1,26 @@
 #include "vesp/Log.hpp"
 #include "vesp/Util.hpp"
 
-#include <cstdio>
 #include <cstdarg>
 #include <ctime>
 
 namespace vesp
 {
-	namespace logger
-	{
-		FILE* LogFile;
-
-		void Initialise(StringPtr path)
-		{
-			fopen_s(&LogFile, path, "a");
-		}
-
-		void Shutdown()
-		{
-			fclose(LogFile);
-		}
-	}
-
 #define LOG_TYPE(type) #type
 	const char* LogTypeStrings[] = { VESP_LOG_TYPES };
 #undef LOG_TYPE
 
-	void Log(LogType type, StringPtr fmt, ...)
+	Logger::Logger(StringPtr path)
+	{
+		this->logFile_ = Filesystem::Get()->Open(path, "a");
+	}
+
+	Logger::~Logger()
+	{
+		Filesystem::Get()->Close(this->logFile_);
+	}
+
+	void Logger::WriteLog(LogType type, StringPtr fmt, ...)
 	{
 		static StringByte tempBuffer[4096];
 		static StringByte finalBuffer[4500];
@@ -49,7 +43,9 @@ namespace vesp
 		sprintf_s(finalBuffer, "%s | %s | %s\n", 
 			timeBuffer, LogTypeStrings[static_cast<U8>(type)], tempBuffer);
 
-		printf("%s", finalBuffer);
-		fprintf(logger::LogFile, "%s", finalBuffer);
+		auto len = strlen(finalBuffer);
+
+		fwrite(finalBuffer, 1, len, stdout);
+		this->logFile_.Write(reinterpret_cast<vesp::U8*>(finalBuffer), len);
 	}
 }
