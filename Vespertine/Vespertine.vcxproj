@@ -86,6 +86,7 @@
     <ClInclude Include="include\vesp\graphics\Window.hpp" />
     <ClInclude Include="include\vesp\Log.hpp" />
     <ClInclude Include="include\vesp\Main.hpp" />
+    <ClInclude Include="include\vesp\math\Matrix.hpp" />
     <ClInclude Include="include\vesp\math\Vector.hpp" />
     <ClInclude Include="include\vesp\Types.hpp" />
     <ClInclude Include="include\vesp\Util.hpp" />
