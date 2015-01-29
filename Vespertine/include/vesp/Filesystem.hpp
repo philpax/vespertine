@@ -6,13 +6,13 @@
 
 namespace vesp
 {
-	class Filesystem : public util::GlobalSystem<Filesystem>
+	class FileSystem : public util::GlobalSystem<FileSystem>
 	{
 	public:
 		struct File
 		{
 		public:
-			friend class Filesystem;
+			friend class FileSystem;
 
 			void Write(U8 const* data, U32 const count);
 			U32 Read(U8* data, U32 const count);

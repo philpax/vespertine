@@ -1,4 +1,4 @@
-#include "vesp/Filesystem.hpp"
+#include "vesp/FileSystem.hpp"
 
 #include <Windows.h>
 
@@ -7,17 +7,17 @@ namespace vesp
 	// Temporary implementation based on the standard library
 	// Will switch to more appropriate measures when necessary
 
-	void Filesystem::File::Write(U8 const* data, U32 const count)
+	void FileSystem::File::Write(U8 const* data, U32 const count)
 	{
 		fwrite(data, 1, count, this->file_);
 	}
 
-	U32 Filesystem::File::Read(U8* data, U32 const count)
+	U32 FileSystem::File::Read(U8* data, U32 const count)
 	{
 		return fread(data, 1, count, this->file_);
 	}
 
-	U32 Filesystem::File::Size()
+	U32 FileSystem::File::Size()
 	{
 		auto currentPosition = ftell(this->file_);
 
@@ -28,7 +28,7 @@ namespace vesp
 		return count;
 	}
 
-	Filesystem::File Filesystem::Open(StringPtr fileName, StringPtr mode)
+	FileSystem::File FileSystem::Open(StringPtr fileName, StringPtr mode)
 	{
 		File file;
 		fopen_s(&file.file_, fileName, mode);
@@ -36,17 +36,17 @@ namespace vesp
 		return file;
 	}
 
-	void Filesystem::Close(Filesystem::File const& file)
+	void FileSystem::Close(FileSystem::File const& file)
 	{
 		fclose(file.file_);
 	}
 
-	bool Filesystem::Exists(StringPtr fileName)
+	bool FileSystem::Exists(StringPtr fileName)
 	{
 		return GetFileAttributes(fileName) != INVALID_FILE_ATTRIBUTES;
 	}
 
-	void Filesystem::Read(StringPtr fileName, Vector<StringByte>& output)
+	void FileSystem::Read(StringPtr fileName, Vector<StringByte>& output)
 	{
 		auto file = this->Open(fileName, "r");
 		

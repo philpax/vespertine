@@ -91,10 +91,10 @@ namespace vesp { namespace graphics {
 
 		Vector<StringByte> shaderSource;
 	
-		Filesystem::Get()->Read("data/shaders/default.vsh", shaderSource);
+		FileSystem::Get()->Read("data/shaders/default.vsh", shaderSource);
 		vertexShader.Load(shaderSource.data(), layout, numElements);
 
-		Filesystem::Get()->Read("data/shaders/default.psh", shaderSource);
+		FileSystem::Get()->Read("data/shaders/default.psh", shaderSource);
 		pixelShader.Load(shaderSource.data());
 
 		Vertex vertices[] =

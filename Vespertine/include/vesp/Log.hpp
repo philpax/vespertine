@@ -1,7 +1,7 @@
 #pragma once
 
 #include "vesp/Types.hpp"
-#include "vesp/Filesystem.hpp"
+#include "vesp/FileSystem.hpp"
 
 #include "vesp/util/GlobalSystem.hpp"
 
@@ -30,7 +30,7 @@ namespace vesp
 		void WriteLog(LogType type, StringPtr fmt, ...);
 
 	private:
-		Filesystem::File logFile_;
+		FileSystem::File logFile_;
 	};
 
 #define Log(type, fmt, ...) vesp::Logger::Get()->WriteLog(type, fmt, __VA_ARGS__)

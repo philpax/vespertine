@@ -12,12 +12,12 @@ namespace vesp
 
 	Logger::Logger(StringPtr path)
 	{
-		this->logFile_ = Filesystem::Get()->Open(path, "a");
+		this->logFile_ = FileSystem::Get()->Open(path, "a");
 	}
 
 	Logger::~Logger()
 	{
-		Filesystem::Get()->Close(this->logFile_);
+		FileSystem::Get()->Close(this->logFile_);
 	}
 
 	void Logger::WriteLog(LogType type, StringPtr fmt, ...)
