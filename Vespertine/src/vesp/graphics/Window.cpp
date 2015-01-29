@@ -47,6 +47,12 @@ namespace vesp { namespace graphics {
 		return ret;
 	}
 
+	float Window::GetAspectRatio()
+	{
+		auto size = this->GetSize();
+		return (float)size.x / (float)size.y;
+	}
+
 	void* Window::GetSystemRepresentation()
 	{
 		SDL_SysWMinfo info;
