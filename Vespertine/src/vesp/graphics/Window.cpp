@@ -9,7 +9,8 @@ namespace vesp { namespace graphics {
 	Window::Window(StringPtr title, IVec2 size)
 	{
 		this->window_ = SDL_CreateWindow(
-			title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, size.x, size.y, SDL_WINDOW_OPENGL);
+			title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
+			size.x, size.y, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 	}
 
 	Window::~Window()
