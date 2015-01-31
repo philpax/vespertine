@@ -18,6 +18,9 @@ namespace vesp { namespace graphics {
 
 		void Update();
 
+		void* operator new(size_t i);
+		void operator delete(void* p);
+
 	protected:
 		struct Constants
 		{

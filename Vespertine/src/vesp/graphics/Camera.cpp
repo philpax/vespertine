@@ -42,4 +42,14 @@ namespace vesp { namespace graphics {
 		return constants;
 	}
 
+    void* Camera::operator new(size_t i)
+    {
+        return _mm_malloc(i,16);
+    }
+
+    void Camera::operator delete(void* p)
+    {
+        _mm_free(p);
+    }
+
 } }
