@@ -1,8 +1,6 @@
 cbuffer VertexConstantBuffer : register(b0)
 {
-	float4x4 model;
-	float4x4 view;
-	float4x4 projection;
+	float4x4 viewProjection;
 };
 
 struct VertexIn
@@ -20,10 +18,7 @@ struct PixelIn
 PixelIn main(VertexIn input)
 {
 	PixelIn output;
-	output.position = float4(input.position, 1.0);
-	output.position = mul(model, float4(input.position, 1.0));
-	output.position = mul(view, output.position);
-	output.position = mul(projection, output.position);
+	output.position = mul(viewProjection, float4(input.position, 1.0));
 	output.colour = input.colour;
 	return output;
 }

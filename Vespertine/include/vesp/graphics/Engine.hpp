@@ -13,6 +13,7 @@ struct ID3D11RenderTargetView;
 namespace vesp { namespace graphics {
 
 	class Window;
+	class Camera;
 
 	class Engine : public util::GlobalSystem<Engine>
 	{
@@ -23,6 +24,8 @@ namespace vesp { namespace graphics {
 		void Initialize();
 		void Pulse();
 
+		Window* GetWindow();
+
 		static IDXGISwapChain* SwapChain;
 		static ID3D11Device* Device;
 		static ID3D11DeviceContext* ImmediateContext;
@@ -30,6 +33,7 @@ namespace vesp { namespace graphics {
 
 	private:
 		std::unique_ptr<Window> window_;
+		std::unique_ptr<Camera> camera_;
 		util::Timer timer_;
 	};
 

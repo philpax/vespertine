@@ -3,6 +3,7 @@
 #include "vesp/graphics/Window.hpp"
 #include "vesp/graphics/Shader.hpp"
 #include "vesp/graphics/Buffer.hpp"
+#include "vesp/graphics/FreeCamera.hpp"
 
 #include "vesp/math/Vector.hpp"
 #include "vesp/math/Matrix.hpp"
@@ -12,18 +13,10 @@
 #include <d3d11.h>
 
 namespace vesp { namespace graphics {
-
-	struct VertexConstant
-	{
-		Mat4 model;
-		Mat4 view;
-		Mat4 projection;
-	} vertexConstantData;
-
+	
 	VertexShader vertexShader("vs");
 	PixelShader pixelShader("ps");
 	VertexBuffer vertexBuffer;
-	ConstantBuffer<VertexConstant> constantBuffer;
 
 	IDXGISwapChain* Engine::SwapChain;
 	ID3D11Device* Engine::Device;
@@ -106,15 +99,10 @@ namespace vesp { namespace graphics {
 
 		vertexBuffer.Create(vertices, util::SizeOfArray(vertices));
 
-		vertexConstantData.model = glm::mat4();
-		vertexConstantData.view = glm::mat4();
-		vertexConstantData.projection = math::DXPerspective(
-			60.0f, this->window_->GetAspectRatio(), 0.1f, 1000.0f);
-
-		constantBuffer.Create(&vertexConstantData, 1);
+		this->camera_ = std::make_unique<FreeCamera>();
 
 		// Set primitive topology
-		ImmediateContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
+		ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	}
 
 	void Engine::Pulse()
@@ -124,12 +112,11 @@ namespace vesp { namespace graphics {
 		float clearColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 		ImmediateContext->ClearRenderTargetView(RenderTargetView, clearColour);
 		
-		vertexConstantData.view = glm::mat4();
-		vertexConstantData.view = glm::translate(vertexConstantData.view, 
-			glm::vec3(0.0f, 0.0f, sin(this->timer_.GetSeconds()) + 0.75f));
-
-		constantBuffer.Load(&vertexConstantData, 1);
-		constantBuffer.UseVS(0);
+		auto freeCamera = static_cast<FreeCamera*>(this->camera_.get());
+		float t = this->timer_.GetSeconds();
+		freeCamera->SetAngle(Quat(Vec3(0.0, sin(t) * glm::half_pi<float>() * 0.2f, 0.0f)));
+		freeCamera->SetPosition(Vec3(0.0f, 0.0f, sin(t) * 0.5f + 0.4f));
+		freeCamera->Update();
 
 		vertexShader.Activate();
 		pixelShader.Activate();
@@ -137,6 +124,11 @@ namespace vesp { namespace graphics {
 		ImmediateContext->Draw(3, 0);
 		
 		SwapChain->Present(0, 0);
+	}
+
+	Window* Engine::GetWindow()
+	{
+		return this->window_.get();
 	}
 
 } }
