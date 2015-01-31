@@ -34,4 +34,7 @@ namespace vesp
 	typedef glm::mat2			Mat2;
 	typedef glm::mat3			Mat3;
 	typedef glm::mat4			Mat4;
+
+	// Quaternion types
+	typedef glm::quat			Quat;
 }
