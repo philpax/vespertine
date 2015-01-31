@@ -1,7 +1,5 @@
 #pragma once
 
-#include <memory>
-
 namespace vesp { namespace util {
 
 	template <typename T>
@@ -11,24 +9,24 @@ namespace vesp { namespace util {
 		template <typename... Values>
 		static void Create(Values&&... values)
 		{
-			ptr_ = std::make_unique<T>(values...);
+			ptr_ = new T(values...);
 		}
 
 		static void Destroy()
 		{
-			ptr_.reset();
+			delete ptr_;
 		}
 
 		static T* Get()
 		{
-			return ptr_.get();
+			return ptr_;
 		}
 
 	private:
-		static std::unique_ptr<T> ptr_;
+		static T* ptr_;
 	};
 
 	template <typename T>
-	std::unique_ptr<T> GlobalSystem<T>::ptr_;
+	T* GlobalSystem<T>::ptr_;
 
 } }
