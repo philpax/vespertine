@@ -4,6 +4,7 @@
 #include "vesp/graphics/Shader.hpp"
 #include "vesp/graphics/Buffer.hpp"
 #include "vesp/graphics/FreeCamera.hpp"
+#include "vesp/graphics/Mesh.hpp"
 
 #include "vesp/math/Vector.hpp"
 #include "vesp/math/Matrix.hpp"
@@ -13,17 +14,11 @@
 #include <d3d11.h>
 
 namespace vesp { namespace graphics {
-	
-	struct PerMeshConstants
-	{
-		Mat4 world;
-	} perMeshConstants;
 
 	VertexShader vertexShader("vs");
 	PixelShader pixelShader("ps");
-	VertexBuffer vertexBuffer;
-	VertexBuffer gizmoVertexBuffer;
-	ConstantBuffer<PerMeshConstants> perMeshConstantBuffer;
+	Mesh floorMesh;
+	Mesh gizmoMesh;
 
 	IDXGISwapChain* Engine::SwapChain;
 	ID3D11Device* Engine::Device;
@@ -96,7 +91,7 @@ namespace vesp { namespace graphics {
 		FileSystem::Get()->Read("data/shaders/default.psh", shaderSource);
 		pixelShader.Load(shaderSource.data());
 
-		Vertex vertices[] =
+		Vertex floorVertices[] =
 		{
 			{Vec3(1.0f, 0.0f, -1.0f), Vec3(1.0f, 0.0f, 0.0f)},
 			{Vec3(-1.0f, 0.0f, -1.0f), Vec3(0.0f, 1.0f, 0.0f)},
@@ -106,8 +101,8 @@ namespace vesp { namespace graphics {
 			{Vec3(1.0f, 0.0f, -1.0f), Vec3(1.0f, 0.0f, 0.0f)},
 			{Vec3(-1.0f, 0.0f, 1.0f), Vec3(0.0f, 0.0f, 1.0f)},
 		};
-
-		vertexBuffer.Create(vertices, util::SizeOfArray(vertices));
+		
+		floorMesh.Create(floorVertices, util::SizeOfArray(floorVertices));
 
 		Vertex gizmoVertices[] =
 		{
@@ -121,9 +116,8 @@ namespace vesp { namespace graphics {
 			{Vec3(0.0f, 0.0f, 1.0f), Vec3(0.0f, 0.0f, 1.0f)},
 		};
 
-		gizmoVertexBuffer.Create(gizmoVertices, util::SizeOfArray(gizmoVertices));
-
-		perMeshConstantBuffer.Create(&perMeshConstants, 1);
+		gizmoMesh.Create(gizmoVertices, util::SizeOfArray(gizmoVertices), 
+			D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 
 		this->camera_ = std::make_unique<FreeCamera>(
 			Vec3(0.0f, 2.0f, -4.0f), 
@@ -145,32 +139,16 @@ namespace vesp { namespace graphics {
 		pixelShader.Activate();
 
 		// Draw floor
-		perMeshConstants.world = Mat4();
-		perMeshConstantBuffer.Load(&perMeshConstants, 1);
-		perMeshConstantBuffer.UseVS(1);
-
-		vertexBuffer.Use(0);
-		ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		ImmediateContext->Draw(6, 0);
+		floorMesh.Draw();
 
 		// Draw rotating gizmo
 		auto seconds = this->timer_.GetSeconds();
-		perMeshConstants.world = math::Transform(Vec3(1,1,1), Quat(Vec3(0, seconds, 0)));
-		perMeshConstantBuffer.Load(&perMeshConstants, 1);
-		perMeshConstantBuffer.UseVS(1);
-
-		gizmoVertexBuffer.Use(0);
-		ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-		ImmediateContext->Draw(6, 0);
+		gizmoMesh.SetPositionAngle(Vec3(1,1,1), Quat(Vec3(0, seconds, 0)));
+		gizmoMesh.Draw();
 
 		// Draw stationary gizmo
-		perMeshConstants.world = math::Transform(Vec3(0,1,0), Quat());
-		perMeshConstantBuffer.Load(&perMeshConstants, 1);
-		perMeshConstantBuffer.UseVS(1);
-
-		gizmoVertexBuffer.Use(0);
-		ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-		ImmediateContext->Draw(6, 0);
+		gizmoMesh.SetPositionAngle(Vec3(0,1,0), Quat());
+		gizmoMesh.Draw();
 		
 		SwapChain->Present(0, 0);
 	}

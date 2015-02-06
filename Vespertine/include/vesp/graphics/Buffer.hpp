@@ -39,6 +39,8 @@ namespace vesp { namespace graphics {
 				return false;
 			}
 
+			this->count_ = count;
+
 			return true;
 		}
 
@@ -47,8 +49,14 @@ namespace vesp { namespace graphics {
 			return this->buffer_;
 		}
 
+		U32 GetCount()
+		{
+			return this->count_;
+		}
+
 	protected:
 		CComPtr<ID3D11Buffer> buffer_;
+		U32 count_;
 	};
 
 	class VertexBuffer : public Buffer<Vertex>
