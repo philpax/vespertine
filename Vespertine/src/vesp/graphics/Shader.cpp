@@ -119,7 +119,7 @@ namespace vesp { namespace graphics {
 			blob->GetBufferPointer(), blob->GetBufferSize(), 
 			nullptr, &this->shader_);
 
-		return true;
+		return SUCCEEDED(hr);
 	}
 
 	void PixelShader::Activate()
