@@ -17,6 +17,10 @@ namespace vesp
 	typedef unsigned long long	U64;
 	typedef signed long long	S64;
 
+	// Floating point types
+	typedef float				F32;
+	typedef double				F64;
+
 	// String types (assume UTF-8)
 	typedef char				StringByte;
 	typedef const StringByte*	StringPtr;
