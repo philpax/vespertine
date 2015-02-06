@@ -125,7 +125,10 @@ namespace vesp { namespace graphics {
 
 		perMeshConstantBuffer.Create(&perMeshConstants, 1);
 
-		this->camera_ = std::make_unique<FreeCamera>(Vec3(2.0f, 2.0f, 0.0f), Quat());
+		this->camera_ = std::make_unique<FreeCamera>(
+			Vec3(0.0f, 2.0f, -4.0f), 
+			Quat(Vec3(0.0f, 0.0f, 0.0f))
+		);
 	}
 
 	void Engine::Pulse()
@@ -153,6 +156,15 @@ namespace vesp { namespace graphics {
 		// Draw rotating gizmo
 		auto seconds = this->timer_.GetSeconds();
 		perMeshConstants.world = math::Transform(Vec3(1,1,1), Quat(Vec3(0, seconds, 0)));
+		perMeshConstantBuffer.Load(&perMeshConstants, 1);
+		perMeshConstantBuffer.UseVS(1);
+
+		gizmoVertexBuffer.Use(0);
+		ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+		ImmediateContext->Draw(6, 0);
+
+		// Draw stationary gizmo
+		perMeshConstants.world = math::Transform(Vec3(0,1,0), Quat());
 		perMeshConstantBuffer.Load(&perMeshConstants, 1);
 		perMeshConstantBuffer.UseVS(1);
 
