@@ -5,6 +5,7 @@ namespace vesp { namespace graphics {
 
 	Mesh::Mesh()
 	{
+		this->scale_ = Vec3(1, 1, 1);
 	}
 
 	bool Mesh::Create(Vertex* vertices, U32 count, D3D11_PRIMITIVE_TOPOLOGY topology)
@@ -47,6 +48,17 @@ namespace vesp { namespace graphics {
 		this->UpdateMatrix();
 	}
 
+	Vec3 Mesh::GetScale()
+	{
+		return this->scale_;
+	}
+
+	void Mesh::SetScale(Vec3 const& scale)
+	{
+		this->scale_ = scale;
+		this->UpdateMatrix();
+	}
+
 	void Mesh::SetTopology(D3D11_PRIMITIVE_TOPOLOGY topology)
 	{
 		this->topology_ = topology;
@@ -67,7 +79,7 @@ namespace vesp { namespace graphics {
 
 	void Mesh::UpdateMatrix()
 	{
-		this->world_ = math::Transform(this->position_, this->angle_);
+		this->world_ = math::Transform(this->position_, this->angle_, this->scale_);
 		this->perMeshConstants_.world = this->world_;
 		this->perMeshConstantBuffer_.Load(&this->perMeshConstants_, 1);
 	}

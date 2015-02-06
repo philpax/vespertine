@@ -20,10 +20,11 @@ namespace vesp { namespace math {
 		return result;
 	}
 
-	Mat4 Transform(Vec3 const& position, Quat const& angle)
+	Mat4 Transform(Vec3 const& position, Quat const& angle, Vec3 const& scale)
 	{
 		Mat4 result;
 
+		result = glm::scale(result, scale);
 		result = glm::translate(result, position);
 		result *= glm::mat4_cast(angle);
 

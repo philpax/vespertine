@@ -21,6 +21,9 @@ namespace vesp { namespace graphics {
 		Quat GetAngle();
 		void SetAngle(Quat const& angle);
 
+		Vec3 GetScale();
+		void SetScale(Vec3 const& scale);
+
 		void SetPositionAngle(Vec3 const& position, Quat const& angle);
 
 		void SetTopology(D3D11_PRIMITIVE_TOPOLOGY topology);
@@ -43,6 +46,7 @@ namespace vesp { namespace graphics {
 		Mat4 world_;
 		Vec3 position_;
 		Quat angle_;
+		Vec3 scale_;
 	};
 
 } }

@@ -103,6 +103,7 @@ namespace vesp { namespace graphics {
 		};
 		
 		floorMesh.Create(floorVertices, util::SizeOfArray(floorVertices));
+		floorMesh.SetScale(Vec3(10, 1, 10));
 
 		Vertex gizmoVertices[] =
 		{
