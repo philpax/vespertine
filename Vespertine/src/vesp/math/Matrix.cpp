@@ -1,5 +1,7 @@
 #include "vesp/math/Matrix.hpp"
 
+#include <glm/gtc/quaternion.hpp>
+
 namespace vesp { namespace math {
 
 	Mat4 DXPerspective(F32 fovY, F32 aspect, F32 zNear, F32 zFar)
@@ -15,6 +17,16 @@ namespace vesp { namespace math {
 		result[2][2] = (zFar) / (zFar - zNear);
 		result[2][3] = 1.0f;
 		result[3][2] = - (zFar * zNear) / (zFar - zNear);
+		return result;
+	}
+
+	Mat4 Transform(Vec3 const& position, Quat const& angle)
+	{
+		Mat4 result;
+
+		result = glm::translate(result, position);
+		result *= glm::mat4_cast(angle);
+
 		return result;
 	}
 
