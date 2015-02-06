@@ -10,6 +10,8 @@ struct IDXGISwapChain;
 struct ID3D11Device;
 struct ID3D11DeviceContext;
 struct ID3D11RenderTargetView;
+struct ID3D11DepthStencilState;
+struct ID3D11DepthStencilView;
 
 namespace vesp { namespace graphics {
 
@@ -35,6 +37,10 @@ namespace vesp { namespace graphics {
 	private:
 		std::unique_ptr<Window> window_;
 		std::unique_ptr<Camera> camera_;
+
+		CComPtr<ID3D11DepthStencilState> depthStencilState_;
+		CComPtr<ID3D11DepthStencilView> depthStencilView_;
+
 		util::Timer timer_;
 		util::Timer fpsTimer_;
 		U32 frameCount_;

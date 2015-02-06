@@ -8,8 +8,11 @@
 
 #include "vesp/math/Vector.hpp"
 #include "vesp/math/Matrix.hpp"
+#include "vesp/math/Util.hpp"
 
 #include "vesp/Log.hpp"
+
+#include <glm/gtc/noise.hpp>
 
 #include <d3d11.h>
 
@@ -63,12 +66,42 @@ namespace vesp { namespace graphics {
 			0, nullptr, 0, D3D11_SDK_VERSION, &desc, &SwapChain,
 			&Device, nullptr, &ImmediateContext);
 
+		// Create depth stencil state
+		D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
+		depthStencilDesc.DepthEnable = true;
+		depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+		depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+		depthStencilDesc.StencilEnable = false;
+
+		Device->CreateDepthStencilState(&depthStencilDesc, &this->depthStencilState_);
+		ImmediateContext->OMSetDepthStencilState(this->depthStencilState_, 1);
+
+		// Create depth texture
+		ID3D11Texture2D* depthTexture = nullptr;
+		D3D11_TEXTURE2D_DESC depthTextureDesc;
+		depthTextureDesc.Width = size.x;
+		depthTextureDesc.Height = size.y;
+		depthTextureDesc.MipLevels = 1;
+		depthTextureDesc.ArraySize = 1;
+		depthTextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		depthTextureDesc.SampleDesc.Count = 1;
+		depthTextureDesc.SampleDesc.Quality = 0;
+		depthTextureDesc.Usage = D3D11_USAGE_DEFAULT;
+		depthTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+		depthTextureDesc.CPUAccessFlags = 0;
+		depthTextureDesc.MiscFlags = 0;
+		Device->CreateTexture2D( &depthTextureDesc, NULL, &depthTexture );
+
+		// Create depth stencil view
+		Device->CreateDepthStencilView(depthTexture, nullptr, &this->depthStencilView_);
+		depthTexture->Release();
+
+		// Set render targets + depth stencil
 		ID3D11Texture2D* backBuffer;
-		// error handling
 		SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
 		Device->CreateRenderTargetView(backBuffer, nullptr, &RenderTargetView);
 		backBuffer->Release();
-		ImmediateContext->OMSetRenderTargets(1, &RenderTargetView, nullptr);
+		ImmediateContext->OMSetRenderTargets(1, &RenderTargetView, this->depthStencilView_);
 	
 		D3D11_VIEWPORT vp;
 		vp.Width = (float)size.x;
@@ -96,19 +129,38 @@ namespace vesp { namespace graphics {
 		FileSystem::Get()->Read("data/shaders/grid.psh", shaderSource);
 		gridPixelShader.Load(shaderSource.data());
 
-		Vertex floorVertices[] =
+		Vector<Vertex> floorVertices;
+		for (int y = -10; y < 10; y++)
 		{
-			{Vec3(1.0f, 0.0f, -1.0f), Vec3(1.0f, 0.0f, 0.0f)},
-			{Vec3(-1.0f, 0.0f, -1.0f), Vec3(0.0f, 1.0f, 0.0f)},
-			{Vec3(-1.0f, 0.0f, 1.0f), Vec3(0.0f, 0.0f, 1.0f)},
+			for (int x = -10; x < 10; x++)
+			{
+				auto p = Vec3(x - 0.5f, 0.0f, y - 0.5f);
 
-			{Vec3(1.0f, 0.0f, 1.0f), Vec3(1.0f, 1.0f, 1.0f)},
-			{Vec3(1.0f, 0.0f, -1.0f), Vec3(1.0f, 0.0f, 0.0f)},
-			{Vec3(-1.0f, 0.0f, 1.0f), Vec3(0.0f, 0.0f, 1.0f)},
-		};
+				auto p1 = p + Vec3(0.5f, 0.0f, -0.5f);
+				auto p2 = p + Vec3(-0.5f, 0.0f, -0.5f);
+				auto p3 = p + Vec3(-0.5f, 0.0f, 0.5f);
+				auto p4 = p + Vec3(0.5f, 0.0f, 0.5f);
+
+				auto push_back = [&](Vec3 pf)
+				{
+					pf.y = glm::simplex(glm::vec2(pf.x, pf.z) / 8.0f);
+					pf.y += glm::simplex(glm::vec2(pf.x, pf.z) / 3.75f) * 0.6f;
+					auto col = Vec3((pf.x + 10) / 20.0f, 1.0f, (pf.z + 10) / 20.0f);
+					col *= math::Clamp(pf.y + 0.4f, 0.0f, 1.0f);
+					floorVertices.push_back({pf, col});
+				};
+
+				push_back(p1);
+				push_back(p2);
+				push_back(p3);
+
+				push_back(p4);
+				push_back(p1);
+				push_back(p3);
+			}
+		}
 		
-		floorMesh.Create(floorVertices, util::SizeOfArray(floorVertices));
-		floorMesh.SetScale(Vec3(10, 1, 10));
+		floorMesh.Create(floorVertices.data(), floorVertices.size());
 
 		Vertex gizmoVertices[] =
 		{
@@ -137,13 +189,15 @@ namespace vesp { namespace graphics {
 
 		float clearColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 		ImmediateContext->ClearRenderTargetView(RenderTargetView, clearColour);
-		
+		ImmediateContext->ClearDepthStencilView(this->depthStencilView_, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
+
 		auto freeCamera = static_cast<FreeCamera*>(this->camera_.get());
 		freeCamera->Update();
 
 		vertexShader.Activate();
 		gridPixelShader.Activate();
 
+		pixelShader.Activate();
 		// Draw floor
 		floorMesh.Draw();
 
