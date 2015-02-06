@@ -4,12 +4,12 @@
 
 namespace vesp { namespace math {
 
-	Mat4 DXPerspective(F32 fovY, F32 aspect, F32 zNear, F32 zFar)
+	Mat4 DXPerspective(F32 fovYInRadians, F32 aspect, F32 zNear, F32 zFar)
 	{
 		assert(abs(aspect - std::numeric_limits<F32>::epsilon()) > 0.0f);
 		assert(zFar > zNear);
 
-		F32 const tanHalfFovY = -tan(fovY / 2.0f);
+		F32 const tanHalfFovY = tan(fovYInRadians / 2.0f);
 
 		Mat4 result(0.0f);
 		result[0][0] = 1.0f / (aspect * tanHalfFovY);

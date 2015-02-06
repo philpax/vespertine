@@ -30,7 +30,10 @@ namespace vesp { namespace graphics {
 	{
 		this->aspectRatio_ = Engine::Get()->GetWindow()->GetAspectRatio();
 		this->projection_ = math::DXPerspective(
-			this->fov_, this->aspectRatio_, this->nearPlane_, this->farPlane_);
+			glm::radians(this->fov_), 
+			this->aspectRatio_, 
+			this->nearPlane_, 
+			this->farPlane_);
 		this->viewProjection_ = this->projection_ * this->view_;
 	}
 

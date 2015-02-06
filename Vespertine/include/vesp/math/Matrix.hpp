@@ -9,7 +9,7 @@
 
 namespace vesp { namespace math {
 
-	Mat4 DXPerspective(F32 fovY, F32 aspect, F32 zNear, F32 zFar);
+	Mat4 DXPerspective(F32 fovYInRadians, F32 aspect, F32 zNear, F32 zFar);
 	Mat4 Transform(Vec3 const& position, Quat const& angle);
 
 } }
