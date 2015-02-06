@@ -88,10 +88,12 @@
     <ClInclude Include="include\vesp\graphics\Shader.hpp" />
     <ClInclude Include="include\vesp\graphics\Vertex.hpp" />
     <ClInclude Include="include\vesp\graphics\Window.hpp" />
+    <ClInclude Include="include\vesp\InputManager.hpp" />
     <ClInclude Include="include\vesp\Log.hpp" />
     <ClInclude Include="include\vesp\Main.hpp" />
     <ClInclude Include="include\vesp\math\Matrix.hpp" />
     <ClInclude Include="include\vesp\math\Quaternion.hpp" />
+    <ClInclude Include="include\vesp\math\Util.hpp" />
     <ClInclude Include="include\vesp\math\Vector.hpp" />
     <ClInclude Include="include\vesp\Types.hpp" />
     <ClInclude Include="include\vesp\Util.hpp" />
@@ -109,8 +111,10 @@
     <ClCompile Include="src\vesp\graphics\FreeCamera.cpp" />
     <ClCompile Include="src\vesp\graphics\Shader.cpp" />
     <ClCompile Include="src\vesp\graphics\Window.cpp" />
+    <ClCompile Include="src\vesp\InputManager.cpp" />
     <ClCompile Include="src\vesp\Log.cpp" />
     <ClCompile Include="src\vesp\Main.cpp" />
+    <ClCompile Include="src\vesp\math\Matrix.cpp" />
     <ClCompile Include="src\vesp\util\MurmurHash.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

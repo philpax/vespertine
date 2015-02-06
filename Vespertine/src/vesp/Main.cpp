@@ -2,6 +2,7 @@
 #include "vesp/Log.hpp"
 #include "vesp/EventManager.hpp"
 #include "vesp/FileSystem.hpp"
+#include "vesp/InputManager.hpp"
 
 #include "vesp/graphics/Engine.hpp"
 
@@ -24,6 +25,8 @@ namespace vesp
 			return false;
 		}
 
+		InputManager::Create();
+
 		graphics::Engine::Create(name);
 		graphics::Engine::Get()->Initialize();
 
@@ -33,6 +36,7 @@ namespace vesp
 	void Shutdown()
 	{
 		graphics::Engine::Destroy();
+		InputManager::Destroy();
 
 		SDL_Quit();
 
@@ -51,6 +55,8 @@ namespace vesp
 
 		while (running)
 		{
+			InputManager::Get()->Pulse();
+
 			while (SDL_PollEvent(&e))
 			{
 				switch (e.type)
@@ -60,6 +66,8 @@ namespace vesp
 					EventManager::Get()->Fire("Quit");
 					break;
 				};
+
+				InputManager::Get()->FeedEvent(&e);
 			}
 
 			graphics::Engine::Get()->Pulse();
