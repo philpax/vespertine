@@ -4,6 +4,7 @@
 #include "vesp/Types.hpp"
 
 #include <atlbase.h>
+#include <memory>
 
 struct IDXGISwapChain;
 struct ID3D11Device;

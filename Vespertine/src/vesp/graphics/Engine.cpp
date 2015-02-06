@@ -17,6 +17,7 @@ namespace vesp { namespace graphics {
 	VertexShader vertexShader("vs");
 	PixelShader pixelShader("ps");
 	VertexBuffer vertexBuffer;
+	VertexBuffer gizmoVertexBuffer;
 
 	IDXGISwapChain* Engine::SwapChain;
 	ID3D11Device* Engine::Device;
@@ -80,29 +81,43 @@ namespace vesp { namespace graphics {
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 			{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		};
-		UINT numElements = ARRAYSIZE( layout );
 
 		Vector<StringByte> shaderSource;
 	
 		FileSystem::Get()->Read("data/shaders/default.vsh", shaderSource);
-		vertexShader.Load(shaderSource.data(), layout, numElements);
+		vertexShader.Load(shaderSource.data(), layout, util::SizeOfArray(layout));
 
 		FileSystem::Get()->Read("data/shaders/default.psh", shaderSource);
 		pixelShader.Load(shaderSource.data());
 
 		Vertex vertices[] =
 		{
-			{Vec3(0.0f, 0.5f, 0.5f), Vec3(1.0f, 0.0f, 0.0f)},
-			{Vec3(0.5f, -0.5f, 0.5f), Vec3(0.0f, 1.0f, 0.0f)},
-			{Vec3(-0.5f, -0.5f, 0.5f), Vec3(0.0f, 0.0f, 1.0f)},
+			{Vec3(1.0f, 0.0f, -1.0f), Vec3(1.0f, 0.0f, 0.0f)},
+			{Vec3(-1.0f, 0.0f, -1.0f), Vec3(0.0f, 1.0f, 0.0f)},
+			{Vec3(-1.0f, 0.0f, 1.0f), Vec3(0.0f, 0.0f, 1.0f)},
+
+			{Vec3(1.0f, 0.0f, 1.0f), Vec3(1.0f, 1.0f, 1.0f)},
+			{Vec3(1.0f, 0.0f, -1.0f), Vec3(1.0f, 0.0f, 0.0f)},
+			{Vec3(-1.0f, 0.0f, 1.0f), Vec3(0.0f, 0.0f, 1.0f)},
 		};
 
 		vertexBuffer.Create(vertices, util::SizeOfArray(vertices));
 
-		this->camera_ = std::make_unique<FreeCamera>();
+		Vertex gizmoVertices[] =
+		{
+			{Vec3(1.0f, 1.0f, 1.0f), Vec3(1.0f, 0.0f, 0.0f)},
+			{Vec3(2.0f, 1.0f, 1.0f), Vec3(1.0f, 0.0f, 0.0f)},
 
-		// Set primitive topology
-		ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			{Vec3(1.0f, 1.0f, 1.0f), Vec3(0.0f, 1.0f, 0.0f)},
+			{Vec3(1.0f, 2.0f, 1.0f), Vec3(0.0f, 1.0f, 0.0f)},
+
+			{Vec3(1.0f, 1.0f, 1.0f), Vec3(0.0f, 0.0f, 1.0f)},
+			{Vec3(1.0f, 1.0f, 2.0f), Vec3(0.0f, 0.0f, 1.0f)},
+		};
+
+		gizmoVertexBuffer.Create(gizmoVertices, util::SizeOfArray(gizmoVertices));
+
+		this->camera_ = std::make_unique<FreeCamera>(Vec3(2.0f, 2.0f, 0.0f), Quat());
 	}
 
 	void Engine::Pulse()
@@ -113,15 +128,18 @@ namespace vesp { namespace graphics {
 		ImmediateContext->ClearRenderTargetView(RenderTargetView, clearColour);
 		
 		auto freeCamera = static_cast<FreeCamera*>(this->camera_.get());
-		float t = this->timer_.GetSeconds();
-		freeCamera->SetAngle(Quat(Vec3(0.0, sin(t) * glm::half_pi<float>() * 0.2f, 0.0f)));
-		freeCamera->SetPosition(Vec3(0.0f, 0.0f, sin(t) * 0.5f + 0.4f));
 		freeCamera->Update();
 
 		vertexShader.Activate();
 		pixelShader.Activate();
+
 		vertexBuffer.Use(0);
-		ImmediateContext->Draw(3, 0);
+		ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ImmediateContext->Draw(6, 0);
+
+		gizmoVertexBuffer.Use(0);
+		ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+		ImmediateContext->Draw(6, 0);
 		
 		SwapChain->Present(0, 0);
 	}
