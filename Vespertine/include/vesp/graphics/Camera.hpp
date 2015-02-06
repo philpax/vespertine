@@ -16,7 +16,7 @@ namespace vesp { namespace graphics {
 		Camera();
 		virtual ~Camera();
 
-		void Update();
+		virtual void Update();
 
 		void* operator new(size_t i);
 		void operator delete(void* p);
@@ -27,7 +27,7 @@ namespace vesp { namespace graphics {
 			Mat4 viewProjection;
 		};
 
-		virtual void CalculateMatrices();
+		void CalculateMatrices();
 		Constants MakeConstants();
 
 		float fov_;

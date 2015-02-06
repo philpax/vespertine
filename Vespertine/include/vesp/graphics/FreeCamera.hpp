@@ -7,7 +7,10 @@ namespace vesp { namespace graphics {
 	class FreeCamera : public Camera
 	{
 	public:
+		FreeCamera();
 		virtual ~FreeCamera();
+
+		virtual void Update();
 
 		void SetPosition(Vec3 const& position);
 		void SetAngle(Quat const& angle);
@@ -16,10 +19,13 @@ namespace vesp { namespace graphics {
 		Quat GetAngle() const;
 
 	protected:
-		virtual void CalculateMatrices();
+		void CalculateMatrices();
 
 		Vec3 position_;
 		Quat angle_;
+		float pitch_;
+		float yaw_;
+		util::Timer frameDeltaTimer_;
 	};
 
 } }
