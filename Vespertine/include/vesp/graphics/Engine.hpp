@@ -12,6 +12,7 @@ struct ID3D11DeviceContext;
 struct ID3D11RenderTargetView;
 struct ID3D11DepthStencilState;
 struct ID3D11DepthStencilView;
+struct ID3D11BlendState;
 
 namespace vesp { namespace graphics {
 
@@ -40,6 +41,7 @@ namespace vesp { namespace graphics {
 
 		CComPtr<ID3D11DepthStencilState> depthStencilState_;
 		CComPtr<ID3D11DepthStencilView> depthStencilView_;
+		CComPtr<ID3D11BlendState> blendState_;
 
 		util::Timer timer_;
 		util::Timer fpsTimer_;

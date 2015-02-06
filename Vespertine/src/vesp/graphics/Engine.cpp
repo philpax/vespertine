@@ -102,6 +102,28 @@ namespace vesp { namespace graphics {
 		Device->CreateRenderTargetView(backBuffer, nullptr, &RenderTargetView);
 		backBuffer->Release();
 		ImmediateContext->OMSetRenderTargets(1, &RenderTargetView, this->depthStencilView_);
+		
+		// Set up blend state
+		D3D11_BLEND_DESC blendDesc;
+		ZeroMemory( &blendDesc, sizeof(blendDesc) );
+
+		D3D11_RENDER_TARGET_BLEND_DESC renderTargetBlendDesc;
+		ZeroMemory( &renderTargetBlendDesc, sizeof(renderTargetBlendDesc) );
+
+		renderTargetBlendDesc.BlendEnable			 = true;
+		renderTargetBlendDesc.SrcBlend				 = D3D11_BLEND_SRC_COLOR;
+		renderTargetBlendDesc.DestBlend				 = D3D11_BLEND_BLEND_FACTOR;
+		renderTargetBlendDesc.BlendOp				 = D3D11_BLEND_OP_ADD;
+		renderTargetBlendDesc.SrcBlendAlpha			 = D3D11_BLEND_ONE;
+		renderTargetBlendDesc.DestBlendAlpha		 = D3D11_BLEND_ZERO;
+		renderTargetBlendDesc.BlendOpAlpha			 = D3D11_BLEND_OP_ADD;
+		renderTargetBlendDesc.RenderTargetWriteMask	 = D3D10_COLOR_WRITE_ENABLE_ALL;
+
+		blendDesc.AlphaToCoverageEnable = false;
+		blendDesc.RenderTarget[0] = renderTargetBlendDesc;
+
+		Device->CreateBlendState(&blendDesc, &this->blendState_);
+		ImmediateContext->OMSetBlendState(this->blendState_, nullptr, 0xFFFFFFFF);
 	
 		D3D11_VIEWPORT vp;
 		vp.Width = (float)size.x;
@@ -146,7 +168,7 @@ namespace vesp { namespace graphics {
 					pf.y = glm::simplex(glm::vec2(pf.x, pf.z) / 8.0f);
 					pf.y += glm::simplex(glm::vec2(pf.x, pf.z) / 3.75f) * 0.6f;
 					auto col = Vec3((pf.x + 10) / 20.0f, 1.0f, (pf.z + 10) / 20.0f);
-					col *= math::Clamp(pf.y + 0.4f, 0.0f, 1.0f);
+					col *= math::Clamp(pf.y + 1.0f, 0.0f, 1.0f);
 					floorVertices.push_back({pf, col});
 				};
 
@@ -196,9 +218,6 @@ namespace vesp { namespace graphics {
 
 		vertexShader.Activate();
 		gridPixelShader.Activate();
-
-		pixelShader.Activate();
-		// Draw floor
 		floorMesh.Draw();
 
 		// Draw rotating gizmo
