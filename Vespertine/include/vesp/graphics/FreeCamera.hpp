@@ -7,7 +7,7 @@ namespace vesp { namespace graphics {
 	class FreeCamera : public Camera
 	{
 	public:
-		FreeCamera();
+		FreeCamera(Vec3 const& position, Quat const& angle);
 		virtual ~FreeCamera();
 
 		virtual void Update();

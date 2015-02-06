@@ -7,9 +7,11 @@
 
 namespace vesp { namespace graphics {
 
-	FreeCamera::FreeCamera()
+	FreeCamera::FreeCamera(Vec3 const& position, Quat const& angle)
 		: pitch_(0.0f), yaw_(0.0f)
 	{
+		this->SetPosition(position);
+		this->SetAngle(angle);
 	}
 
 	FreeCamera::~FreeCamera()
