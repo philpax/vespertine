@@ -33,10 +33,12 @@ namespace vesp { namespace graphics {
 		auto camLeftState	= inputManager->GetState(Action::CameraLeft);
 		auto camRightState	= inputManager->GetState(Action::CameraRight);
 
+		auto boostMult		= inputManager->GetState(Action::Boost) * 4.0f + 1.0f;
+
 		auto timeDelta		= this->frameDeltaTimer_.GetSeconds();
 
 		// Calculate absolute translational delta
-		auto speed			= 1.0f * timeDelta; // ms^-1
+		auto speed			= 1.0f * boostMult * timeDelta; // ms^-1
 		auto forwardDelta	= (forwardState - backwardState) * speed;
 		auto sideDelta		= (rightState - leftState) * speed;
 

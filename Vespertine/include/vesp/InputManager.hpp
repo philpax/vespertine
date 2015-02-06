@@ -13,6 +13,7 @@ namespace vesp
 		Backward,
 		Left,
 		Right,
+		Boost,
 		CameraUp,
 		CameraDown,
 		CameraLeft,

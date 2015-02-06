@@ -36,6 +36,9 @@ namespace vesp
 			case 'd':
 				this->SetState(Action::Right, 1.0f);
 				break;
+			case SDLK_LSHIFT:
+				this->SetState(Action::Boost, 1.0f);
+				break;
 			}
 		}
 		else if (event->type == SDL_KEYUP)
@@ -54,6 +57,9 @@ namespace vesp
 				break;
 			case 'd':
 				this->SetState(Action::Right, 0.0f);
+				break;
+			case SDLK_LSHIFT:
+				this->SetState(Action::Boost, 0.0f);
 				break;
 			}
 		}
