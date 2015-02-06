@@ -1,0 +1,16 @@
+struct PixelIn
+{
+	float4 position : SV_POSITION;
+	float3 worldPosition : POSITION;
+	float3 colour : COLOR;
+};
+
+static const float PI = 3.14159265f;
+
+float4 main(PixelIn input) : SV_Target
+{
+	float fX = 1.0 - saturate((cos(input.worldPosition.x * PI) * 0.5 + 0.5) * 1000);
+	float fZ = 1.0 - saturate((cos(input.worldPosition.z * PI) * 0.5 + 0.5) * 1000);
+	float f = saturate(fX + fZ);
+	return float4(f, f, f, 1.0);
+}

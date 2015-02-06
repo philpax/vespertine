@@ -36,6 +36,8 @@ namespace vesp { namespace graphics {
 		std::unique_ptr<Window> window_;
 		std::unique_ptr<Camera> camera_;
 		util::Timer timer_;
+		util::Timer fpsTimer_;
+		U32 frameCount_;
 	};
 
 } }

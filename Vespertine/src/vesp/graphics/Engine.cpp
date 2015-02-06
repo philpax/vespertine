@@ -17,6 +17,7 @@ namespace vesp { namespace graphics {
 
 	VertexShader vertexShader("vs");
 	PixelShader pixelShader("ps");
+	PixelShader gridPixelShader("psGrid");
 	Mesh floorMesh;
 	Mesh gizmoMesh;
 
@@ -28,6 +29,7 @@ namespace vesp { namespace graphics {
 	Engine::Engine(StringPtr title)
 	{
 		this->window_ = std::make_unique<Window>(title, IVec2(1280, 800));
+		this->frameCount_ = 0;
 	}
 
 	Engine::~Engine()
@@ -91,6 +93,9 @@ namespace vesp { namespace graphics {
 		FileSystem::Get()->Read("data/shaders/default.psh", shaderSource);
 		pixelShader.Load(shaderSource.data());
 
+		FileSystem::Get()->Read("data/shaders/grid.psh", shaderSource);
+		gridPixelShader.Load(shaderSource.data());
+
 		Vertex floorVertices[] =
 		{
 			{Vec3(1.0f, 0.0f, -1.0f), Vec3(1.0f, 0.0f, 0.0f)},
@@ -137,12 +142,13 @@ namespace vesp { namespace graphics {
 		freeCamera->Update();
 
 		vertexShader.Activate();
-		pixelShader.Activate();
+		gridPixelShader.Activate();
 
 		// Draw floor
 		floorMesh.Draw();
 
 		// Draw rotating gizmo
+		pixelShader.Activate();
 		auto seconds = this->timer_.GetSeconds();
 		gizmoMesh.SetPositionAngle(Vec3(1,1,1), Quat(Vec3(0, seconds, 0)));
 		gizmoMesh.Draw();
@@ -152,6 +158,14 @@ namespace vesp { namespace graphics {
 		gizmoMesh.Draw();
 		
 		SwapChain->Present(0, 0);
+
+		this->frameCount_++;
+		if (this->fpsTimer_.GetSeconds() > 5)
+		{
+			LogInfo("FPS: %.01f", this->frameCount_ / this->fpsTimer_.GetSeconds());
+			this->fpsTimer_.Restart();
+			this->frameCount_ = 0;
+		}
 	}
 
 	Window* Engine::GetWindow()
