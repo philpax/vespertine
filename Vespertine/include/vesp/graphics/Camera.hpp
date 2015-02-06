@@ -22,13 +22,13 @@ namespace vesp { namespace graphics {
 		void operator delete(void* p);
 
 	protected:
-		struct Constants
+		struct PerFrameConstants
 		{
 			Mat4 viewProjection;
 		};
 
 		void CalculateMatrices();
-		Constants MakeConstants();
+		PerFrameConstants MakeConstants();
 
 		float fov_;
 		float aspectRatio_;
@@ -39,7 +39,7 @@ namespace vesp { namespace graphics {
 		Mat4 projection_;
 		Mat4 viewProjection_;
 
-		ConstantBuffer<Constants> constantBuffer_;
+		ConstantBuffer<PerFrameConstants> constantBuffer_;
 	};
 
 } }

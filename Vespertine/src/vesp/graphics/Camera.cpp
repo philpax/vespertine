@@ -34,9 +34,9 @@ namespace vesp { namespace graphics {
 		this->viewProjection_ = this->projection_ * this->view_;
 	}
 
-	Camera::Constants Camera::MakeConstants()
+	Camera::PerFrameConstants Camera::MakeConstants()
 	{
-		Constants constants;
+		PerFrameConstants constants;
 		constants.viewProjection = this->viewProjection_;
 
 		return constants;

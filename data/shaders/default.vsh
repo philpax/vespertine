@@ -1,7 +1,12 @@
-cbuffer VertexConstantBuffer : register(b0)
+cbuffer PerFrameBuffer : register(b0)
 {
 	float4x4 viewProjection;
 };
+
+cbuffer PerMeshBuffer : register(b1)
+{
+	float4x4 world;
+}
 
 struct VertexIn
 {
@@ -18,7 +23,8 @@ struct PixelIn
 PixelIn main(VertexIn input)
 {
 	PixelIn output;
-	output.position = mul(viewProjection, float4(input.position, 1.0));
+	output.position = mul(world, float4(input.position, 1.0));
+	output.position = mul(viewProjection, output.position);
 	output.colour = input.colour;
 	return output;
 }
