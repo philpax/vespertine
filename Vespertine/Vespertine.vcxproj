@@ -116,7 +116,7 @@
     <ClCompile Include="src\vesp\Log.cpp" />
     <ClCompile Include="src\vesp\Main.cpp" />
     <ClCompile Include="src\vesp\math\Matrix.cpp" />
-    <ClCompile Include="src\vesp\math\Mesh.cpp" />
+    <ClCompile Include="src\vesp\graphics\Mesh.cpp" />
     <ClCompile Include="src\vesp\util\MurmurHash.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
