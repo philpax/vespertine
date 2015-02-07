@@ -1,4 +1,6 @@
 #include "vesp/graphics/Window.hpp"
+#include "vesp/graphics/Engine.hpp"
+
 #include "vesp/math/Vector.hpp"
 
 #include <SDL.h>
@@ -17,6 +19,20 @@ namespace vesp { namespace graphics {
 	{
 		if (this->window_)
 			SDL_DestroyWindow(this->window_);
+	}
+
+	void Window::FeedEvent(SDL_Event const* event)
+	{
+		if (event->window.windowID != SDL_GetWindowID(this->window_))
+			return;
+
+		switch (event->window.event)
+		{
+		case SDL_WINDOWEVENT_SIZE_CHANGED:
+			Engine::Get()->HandleResize(
+				IVec2(event->window.data1, event->window.data2));
+			break;
+		};
 	}
 
 	void Window::SetTitle(StringPtr title)

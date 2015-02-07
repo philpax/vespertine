@@ -26,6 +26,7 @@ namespace vesp { namespace graphics {
 		~Engine();
 
 		void Initialize();
+		void HandleResize(IVec2 size);
 		void Pulse();
 
 		Window* GetWindow();
@@ -37,11 +38,14 @@ namespace vesp { namespace graphics {
 		static ID3D11DeviceContext* ImmediateContext;
 
 	private:
-		void CreateDevice();
-		void CreateDepthStencil();
-		void CreateRenderTargets();
+		void CreateDevice(IVec2 size);
+		void CreateDepthStencil(IVec2 size);
+		void CreateRenderTargets(IVec2 size);
 		void CreateBlendState();
 		void CreateTestData();
+
+		void DestroyDepthStencil();
+		void DestroyRenderTargets();
 
 		std::unique_ptr<Window> window_;
 		std::unique_ptr<Camera> camera_;

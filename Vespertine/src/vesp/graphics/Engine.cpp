@@ -36,6 +36,9 @@ namespace vesp { namespace graphics {
 
 	Engine::~Engine()
 	{
+		this->DestroyRenderTargets();
+		this->DestroyDepthStencil();
+
 		ImmediateContext->Release();
 		SwapChain->Release();
 		Device->Release();
@@ -43,9 +46,11 @@ namespace vesp { namespace graphics {
 	
 	void Engine::Initialize()
 	{
-		this->CreateDevice();
-		this->CreateDepthStencil();
-		this->CreateRenderTargets();
+		auto size = this->window_->GetSize();
+
+		this->CreateDevice(size);
+		this->CreateDepthStencil(size);
+		this->CreateRenderTargets(size);
 		this->CreateBlendState();
 		this->CreateTestData();		
 
@@ -53,6 +58,19 @@ namespace vesp { namespace graphics {
 			Vec3(0.0f, 2.0f, -4.0f), 
 			Quat(Vec3(0.0f, 0.0f, 0.0f))
 		);
+	}
+
+	void Engine::HandleResize(IVec2 size)
+	{
+		this->DestroyRenderTargets();
+		this->DestroyDepthStencil();
+
+		SwapChain->ResizeBuffers(0, size.x, size.y, DXGI_FORMAT_UNKNOWN, 0);
+
+		this->CreateDepthStencil(size);
+		this->CreateRenderTargets(size);
+
+		LogInfo("Resized to (%d, %d)", size.x, size.y);
 	}
 
 	void Engine::Pulse()
@@ -104,10 +122,8 @@ namespace vesp { namespace graphics {
 			state ? this->blendState_ : nullptr, nullptr, 0xFFFFFFFF);
 	}
 
-	void Engine::CreateDevice()
+	void Engine::CreateDevice(IVec2 size)
 	{
-		auto size = this->window_->GetSize();
-
 		DXGI_SWAP_CHAIN_DESC desc;
 		ZeroMemory( &desc, sizeof(desc) );
 		desc.BufferCount = 1;
@@ -129,10 +145,8 @@ namespace vesp { namespace graphics {
 			&Device, nullptr, &ImmediateContext);
 	}
 
-	void Engine::CreateDepthStencil()
+	void Engine::CreateDepthStencil(IVec2 size)
 	{
-		auto size = this->window_->GetSize();
-
 		// Create depth stencil state
 		D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
 		depthStencilDesc.DepthEnable = true;
@@ -164,10 +178,8 @@ namespace vesp { namespace graphics {
 		depthTexture->Release();
 	}
 
-	void Engine::CreateRenderTargets()
+	void Engine::CreateRenderTargets(IVec2 size)
 	{
-		auto size = this->window_->GetSize();
-
 		// Set render targets + depth stencil
 		CComPtr<ID3D11Texture2D> backBuffer;
 		SwapChain->GetBuffer(
@@ -280,6 +292,19 @@ namespace vesp { namespace graphics {
 
 		gizmoMesh.Create(gizmoVertices, util::SizeOfArray(gizmoVertices), 
 			D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	}
+
+	void Engine::DestroyDepthStencil()
+	{
+		ImmediateContext->OMSetDepthStencilState(nullptr, 0);
+		this->depthStencilState_.Release();
+		this->depthStencilView_.Release();
+	}
+
+	void Engine::DestroyRenderTargets()
+	{
+		ImmediateContext->OMSetRenderTargets(0, nullptr, nullptr);
+		this->renderTargetView_.Release();
 	}
 
 } }

@@ -3,6 +3,7 @@
 #include "vesp/Types.hpp"
 
 struct SDL_Window;
+union SDL_Event;
 
 namespace vesp { namespace graphics {
 
@@ -11,6 +12,8 @@ namespace vesp { namespace graphics {
 	public:
 		Window(StringPtr title, IVec2 size);
 		~Window();
+
+		void FeedEvent(SDL_Event const* event);
 
 		void SetTitle(StringPtr title);
 		void SetPosition(IVec2 position);

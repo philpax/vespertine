@@ -5,6 +5,9 @@
 #include "vesp/InputManager.hpp"
 
 #include "vesp/graphics/Engine.hpp"
+#include "vesp/graphics/Window.hpp"
+
+#include "vesp/math/Vector.hpp"
 
 #include <SDL.h>
 
@@ -64,6 +67,9 @@ namespace vesp
 				case SDL_QUIT:
 					running = false;
 					EventManager::Get()->Fire("Quit");
+					break;
+				case SDL_WINDOWEVENT:
+					graphics::Engine::Get()->GetWindow()->FeedEvent(&e);
 					break;
 				};
 
