@@ -23,6 +23,7 @@ namespace vesp { namespace graphics {
 
 		Vec3 GetScale();
 		void SetScale(Vec3 const& scale);
+		void SetScale(F32 scale);
 
 		void SetPositionAngle(Vec3 const& position, Quat const& angle);
 

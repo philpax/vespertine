@@ -59,6 +59,11 @@ namespace vesp { namespace graphics {
 		this->UpdateMatrix();
 	}
 
+	void Mesh::SetScale(F32 scale)
+	{
+		this->SetScale(Vec3(scale, scale, scale));
+	}
+
 	void Mesh::SetTopology(D3D11_PRIMITIVE_TOPOLOGY topology)
 	{
 		this->topology_ = topology;
