@@ -123,7 +123,6 @@ namespace vesp { namespace graphics {
 		blendDesc.RenderTarget[0] = renderTargetBlendDesc;
 
 		Device->CreateBlendState(&blendDesc, &this->blendState_);
-		ImmediateContext->OMSetBlendState(this->blendState_, nullptr, 0xFFFFFFFF);
 	
 		D3D11_VIEWPORT vp;
 		vp.Width = (float)size.x;
@@ -138,6 +137,7 @@ namespace vesp { namespace graphics {
 		{
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 			{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		};
 
 		Vector<StringByte> shaderSource;
@@ -244,6 +244,12 @@ namespace vesp { namespace graphics {
 	Window* Engine::GetWindow()
 	{
 		return this->window_.get();
+	}
+
+	void Engine::SetBlendingEnabled(bool state)
+	{
+		ImmediateContext->OMSetBlendState(
+			state ? this->blendState_ : nullptr, nullptr, 0xFFFFFFFF);
 	}
 
 } }

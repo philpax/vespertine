@@ -9,6 +9,7 @@ namespace vesp { namespace graphics {
 	{
 		Vec3 position;
 		Vec3 colour;
+		Vec3 normal;
 	};
 
 } }

@@ -30,6 +30,8 @@ namespace vesp { namespace graphics {
 
 		Window* GetWindow();
 
+		void SetBlendingEnabled(bool state);
+
 		static IDXGISwapChain* SwapChain;
 		static ID3D11Device* Device;
 		static ID3D11DeviceContext* ImmediateContext;
