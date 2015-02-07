@@ -35,7 +35,6 @@ namespace vesp { namespace graphics {
 		static IDXGISwapChain* SwapChain;
 		static ID3D11Device* Device;
 		static ID3D11DeviceContext* ImmediateContext;
-		static ID3D11RenderTargetView* RenderTargetView;
 
 	private:
 		void CreateDevice();
@@ -47,6 +46,7 @@ namespace vesp { namespace graphics {
 		std::unique_ptr<Window> window_;
 		std::unique_ptr<Camera> camera_;
 
+		CComPtr<ID3D11RenderTargetView> renderTargetView_;
 		CComPtr<ID3D11DepthStencilState> depthStencilState_;
 		CComPtr<ID3D11DepthStencilView> depthStencilView_;
 		CComPtr<ID3D11BlendState> blendState_;

@@ -27,7 +27,6 @@ namespace vesp { namespace graphics {
 	IDXGISwapChain* Engine::SwapChain;
 	ID3D11Device* Engine::Device;
 	ID3D11DeviceContext* Engine::ImmediateContext;
-	ID3D11RenderTargetView* Engine::RenderTargetView;
 
 	Engine::Engine(StringPtr title)
 	{
@@ -37,7 +36,6 @@ namespace vesp { namespace graphics {
 
 	Engine::~Engine()
 	{
-		RenderTargetView->Release();
 		ImmediateContext->Release();
 		SwapChain->Release();
 		Device->Release();
@@ -61,8 +59,9 @@ namespace vesp { namespace graphics {
 	{
 		this->window_->Pulse();
 
-		float clearColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
-		ImmediateContext->ClearRenderTargetView(RenderTargetView, clearColour);
+		F32 clearColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+		ImmediateContext->ClearRenderTargetView(
+			this->renderTargetView_, clearColour);
 		ImmediateContext->ClearDepthStencilView(
 			this->depthStencilView_, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
 
@@ -118,7 +117,8 @@ namespace vesp { namespace graphics {
 		desc.BufferDesc.RefreshRate.Numerator = 60;
 		desc.BufferDesc.RefreshRate.Denominator = 1;
 		desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		desc.OutputWindow = (HWND)this->window_->GetSystemRepresentation();
+		desc.OutputWindow = 
+			reinterpret_cast<HWND>(this->window_->GetSystemRepresentation());
 		desc.SampleDesc.Count = 1;
 		desc.SampleDesc.Quality = 0;
 		desc.Windowed = !this->window_->IsFullscreen();
@@ -157,7 +157,7 @@ namespace vesp { namespace graphics {
 		depthTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 		depthTextureDesc.CPUAccessFlags = 0;
 		depthTextureDesc.MiscFlags = 0;
-		Device->CreateTexture2D( &depthTextureDesc, NULL, &depthTexture );
+		Device->CreateTexture2D(&depthTextureDesc, NULL, &depthTexture);
 
 		// Create depth stencil view
 		Device->CreateDepthStencilView(depthTexture, nullptr, &this->depthStencilView_);
@@ -169,15 +169,19 @@ namespace vesp { namespace graphics {
 		auto size = this->window_->GetSize();
 
 		// Set render targets + depth stencil
-		ID3D11Texture2D* backBuffer;
-		SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
-		Device->CreateRenderTargetView(backBuffer, nullptr, &RenderTargetView);
-		backBuffer->Release();
-		ImmediateContext->OMSetRenderTargets(1, &RenderTargetView, this->depthStencilView_);
+		CComPtr<ID3D11Texture2D> backBuffer;
+		SwapChain->GetBuffer(
+			0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer));
+
+		Device->CreateRenderTargetView(
+			backBuffer, nullptr, &this->renderTargetView_);
+
+		ImmediateContext->OMSetRenderTargets(
+			1, &this->renderTargetView_.p, this->depthStencilView_);
 	
 		D3D11_VIEWPORT vp;
-		vp.Width = (float)size.x;
-		vp.Height = (float)size.y;
+		vp.Width = static_cast<F32>(size.x);
+		vp.Height = static_cast<F32>(size.y);
 		vp.MinDepth = 0.0f;
 		vp.MaxDepth = 1.0f;
 		vp.TopLeftX = 0;
@@ -230,9 +234,9 @@ namespace vesp { namespace graphics {
 		gridPixelShader.Load(shaderSource.data());
 
 		Vector<Vertex> floorVertices;
-		for (int y = -10; y < 10; y++)
+		for (S32 y = -10; y < 10; y++)
 		{
-			for (int x = -10; x < 10; x++)
+			for (S32 x = -10; x < 10; x++)
 			{
 				auto p = Vec3(x - 0.5f, 0.0f, y - 0.5f);
 
