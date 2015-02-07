@@ -38,6 +38,12 @@ namespace vesp { namespace graphics {
 		static ID3D11RenderTargetView* RenderTargetView;
 
 	private:
+		void CreateDevice();
+		void CreateDepthStencil();
+		void CreateRenderTargets();
+		void CreateBlendState();
+		void CreateTestData();
+
 		std::unique_ptr<Window> window_;
 		std::unique_ptr<Camera> camera_;
 

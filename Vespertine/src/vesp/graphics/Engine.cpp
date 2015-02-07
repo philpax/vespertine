@@ -45,6 +45,68 @@ namespace vesp { namespace graphics {
 	
 	void Engine::Initialize()
 	{
+		this->CreateDevice();
+		this->CreateDepthStencil();
+		this->CreateRenderTargets();
+		this->CreateBlendState();
+		this->CreateTestData();		
+
+		this->camera_ = std::make_unique<FreeCamera>(
+			Vec3(0.0f, 2.0f, -4.0f), 
+			Quat(Vec3(0.0f, 0.0f, 0.0f))
+		);
+	}
+
+	void Engine::Pulse()
+	{
+		this->window_->Pulse();
+
+		float clearColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+		ImmediateContext->ClearRenderTargetView(RenderTargetView, clearColour);
+		ImmediateContext->ClearDepthStencilView(
+			this->depthStencilView_, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+		auto freeCamera = static_cast<FreeCamera*>(this->camera_.get());
+		freeCamera->Update();
+
+		vertexShader.Activate();
+		gridPixelShader.Activate();
+		floorMesh.Draw();
+
+		// Draw rotating gizmo
+		pixelShader.Activate();
+		auto seconds = this->timer_.GetSeconds();
+		gizmoMesh.SetPositionAngle(Vec3(1,1,1), Quat(Vec3(0, seconds, 0)));
+		gizmoMesh.Draw();
+
+		// Draw stationary gizmo
+		gizmoMesh.SetPositionAngle(Vec3(0,1,0), Quat());
+		gizmoMesh.Draw();
+		
+		SwapChain->Present(0, 0);
+
+		this->frameCount_++;
+		if (this->fpsTimer_.GetSeconds() > 5)
+		{
+			LogInfo("FPS: %.01f", this->frameCount_ / this->fpsTimer_.GetSeconds());
+			this->fpsTimer_.Restart();
+			this->frameCount_ = 0;
+		}
+	}
+
+	Window* Engine::GetWindow()
+	{
+		return this->window_.get();
+	}
+
+	void Engine::SetBlendingEnabled(bool state)
+	{
+		ImmediateContext->OMSetBlendState(
+			state ? this->blendState_ : nullptr, nullptr, 0xFFFFFFFF);
+	}
+
+	void Engine::CreateDevice()
+	{
 		auto size = this->window_->GetSize();
 
 		DXGI_SWAP_CHAIN_DESC desc;
@@ -65,6 +127,11 @@ namespace vesp { namespace graphics {
 		D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
 			0, nullptr, 0, D3D11_SDK_VERSION, &desc, &SwapChain,
 			&Device, nullptr, &ImmediateContext);
+	}
+
+	void Engine::CreateDepthStencil()
+	{
+		auto size = this->window_->GetSize();
 
 		// Create depth stencil state
 		D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
@@ -95,6 +162,11 @@ namespace vesp { namespace graphics {
 		// Create depth stencil view
 		Device->CreateDepthStencilView(depthTexture, nullptr, &this->depthStencilView_);
 		depthTexture->Release();
+	}
+
+	void Engine::CreateRenderTargets()
+	{
+		auto size = this->window_->GetSize();
 
 		// Set render targets + depth stencil
 		ID3D11Texture2D* backBuffer;
@@ -102,7 +174,19 @@ namespace vesp { namespace graphics {
 		Device->CreateRenderTargetView(backBuffer, nullptr, &RenderTargetView);
 		backBuffer->Release();
 		ImmediateContext->OMSetRenderTargets(1, &RenderTargetView, this->depthStencilView_);
-		
+	
+		D3D11_VIEWPORT vp;
+		vp.Width = (float)size.x;
+		vp.Height = (float)size.y;
+		vp.MinDepth = 0.0f;
+		vp.MaxDepth = 1.0f;
+		vp.TopLeftX = 0;
+		vp.TopLeftY = 0;
+		ImmediateContext->RSSetViewports(1, &vp);
+	}
+
+	void Engine::CreateBlendState()
+	{
 		// Set up blend state
 		D3D11_BLEND_DESC blendDesc;
 		ZeroMemory( &blendDesc, sizeof(blendDesc) );
@@ -123,16 +207,10 @@ namespace vesp { namespace graphics {
 		blendDesc.RenderTarget[0] = renderTargetBlendDesc;
 
 		Device->CreateBlendState(&blendDesc, &this->blendState_);
-	
-		D3D11_VIEWPORT vp;
-		vp.Width = (float)size.x;
-		vp.Height = (float)size.y;
-		vp.MinDepth = 0.0f;
-		vp.MaxDepth = 1.0f;
-		vp.TopLeftX = 0;
-		vp.TopLeftY = 0;
-		ImmediateContext->RSSetViewports(1, &vp);
+	}
 
+	void Engine::CreateTestData()
+	{
 		D3D11_INPUT_ELEMENT_DESC layout[] =
 		{
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -198,58 +276,6 @@ namespace vesp { namespace graphics {
 
 		gizmoMesh.Create(gizmoVertices, util::SizeOfArray(gizmoVertices), 
 			D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-
-		this->camera_ = std::make_unique<FreeCamera>(
-			Vec3(0.0f, 2.0f, -4.0f), 
-			Quat(Vec3(0.0f, 0.0f, 0.0f))
-		);
-	}
-
-	void Engine::Pulse()
-	{
-		this->window_->Pulse();
-
-		float clearColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
-		ImmediateContext->ClearRenderTargetView(RenderTargetView, clearColour);
-		ImmediateContext->ClearDepthStencilView(this->depthStencilView_, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
-
-		auto freeCamera = static_cast<FreeCamera*>(this->camera_.get());
-		freeCamera->Update();
-
-		vertexShader.Activate();
-		gridPixelShader.Activate();
-		floorMesh.Draw();
-
-		// Draw rotating gizmo
-		pixelShader.Activate();
-		auto seconds = this->timer_.GetSeconds();
-		gizmoMesh.SetPositionAngle(Vec3(1,1,1), Quat(Vec3(0, seconds, 0)));
-		gizmoMesh.Draw();
-
-		// Draw stationary gizmo
-		gizmoMesh.SetPositionAngle(Vec3(0,1,0), Quat());
-		gizmoMesh.Draw();
-		
-		SwapChain->Present(0, 0);
-
-		this->frameCount_++;
-		if (this->fpsTimer_.GetSeconds() > 5)
-		{
-			LogInfo("FPS: %.01f", this->frameCount_ / this->fpsTimer_.GetSeconds());
-			this->fpsTimer_.Restart();
-			this->frameCount_ = 0;
-		}
-	}
-
-	Window* Engine::GetWindow()
-	{
-		return this->window_.get();
-	}
-
-	void Engine::SetBlendingEnabled(bool state)
-	{
-		ImmediateContext->OMSetBlendState(
-			state ? this->blendState_ : nullptr, nullptr, 0xFFFFFFFF);
 	}
 
 } }
