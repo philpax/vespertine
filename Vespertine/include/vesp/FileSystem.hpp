@@ -17,6 +17,7 @@ namespace vesp
 			void Write(U8 const* data, U32 const count);
 			U32 Read(U8* data, U32 const count);
 			U32 Size();
+			bool Exists();
 
 		private:
 			FILE* file_;

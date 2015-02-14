@@ -45,6 +45,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>include/;../vendor/SDL2-2.0.3/include;../vendor/glm</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>VESP_ASSERT_ENABLED;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -78,6 +79,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\vesp\Assert.hpp" />
     <ClInclude Include="include\vesp\Containers.hpp" />
     <ClInclude Include="include\vesp\EventManager.hpp" />
     <ClInclude Include="include\vesp\FileSystem.hpp" />
@@ -104,6 +106,7 @@
     <ClInclude Include="include\vesp\util\Timer.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\vesp\Assert.cpp" />
     <ClCompile Include="src\vesp\EventManager.cpp" />
     <ClCompile Include="src\vesp\FileSystem.cpp" />
     <ClCompile Include="src\vesp\graphics\Buffer.cpp" />

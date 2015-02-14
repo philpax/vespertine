@@ -1,4 +1,5 @@
 #include "vesp/FileSystem.hpp"
+#include "vesp/Assert.hpp"
 
 #include <Windows.h>
 
@@ -27,6 +28,11 @@ namespace vesp
 
 		return count;
 	}
+	
+	bool FileSystem::File::Exists()
+	{
+		return this->file_ != nullptr;
+	}
 
 	FileSystem::File FileSystem::Open(StringPtr fileName, StringPtr mode)
 	{
@@ -49,12 +55,13 @@ namespace vesp
 	void FileSystem::Read(StringPtr fileName, Vector<StringByte>& output)
 	{
 		auto file = this->Open(fileName, "r");
+
+		VESP_ENFORCE(file.Exists());
 		
 		auto size = file.Size();
 		output.clear();
-		output.resize(size + 1);
+		output.resize(size);
 		file.Read(reinterpret_cast<U8*>(output.data()), size);
-		output[size] = '\0';
 
 		this->Close(file);
 	}

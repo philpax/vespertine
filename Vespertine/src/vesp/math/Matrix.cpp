@@ -1,4 +1,5 @@
 #include "vesp/math/Matrix.hpp"
+#include "vesp/Assert.hpp"
 
 #include <glm/gtc/quaternion.hpp>
 
@@ -6,8 +7,8 @@ namespace vesp { namespace math {
 
 	Mat4 DXPerspective(F32 fovYInRadians, F32 aspect, F32 zNear, F32 zFar)
 	{
-		assert(abs(aspect - std::numeric_limits<F32>::epsilon()) > 0.0f);
-		assert(zFar > zNear);
+		VESP_ASSERT(abs(aspect - std::numeric_limits<F32>::epsilon()) > 0.0f);
+		VESP_ASSERT(zFar > zNear);
 
 		F32 const tanHalfFovY = tan(fovYInRadians / 2.0f);
 
