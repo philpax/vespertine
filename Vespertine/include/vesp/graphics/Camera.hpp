@@ -18,6 +18,9 @@ namespace vesp { namespace graphics {
 
 		virtual void Update();
 
+		Mat4 const& GetView();
+		Mat4 const& GetProjection();
+
 		void* operator new(size_t i);
 		void operator delete(void* p);
 

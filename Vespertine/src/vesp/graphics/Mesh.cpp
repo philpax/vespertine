@@ -1,5 +1,7 @@
 #pragma warning(disable: 4005)
 #include "vesp/graphics/Mesh.hpp"
+#include "vesp/graphics/Engine.hpp"
+#include "vesp/graphics/Camera.hpp"
 
 namespace vesp { namespace graphics {
 
@@ -13,7 +15,9 @@ namespace vesp { namespace graphics {
 		if (!this->vertexBuffer_.Create(vertices, count))
 			return false;
 
-		if (!this->perMeshConstantBuffer_.Create(&this->perMeshConstants_, 1))
+		PerMeshConstants constants;
+
+		if (!this->perMeshConstantBuffer_.Create(&constants, 1))
 			return false;
 
 		this->topology_ = topology;
@@ -45,7 +49,6 @@ namespace vesp { namespace graphics {
 	{
 		this->position_ = position;
 		this->angle_ = angle;
-		this->UpdateMatrix();
 	}
 
 	Vec3 Mesh::GetScale()
@@ -56,7 +59,6 @@ namespace vesp { namespace graphics {
 	void Mesh::SetScale(Vec3 const& scale)
 	{
 		this->scale_ = scale;
-		this->UpdateMatrix();
 	}
 
 	void Mesh::SetScale(F32 scale)
@@ -76,6 +78,7 @@ namespace vesp { namespace graphics {
 
 	void Mesh::Draw()
 	{
+		this->UpdateMatrix();
 		this->vertexBuffer_.Use(0);
 		this->perMeshConstantBuffer_.UseVS(1);
 		Engine::ImmediateContext->IASetPrimitiveTopology(this->topology_);
@@ -85,8 +88,15 @@ namespace vesp { namespace graphics {
 	void Mesh::UpdateMatrix()
 	{
 		this->world_ = math::Transform(this->position_, this->angle_, this->scale_);
-		this->perMeshConstants_.world = this->world_;
-		this->perMeshConstantBuffer_.Load(&this->perMeshConstants_, 1);
+
+		PerMeshConstants constants;
+		constants.world = this->world_;
+		constants.worldView = 
+			this->world_ * Engine::Get()->GetCamera()->GetView();
+		constants.worldViewInverseTranspose = 
+			glm::transpose(glm::inverse(constants.worldView));
+
+		this->perMeshConstantBuffer_.Load(&constants, 1);
 	}
 
 } }

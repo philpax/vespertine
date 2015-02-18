@@ -38,7 +38,9 @@ namespace vesp { namespace graphics {
 		struct PerMeshConstants
 		{
 			Mat4 world;
-		} perMeshConstants_;
+			Mat4 worldView;
+			Mat4 worldViewInverseTranspose;
+		};
 
 		VertexBuffer vertexBuffer_;
 		ConstantBuffer<PerMeshConstants> perMeshConstantBuffer_;

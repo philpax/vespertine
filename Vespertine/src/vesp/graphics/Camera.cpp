@@ -45,6 +45,16 @@ namespace vesp { namespace graphics {
 		return constants;
 	}
 
+	Mat4 const& Camera::GetView()
+	{
+		return this->view_;
+	}
+
+	Mat4 const& Camera::GetProjection()
+	{
+		return this->projection_;
+	}
+
     void* Camera::operator new(size_t i)
     {
         return _mm_malloc(i,16);
