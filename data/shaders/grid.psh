@@ -1,17 +1,30 @@
 struct PixelIn
 {
-	float4 position : SV_POSITION;
+	float4 viewPosition : SV_POSITION;
 	float3 worldPosition : POSITION;
-	float3 normal : NORMAL;
-	float3 colour : COLOR;
+	float3 viewNormal : NORMAL;
+	float3 color : COLOR;
+	float2 texcoord : TEXCOORD0;
 };
 
-static const float PI = 3.14159265f;
-
-float4 main(PixelIn input) : SV_Target
+struct PixelOut
 {
-	float fX = 1.0 - saturate((cos(input.worldPosition.x * PI) * 0.5 + 0.5) * 1000);
-	float fZ = 1.0 - saturate((cos(input.worldPosition.z * PI) * 0.5 + 0.5) * 1000);
-	float f = saturate(fX + fZ);
-	return float4(input.colour * f, f);
+	float4 color : COLOR0;
+	float3 normal : COLOR1;
+};
+
+static const float LineWidth = 0.1;
+
+PixelOut main(PixelIn input) : SV_Target
+{
+	float f = saturate(
+		step(fmod(abs(input.worldPosition.x), 1.0), LineWidth) +
+		step(fmod(abs(input.worldPosition.z), 1.0), LineWidth)
+	);
+
+	PixelOut output;
+	output.color = float4(input.color * f, 1.0);
+	output.normal = input.viewNormal * 0.5 + 0.5;
+
+	return output;
 }

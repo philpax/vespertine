@@ -2,6 +2,7 @@
 
 #include "vesp/Util.hpp"
 #include "vesp/Types.hpp"
+#include "vesp/Containers.hpp"
 
 #include <atlbase.h>
 #include <memory>
@@ -13,6 +14,7 @@ struct ID3D11RenderTargetView;
 struct ID3D11DepthStencilState;
 struct ID3D11DepthStencilView;
 struct ID3D11BlendState;
+struct ID3D11ShaderResourceView;
 
 namespace vesp { namespace graphics {
 
@@ -30,8 +32,10 @@ namespace vesp { namespace graphics {
 		void Pulse();
 
 		Window* GetWindow();
+		Camera* GetCamera();
 
 		void SetBlendingEnabled(bool state);
+		void SetDepthEnabled(bool state);
 
 		static IDXGISwapChain* SwapChain;
 		static ID3D11Device* Device;
@@ -50,14 +54,21 @@ namespace vesp { namespace graphics {
 		std::unique_ptr<Window> window_;
 		std::unique_ptr<Camera> camera_;
 
-		CComPtr<ID3D11RenderTargetView> renderTargetView_;
-		CComPtr<ID3D11DepthStencilState> depthStencilState_;
+		// 0 - backbuffer
+		// 1 - diffuse
+		// 2 - normals
+		Array<CComPtr<ID3D11RenderTargetView>, 3> renderTargetViews_;
+		// 0 - diffuse
+		// 1 - normals
+		Array<CComPtr<ID3D11ShaderResourceView>, 2> renderTargetResourceViews_;
+		CComPtr<ID3D11DepthStencilState> enabledDepthStencilState_;
+		CComPtr<ID3D11DepthStencilState> disabledDepthStencilState_;
 		CComPtr<ID3D11DepthStencilView> depthStencilView_;
 		CComPtr<ID3D11BlendState> blendState_;
 
 		util::Timer timer_;
 		util::Timer fpsTimer_;
-		U32 frameCount_;
+		U32 frameCount_ = 0;
 	};
 
 } }

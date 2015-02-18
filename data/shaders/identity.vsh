@@ -20,21 +20,18 @@ struct VertexIn
 
 struct PixelIn
 {
-	float4 viewPosition : SV_POSITION;
-	float3 worldPosition : POSITION;
-	float3 viewNormal : NORMAL;
+	float4 position : SV_POSITION;
 	float3 colour : COLOR;
+	float3 normal : NORMAL;
 	float2 texcoord : TEXCOORD0;
 };
 
 PixelIn main(VertexIn input)
 {
 	PixelIn output;
-	output.worldPosition = input.position;
-	output.viewPosition = mul(world, float4(input.position, 1.0));
-	output.viewPosition = mul(viewProjection, output.viewPosition);
-	output.viewNormal = normalize(mul(input.normal, worldViewInverseTranspose));
+	output.position = mul(world, float4(input.position, 1.0));
 	output.colour = input.colour;
+	output.normal = input.normal;
 	output.texcoord = input.texcoord;
 	return output;
 }

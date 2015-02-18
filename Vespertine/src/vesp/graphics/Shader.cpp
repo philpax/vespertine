@@ -76,7 +76,7 @@ namespace vesp { namespace graphics {
 
 		if (FAILED(hr))
 		{
-			LogError("Failed to create shader %s! Error: %d",
+			LogError("Failed to create shader %s! Error: %X",
 				this->name_, hr);
 			return false;
 		}
@@ -87,7 +87,7 @@ namespace vesp { namespace graphics {
 
 		if (FAILED(hr))
 		{
-			LogError("Failed to load shader %s! Error (CreateInputLayout): %d",
+			LogError("Failed to load shader %s! Error (CreateInputLayout): %X",
 				this->name_, hr);
 			return false;
 		}

@@ -1,12 +1,23 @@
 struct PixelIn
 {
-	float4 position : SV_POSITION;
+	float4 viewPosition : SV_POSITION;
 	float3 worldPosition : POSITION;
-	float3 normal : NORMAL;
-	float3 colour : COLOR;
+	float3 viewNormal : NORMAL;
+	float3 color : COLOR;
+	float2 texcoord : TEXCOORD0;
 };
 
-float4 main(PixelIn input) : SV_Target
+struct PixelOut
 {
-	return float4(input.colour, 1.0);
+	float4 color : COLOR0;
+	float3 normal : COLOR1;
+};
+
+PixelOut main(PixelIn input) : SV_Target
+{
+	PixelOut output;
+	output.color = float4(input.color, 1.0);
+	output.normal = input.viewNormal * 0.5 + 0.5;
+
+	return output;
 }
