@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vesp/Types.hpp"
+#include "vesp/Containers.hpp"
 #include "vesp/Log.hpp"
 
 #include "vesp/graphics/Vertex.hpp"
@@ -15,31 +16,31 @@ namespace vesp { namespace graphics {
 	class Buffer
 	{
 	public:
-		bool Create(T* data, U32 count, U32 bindFlags, D3D11_USAGE usage = D3D11_USAGE_DEFAULT)
+		bool Create(ArrayView<T> const array, U32 bindFlags, D3D11_USAGE usage = D3D11_USAGE_DEFAULT)
 		{
 			D3D11_BUFFER_DESC desc;
 			ZeroMemory(&desc, sizeof(desc));
 			desc.Usage = usage;
-			desc.ByteWidth = sizeof(T) * count;
+			desc.ByteWidth = sizeof(T) * array.size;
 			desc.BindFlags = bindFlags;
 			desc.CPUAccessFlags = 
 				bindFlags == D3D11_BIND_CONSTANT_BUFFER ? D3D11_CPU_ACCESS_WRITE : 0;
 
 			D3D11_SUBRESOURCE_DATA initData;
 			ZeroMemory(&initData, sizeof(initData));
-			initData.pSysMem = data;
+			initData.pSysMem = array.data;
 			
 			HRESULT hr = Engine::Device->CreateBuffer(&desc, &initData, &this->buffer_);
 			if (FAILED(hr))
 			{
 				LogError( 
 					"Failed to create buffer (count: %d, flags: %d, usage: %d, error: %X)", 
-					count, bindFlags, usage, hr);
+					array.size, bindFlags, usage, hr);
 
 				return false;
 			}
 
-			this->count_ = count;
+			this->count_ = array.size;
 
 			return true;
 		}
@@ -62,7 +63,7 @@ namespace vesp { namespace graphics {
 	class VertexBuffer : public Buffer<Vertex>
 	{
 	public:
-		bool Create(Vertex* data, U32 count, D3D11_USAGE usage = D3D11_USAGE_DEFAULT);
+		bool Create(ArrayView<Vertex> const array, D3D11_USAGE usage = D3D11_USAGE_DEFAULT);
 
 		void Use(U32 slot);
 	};
@@ -71,9 +72,9 @@ namespace vesp { namespace graphics {
 	class ConstantBuffer : public Buffer<T>
 	{
 	public:
-		bool Create(T* data, U32 count)
+		bool Create(ArrayView<T> array)
 		{
-			return Buffer<T>::Create(data, count, D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC);
+			return Buffer<T>::Create(array, D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC);
 		}
 
 		void UseVS(U32 slot)
@@ -101,10 +102,10 @@ namespace vesp { namespace graphics {
 			Engine::ImmediateContext->Unmap(this->buffer_, 0);
 		}
 
-		void Load(T* data, U32 count)
+		void Load(ArrayView<T> const array)
 		{
 			auto p = this->Map();
-			memcpy(p, data, sizeof(T) * count);
+			memcpy(p, array.data, sizeof(T) * array.size);
 			this->Unmap();
 		}
 	};

@@ -10,7 +10,7 @@ namespace vesp { namespace graphics {
 		this->CalculateMatrices();
 
 		auto constants = this->MakeConstants();
-		this->constantBuffer_.Create(&constants, 1);
+		this->constantBuffer_.Create(constants);
 	}
 
 	Camera::~Camera()
@@ -22,7 +22,7 @@ namespace vesp { namespace graphics {
 		this->CalculateMatrices();
 
 		auto constants = this->MakeConstants();
-		this->constantBuffer_.Load(&constants, 1);
+		this->constantBuffer_.Load(constants);
 		this->constantBuffer_.UseVS(0);
 	}
 

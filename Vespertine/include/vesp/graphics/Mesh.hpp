@@ -12,7 +12,7 @@ namespace vesp { namespace graphics {
 	public:
 		Mesh();
 
-		bool Create(Vertex* vertices, U32 count, 
+		bool Create(ArrayView<Vertex> vertices, 
 			D3D11_PRIMITIVE_TOPOLOGY topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		Vec3 GetPosition();

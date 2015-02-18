@@ -23,7 +23,7 @@ namespace vesp
 
 	// String types (assume UTF-8)
 	typedef char				StringByte;
-	typedef const StringByte*	StringPtr;
+	typedef StringByte const*	StringPtr;
 
 	// Vector types
 	typedef glm::vec2			Vec2;

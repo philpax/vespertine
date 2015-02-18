@@ -8,14 +8,14 @@ namespace vesp
 	// Temporary implementation based on the standard library
 	// Will switch to more appropriate measures when necessary
 
-	void FileSystem::File::Write(U8 const* data, U32 const count)
+	void FileSystem::File::Write(ArrayView<U8> const array)
 	{
-		fwrite(data, 1, count, this->file_);
+		fwrite(array.data, 1, array.size, this->file_);
 	}
 
-	U32 FileSystem::File::Read(U8* data, U32 const count)
+	U32 FileSystem::File::Read(ArrayView<U8> array)
 	{
-		return fread(data, 1, count, this->file_);
+		return fread(array.data, 1, array.size, this->file_);
 	}
 
 	U32 FileSystem::File::Size()
@@ -66,7 +66,7 @@ namespace vesp
 		auto size = file.Size();
 		output.clear();
 		output.resize(size);
-		file.Read(reinterpret_cast<U8*>(output.data()), size);
+		file.Read(ArrayView<StringByte>(output));
 
 		this->Close(file);
 	}

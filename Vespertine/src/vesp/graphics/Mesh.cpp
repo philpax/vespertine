@@ -10,14 +10,14 @@ namespace vesp { namespace graphics {
 		this->scale_ = Vec3(1, 1, 1);
 	}
 
-	bool Mesh::Create(Vertex* vertices, U32 count, D3D11_PRIMITIVE_TOPOLOGY topology)
+	bool Mesh::Create(ArrayView<Vertex> vertices, D3D11_PRIMITIVE_TOPOLOGY topology)
 	{
-		if (!this->vertexBuffer_.Create(vertices, count))
+		if (!this->vertexBuffer_.Create(vertices))
 			return false;
 
 		PerMeshConstants constants;
 
-		if (!this->perMeshConstantBuffer_.Create(&constants, 1))
+		if (!this->perMeshConstantBuffer_.Create(constants))
 			return false;
 
 		this->topology_ = topology;
@@ -96,7 +96,7 @@ namespace vesp { namespace graphics {
 		constants.worldViewInverseTranspose = 
 			glm::transpose(glm::inverse(constants.worldView));
 
-		this->perMeshConstantBuffer_.Load(&constants, 1);
+		this->perMeshConstantBuffer_.Load(constants);
 	}
 
 } }

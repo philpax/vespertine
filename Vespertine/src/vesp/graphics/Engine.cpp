@@ -449,7 +449,7 @@ namespace vesp { namespace graphics {
 			}
 		}
 
-		floorMesh.Create(floorVertices, util::SizeOfArray(floorVertices));
+		floorMesh.Create(floorVertices);
 
 		Vertex gizmoVertices[] =
 		{
@@ -463,8 +463,7 @@ namespace vesp { namespace graphics {
 			{Vec3(0.0f, 0.0f, 1.0f), Vec3(0.0f, 0.0f, 1.0f)},
 		};
 
-		gizmoMesh.Create(gizmoVertices, util::SizeOfArray(gizmoVertices), 
-			D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+		gizmoMesh.Create(gizmoVertices, D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 
 		Vertex screenVertices[] =
 		{
@@ -477,7 +476,7 @@ namespace vesp { namespace graphics {
 			{Vec3(-1, 1, 0), Vec3(1, 1, 1), Vec3(0, 0, -1), Vec2(0, 0)},
 		};
 
-		screenMesh.Create(screenVertices, util::SizeOfArray(screenVertices));
+		screenMesh.Create(screenVertices);
 	}
 
 	void Engine::DestroyDepthStencil()

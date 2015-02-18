@@ -3,9 +3,9 @@
 
 namespace vesp { namespace graphics {
 
-	bool VertexBuffer::Create(Vertex* data, U32 count, D3D11_USAGE usage)
+	bool VertexBuffer::Create(ArrayView<Vertex> const array, D3D11_USAGE usage)
 	{
-		return Buffer<Vertex>::Create(data, count, D3D11_BIND_VERTEX_BUFFER, usage);
+		return Buffer<Vertex>::Create(array, D3D11_BIND_VERTEX_BUFFER, usage);
 	}
 
 	void VertexBuffer::Use(U32 slot)
