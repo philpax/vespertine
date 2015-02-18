@@ -18,6 +18,7 @@ namespace vesp
 			U32 Read(U8* data, U32 const count);
 			U32 Size();
 			bool Exists();
+			void Flush();
 
 		private:
 			FILE* file_;

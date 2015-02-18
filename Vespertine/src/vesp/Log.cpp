@@ -47,5 +47,6 @@ namespace vesp
 
 		fwrite(finalBuffer, 1, len, stdout);
 		this->logFile_.Write(reinterpret_cast<vesp::U8*>(finalBuffer), len);
+		this->logFile_.Flush();
 	}
 }

@@ -34,6 +34,11 @@ namespace vesp
 		return this->file_ != nullptr;
 	}
 
+	void FileSystem::File::Flush()
+	{
+		fflush(this->file_);
+	}
+
 	FileSystem::File FileSystem::Open(StringPtr fileName, StringPtr mode)
 	{
 		File file;
