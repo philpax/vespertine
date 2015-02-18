@@ -71,6 +71,4 @@ namespace vesp
 			this->size = array.size * (sizeof(T) / sizeof(Y));
 		}
 	};
-
-	static ArrayView<U8> array = ArrayView<StringByte>(nullptr, 0);
 }
