@@ -23,5 +23,5 @@ namespace vesp
 #ifdef VESP_ASSERT_ENABLED
 	#define VESP_ASSERT(cond) VESP_ENFORCE(cond)
 #else
-	#define VESP_ASSERT(cond) do { (void)sizeof(cond); } while(0)
+	#define VESP_ASSERT(cond) do { (void)sizeof(cond); } while(__LINE__ == -1)
 #endif
