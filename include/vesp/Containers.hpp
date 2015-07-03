@@ -2,9 +2,12 @@
 
 // Implemented as standard library containers until otherwise needed
 
+#pragma warning(push)
+#pragma warning(disable: 4530)
 #include <vector>
 #include <unordered_map>
 #include <array>
+#pragma warning(pop)
 
 #include "vesp/Types.hpp"
 

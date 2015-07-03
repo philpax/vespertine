@@ -8,6 +8,7 @@ project "Vespertine"
 	includedirs(VENDOR_INCLUDES)
 	includedirs { "include/" }
 	files { "include/**.hpp", "src/**.cpp" }
+	flags { "NoExceptions", "NoRTTI", "FatalWarnings" }
 
 	filter "configurations:Debug"
 		defines { "DEBUG" }
