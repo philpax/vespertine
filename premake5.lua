@@ -8,7 +8,8 @@ project "Vespertine"
 	includedirs(VENDOR_INCLUDES)
 	includedirs { "include/" }
 	files { "include/**.hpp", "src/**.cpp" }
-	flags { "NoExceptions", "NoRTTI", "FatalWarnings" }
+	flags { "NoExceptions", "NoRTTI", "FatalWarnings", "MultiProcessorCompile" }
+	defines { "NOMINMAX", "_USE_MATH_DEFINES" }
 
 	filter "configurations:Debug"
 		defines { "DEBUG" }

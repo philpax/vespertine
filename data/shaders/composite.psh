@@ -1,7 +1,7 @@
 struct PixelIn
 {
 	float4 position : SV_POSITION;
-	float3 colour : COLOR;
+	float4 colour : COLOR;
 	float3 normal : NORMAL;
 	float2 texcoord : TEXCOORD0;
 };

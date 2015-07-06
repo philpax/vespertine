@@ -352,11 +352,11 @@ namespace vesp { namespace graphics {
 		{
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 
 				D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 
+			{ "NORMAL", 0, DXGI_FORMAT_R16G16_UNORM, 0, 
 				D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 
+			{ "TEXCOORD", 0, DXGI_FORMAT_R16G16_UNORM, 0, 
 				D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 
+			{ "COLOR", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, 
 				D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		};
 
@@ -431,11 +431,18 @@ namespace vesp { namespace graphics {
 					float deltaZ = h(pf.x, pf.z + 1) - h(pf.x, pf.z - 1);
 					Vec3 normal = glm::normalize(Vec3(-deltaX, 2, -deltaZ));
 
-					auto col = Vec3(
+					auto col = Vec4(
 						(pf.x + HalfGridWidth) / static_cast<float>(GridWidth), 
 						1.0f, 
-						(pf.z + HalfGridWidth) / static_cast<float>(GridWidth));
-					floorVertices[index] = {pf, col, normal};
+						(pf.z + HalfGridWidth) / static_cast<float>(GridWidth),
+						1.0f);
+
+					Vertex vertex;
+					vertex.position = pf;
+					vertex.SetNormal(normal);
+					vertex.colour = col;
+
+					floorVertices[index] = vertex;
 					index++;
 				};
 
@@ -453,27 +460,27 @@ namespace vesp { namespace graphics {
 
 		Vertex gizmoVertices[] =
 		{
-			{Vec3(0.0f, 0.0f, 0.0f), Vec3(1.0f, 0.0f, 0.0f)},
-			{Vec3(1.0f, 0.0f, 0.0f), Vec3(1.0f, 0.0f, 0.0f)},
+			{Vec3(0.0f, 0.0f, 0.0f), Vec3(1.0f, 0.0f, 0.0f), Colour::Red},
+			{Vec3(1.0f, 0.0f, 0.0f), Vec3(1.0f, 0.0f, 0.0f), Colour::Red},
 
-			{Vec3(0.0f, 0.0f, 0.0f), Vec3(0.0f, 1.0f, 0.0f)},
-			{Vec3(0.0f, 1.0f, 0.0f), Vec3(0.0f, 1.0f, 0.0f)},
+			{Vec3(0.0f, 0.0f, 0.0f), Vec3(0.0f, 1.0f, 0.0f), Colour::Green},
+			{Vec3(0.0f, 1.0f, 0.0f), Vec3(0.0f, 1.0f, 0.0f), Colour::Green},
 
-			{Vec3(0.0f, 0.0f, 0.0f), Vec3(0.0f, 0.0f, 1.0f)},
-			{Vec3(0.0f, 0.0f, 1.0f), Vec3(0.0f, 0.0f, 1.0f)},
+			{Vec3(0.0f, 0.0f, 0.0f), Vec3(0.0f, 0.0f, 1.0f), Colour::Blue},
+			{Vec3(0.0f, 0.0f, 1.0f), Vec3(0.0f, 0.0f, 1.0f), Colour::Blue},
 		};
 
 		gizmoMesh.Create(gizmoVertices, D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 
 		Vertex screenVertices[] =
 		{
-			{Vec3(1, -1, 0), Vec3(1, 1, 1), Vec3(0, 0, -1), Vec2(1, 1)},
-			{Vec3(-1, -1, 0), Vec3(1, 1, 1), Vec3(0, 0, -1), Vec2(0, 1)},
-			{Vec3(-1, 1, 0), Vec3(1, 1, 1), Vec3(0, 0, -1), Vec2(0, 0)},
+			{Vec3(1, -1, 0), Vec3(0, 0, -1), Vec2(1, 1)},
+			{Vec3(-1, -1, 0), Vec3(0, 0, -1), Vec2(0, 1)},
+			{Vec3(-1, 1, 0), Vec3(0, 0, -1), Vec2(0, 0)},
 			
-			{Vec3(1, 1, 0), Vec3(1, 1, 1), Vec3(0, 0, -1), Vec2(1, 0)},
-			{Vec3(1, -1, 0), Vec3(1, 1, 1), Vec3(0, 0, -1), Vec2(1, 1)},
-			{Vec3(-1, 1, 0), Vec3(1, 1, 1), Vec3(0, 0, -1), Vec2(0, 0)},
+			{Vec3(1, 1, 0), Vec3(0, 0, -1), Vec2(1, 0)},
+			{Vec3(1, -1, 0), Vec3(0, 0, -1), Vec2(1, 1)},
+			{Vec3(-1, 1, 0), Vec3(0, 0, -1), Vec2(0, 0)},
 		};
 
 		screenMesh.Create(screenVertices);
