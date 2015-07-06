@@ -3,6 +3,8 @@
 #include "vesp/graphics/Engine.hpp"
 #include "vesp/Log.hpp"
 
+#include "vesp/Assert.hpp"
+
 #include <d3d11.h>
 #include <d3dcompiler.h>
 
@@ -17,7 +19,13 @@ namespace vesp { namespace graphics {
 	void* Shader::Compile(StringPtr shaderSource)
 	{
 		HRESULT hr = S_OK;
+		const bool DebuggingEnabled = false;
 		U32 shaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+		if (DebuggingEnabled)
+		{
+			shaderFlags |= D3DCOMPILE_DEBUG;
+			shaderFlags |= D3DCOMPILE_SKIP_OPTIMIZATION;
+		}
 
 		StringPtr target = nullptr;
 		switch (this->type_)
@@ -38,7 +46,7 @@ namespace vesp { namespace graphics {
 
 		hr = D3DCompile(
 			shaderSource, strlen(shaderSource), 
-			nullptr, nullptr, nullptr, "main", target, 
+			this->name_, nullptr, nullptr, "main", target, 
 			shaderFlags, 0, &output, &errorBlob);
 
 		if (FAILED(hr))
@@ -97,6 +105,7 @@ namespace vesp { namespace graphics {
 
 	void VertexShader::Activate()
 	{
+		VESP_ASSERT(this->shader_);
 		auto immediateContext = Engine::ImmediateContext;
 		immediateContext->IASetInputLayout(this->inputLayout_);
 		immediateContext->VSSetShader(this->shader_, nullptr, 0);
@@ -124,6 +133,7 @@ namespace vesp { namespace graphics {
 
 	void PixelShader::Activate()
 	{
+		VESP_ASSERT(this->shader_);
 		Engine::ImmediateContext->PSSetShader(
 			this->shader_, nullptr, 0);
 	}
