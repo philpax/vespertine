@@ -15,6 +15,7 @@ struct ID3D11DepthStencilState;
 struct ID3D11DepthStencilView;
 struct ID3D11BlendState;
 struct ID3D11ShaderResourceView;
+struct ID3D11SamplerState;
 
 namespace vesp { namespace graphics {
 
@@ -46,6 +47,7 @@ namespace vesp { namespace graphics {
 		void CreateDepthStencil(IVec2 size);
 		void CreateRenderTargets(IVec2 size);
 		void CreateBlendState();
+		void CreateSamplerState();
 		void CreateTestData();
 
 		void DestroyDepthStencil();
@@ -65,6 +67,7 @@ namespace vesp { namespace graphics {
 		CComPtr<ID3D11DepthStencilState> disabledDepthStencilState_;
 		CComPtr<ID3D11DepthStencilView> depthStencilView_;
 		CComPtr<ID3D11BlendState> blendState_;
+		CComPtr<ID3D11SamplerState> samplerState_;
 
 		util::Timer timer_;
 		util::Timer fpsTimer_;

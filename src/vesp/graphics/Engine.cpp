@@ -58,6 +58,7 @@ namespace vesp { namespace graphics {
 		this->CreateDepthStencil(size);
 		this->CreateRenderTargets(size);
 		this->CreateBlendState();
+		this->CreateSamplerState();
 		this->CreateTestData();		
 
 		this->camera_ = std::make_unique<FreeCamera>(
@@ -89,7 +90,11 @@ namespace vesp { namespace graphics {
 
 		ImmediateContext->ClearDepthStencilView(
 			this->depthStencilView_, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
-		
+
+		ID3D11ShaderResourceView* views[2] = {};
+		ImmediateContext->PSSetSamplers(0, 1, &this->samplerState_.p);
+		ImmediateContext->PSSetShaderResources(0, 2, views);
+
 		// Activate g-buffer render targets
 		ImmediateContext->OMSetRenderTargets(
 			this->renderTargetViews_.size() - 1, 
@@ -343,6 +348,26 @@ namespace vesp { namespace graphics {
 		blendDesc.RenderTarget[0] = renderTargetBlendDesc;
 
 		auto hr = Device->CreateBlendState(&blendDesc, &this->blendState_);
+		VESP_ENFORCE(SUCCEEDED(hr));
+	}
+
+	void Engine::CreateSamplerState()
+	{
+		D3D11_SAMPLER_DESC samplerDesc;
+
+		samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc.MinLOD = -FLT_MAX;
+		samplerDesc.MaxLOD = FLT_MAX;
+		samplerDesc.MipLODBias = 0.0f;
+		samplerDesc.MaxAnisotropy = 1;
+		samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+		float borderColour[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+		memcpy(samplerDesc.BorderColor, borderColour, 4*sizeof(float));
+
+		auto hr = Device->CreateSamplerState(&samplerDesc, &this->samplerState_);
 		VESP_ENFORCE(SUCCEEDED(hr));
 	}
 
