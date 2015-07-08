@@ -2,66 +2,109 @@
 #include "vesp/graphics/Engine.hpp"
 
 #include "vesp/math/Vector.hpp"
-
-#include <SDL.h>
-#include <SDL_syswm.h>
+#include "vesp/math/Util.hpp"
+#include "vesp/util/StringConversion.hpp"
+#include "vesp/Assert.hpp"
 
 namespace vesp { namespace graphics {
 
+	LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+	{
+		switch (msg)
+		{
+		case WM_CLOSE:
+			DestroyWindow(hwnd);
+			break;
+
+		case WM_DESTROY:
+			PostQuitMessage(0);
+			break;
+
+		case WM_SIZE:
+		{
+			auto engine = Engine::Get();
+
+			if (engine)
+			{
+				engine->HandleResize(
+					IVec2(math::LowWord(lparam), math::HighWord(lparam)));
+			}
+			break;
+		}
+		default:
+			return DefWindowProc(hwnd, msg, wparam, lparam);
+		}
+
+		return 0;
+	}
+
 	Window::Window(StringPtr title, IVec2 size)
 	{
-		this->window_ = SDL_CreateWindow(
-			title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
-			size.x, size.y, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+		static const wchar_t className[] = L"VespertineD3D";
+
+		WNDCLASSEXW wndClass{};
+		wndClass.cbSize = sizeof(WNDCLASSEXW);
+		wndClass.lpfnWndProc = &WndProc;
+		wndClass.lpszClassName = className;
+		ATOM atom = RegisterClassExW(&wndClass);
+
+		VESP_ENFORCE(atom != 0 && "Failed to register window class");
+
+		hwnd_ = CreateWindowW(className, util::MultiToWide(title, CP_UTF8).data(),
+			WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
+			size.x, size.y, nullptr, nullptr, nullptr, nullptr);
+
+		VESP_ENFORCE(hwnd_ != NULL && "Failed to create window");
+
+		// Center the window
+		RECT rect{};
+		GetWindowRect(hwnd_, &rect);
+
+		int x = (GetSystemMetrics(SM_CXSCREEN) - rect.right) / 2;
+		int y = (GetSystemMetrics(SM_CYSCREEN) - rect.bottom) / 2;
+		SetPosition(IVec2(x, y));
+
+		ShowCursor(FALSE);
+		ShowWindow(hwnd_, SW_SHOW);
+		UpdateWindow(hwnd_);
 	}
 
 	Window::~Window()
 	{
-		if (this->window_)
-			SDL_DestroyWindow(this->window_);
-	}
-
-	void Window::FeedEvent(SDL_Event const* event)
-	{
-		if (event->window.windowID != SDL_GetWindowID(this->window_))
-			return;
-
-		switch (event->window.event)
-		{
-		case SDL_WINDOWEVENT_SIZE_CHANGED:
-			Engine::Get()->HandleResize(
-				IVec2(event->window.data1, event->window.data2));
-			break;
-		};
+		if (hwnd_)
+			DestroyWindow(hwnd_);
 	}
 
 	void Window::SetTitle(StringPtr title)
 	{
-		SDL_SetWindowTitle(this->window_, title);
+		auto  wideString = util::MultiToWide(title, CP_UTF8);
+		SetWindowTextW(hwnd_, wideString.data());
 	}
 
 	void Window::SetPosition(IVec2 position)
 	{
-		SDL_SetWindowPosition(this->window_, position.x, position.y);
+		SetWindowPos(hwnd_, nullptr, position.x, position.y, 0, 0, SWP_NOSIZE);
 	}
 
 	void Window::SetSize(IVec2 size)
 	{
-		SDL_SetWindowSize(this->window_, size.x, size.y);
+		SetWindowPos(hwnd_, nullptr, 0, 0, GetSize().x, GetSize().y, SWP_NOREPOSITION);
 	}
 
 	IVec2 Window::GetPosition()
 	{
-		IVec2 ret;
-		SDL_GetWindowPosition(this->window_, &ret.x, &ret.y);
-		return ret;
+		RECT rect{};
+		GetWindowRect(hwnd_, &rect);
+
+		return IVec2(rect.left, rect.top);
 	}
 
 	IVec2 Window::GetSize()
 	{
-		IVec2 ret;
-		SDL_GetWindowSize(this->window_, &ret.x, &ret.y);
-		return ret;
+		RECT rect{};
+		GetClientRect(hwnd_, &rect);
+
+		return IVec2(rect.right - rect.left, rect.bottom - rect.top);
 	}
 
 	float Window::GetAspectRatio()
@@ -72,16 +115,13 @@ namespace vesp { namespace graphics {
 
 	void* Window::GetSystemRepresentation()
 	{
-		SDL_SysWMinfo info;
-		SDL_VERSION(&info.version);
-		// TODO error handling
-		SDL_GetWindowWMInfo(this->window_, &info);
-		return info.info.win.window;
+		return hwnd_;
 	}
 
 	bool Window::IsFullscreen()
 	{
-		return (SDL_GetWindowFlags(this->window_) & SDL_WINDOW_FULLSCREEN);
+		// There is probably a much better way of handling this..
+		return (GetWindowLong(hwnd_, GWL_STYLE) & WS_POPUP) == WS_POPUP;
 	}
 
 	void Window::Pulse()

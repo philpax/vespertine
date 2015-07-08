@@ -9,8 +9,6 @@
 
 #include "vesp/math/Vector.hpp"
 
-#include <SDL.h>
-
 namespace vesp
 {
 	bool Initialize(StringPtr name)
@@ -21,13 +19,6 @@ namespace vesp
 		LogInfo("Vespertine (%s %s)", __DATE__, __TIME__);
 
 		EventManager::Create();
-
-		if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
-		{
-			LogFatal("Failed to initialize SDL, error: %s", SDL_GetError());
-			return false;
-		}
-
 		InputManager::Create();
 
 		graphics::Engine::Create(name);
@@ -41,8 +32,6 @@ namespace vesp
 		graphics::Engine::Destroy();
 		InputManager::Destroy();
 
-		SDL_Quit();
-
 		EventManager::Destroy();
 
 		LogInfo("Vespertine shutting down");
@@ -54,26 +43,26 @@ namespace vesp
 	void Loop()
 	{
 		bool running = true;
-		SDL_Event e;
 
 		while (running)
 		{
 			InputManager::Get()->Pulse();
 
-			while (SDL_PollEvent(&e))
+			MSG msg{};
+			if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE) > 0)
 			{
-				switch (e.type)
+				switch (msg.message)
 				{
-				case SDL_QUIT:
+				case WM_QUIT:
 					running = false;
 					EventManager::Get()->Fire("Quit");
 					break;
-				case SDL_WINDOWEVENT:
-					graphics::Engine::Get()->GetWindow()->FeedEvent(&e);
-					break;
-				};
+				}
+				
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
 
-				InputManager::Get()->FeedEvent(&e);
+				InputManager::Get()->FeedEvent(&msg);
 			}
 
 			graphics::Engine::Get()->Pulse();

@@ -1,4 +1,4 @@
-VENDOR_INCLUDES = { "vendor/glm", "vendor/SDL2-2.0.3/include" }
+VENDOR_INCLUDES = { "vendor/glm" }
 
 project "Vespertine"
 	kind "StaticLib"

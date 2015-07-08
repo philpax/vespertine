@@ -22,6 +22,9 @@ namespace vesp
 	template <typename T, int N>
 	using Array = std::array<T, N>;
 
+	using String = Vector<StringByte>;
+	using WideString = Vector<wchar_t>;
+
 	template <typename T>
 	struct ArrayView
 	{

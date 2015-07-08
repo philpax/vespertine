@@ -2,71 +2,78 @@
 #include "vesp/Math/Util.hpp"
 #include "vesp/Log.hpp"
 
-#include <SDL.h>
+#include <Windowsx.h>
 
 namespace vesp
 {
 	InputManager::InputManager()
 	{
 		this->state_.assign(0);
-		SDL_SetRelativeMouseMode(SDL_TRUE);
 	}
 
 	InputManager::~InputManager()
 	{
-		SDL_SetRelativeMouseMode(SDL_FALSE);
 	}
 
-	void InputManager::FeedEvent(SDL_Event const* event)
+	void InputManager::FeedEvent(MSG const* event)
 	{
-		if (event->type == SDL_KEYDOWN)
+		if (event->message == WM_KEYDOWN)
 		{
 			// TODO: Settings manager
-			switch (event->key.keysym.sym)
+			switch (static_cast<StringByte>(event->wParam))
 			{
-			case 'w':
+			case 'W':
 				this->SetState(Action::Forward, 1.0f);
 				break;
-			case 's':
+			case 'S':
 				this->SetState(Action::Backward, 1.0f);
 				break;
-			case 'a':
+			case 'A':
 				this->SetState(Action::Left, 1.0f);
 				break;
-			case 'd':
+			case 'D':
 				this->SetState(Action::Right, 1.0f);
 				break;
-			case SDLK_LSHIFT:
+			case VK_SHIFT:
 				this->SetState(Action::Boost, 1.0f);
 				break;
 			}
 		}
-		else if (event->type == SDL_KEYUP)
+		else if (event->message == WM_KEYUP)
 		{
 			// TODO: Settings manager
-			switch (event->key.keysym.sym)
+			switch (static_cast<StringByte>(event->wParam))
 			{
-			case 'w':
+			case 'W':
 				this->SetState(Action::Forward, 0.0f);
 				break;
-			case 's':
+			case 'S':
 				this->SetState(Action::Backward, 0.0f);
 				break;
-			case 'a':
+			case 'A':
 				this->SetState(Action::Left, 0.0f);
 				break;
-			case 'd':
+			case 'D':
 				this->SetState(Action::Right, 0.0f);
 				break;
-			case SDLK_LSHIFT:
+			case VK_SHIFT:
 				this->SetState(Action::Boost, 0.0f);
 				break;
 			}
 		}
-		else if (event->type == SDL_MOUSEMOTION)
+		else if (event->message == WM_MOUSEMOVE)
 		{
-			auto x = math::Clamp(event->motion.xrel / 16.0f, -1.0f, 1.0f);
-			auto y = -math::Clamp(event->motion.yrel / 16.0f, -1.0f, 1.0f);
+			S16 currentCursorX = GET_X_LPARAM(event->lParam);
+			S16 currentCursorY = GET_Y_LPARAM(event->lParam);
+
+			S16 deltaCursorX = currentCursorX - lastCursorX_;
+			S16 deltaCursorY = currentCursorY - lastCursorY_;
+
+			lastCursorX_ = currentCursorX;
+			lastCursorY_ = currentCursorY;
+
+			auto x = math::Clamp(deltaCursorX / 16.0f, -1.0f, 1.0f);
+			auto y = -math::Clamp(deltaCursorY / 16.0f, -1.0f, 1.0f);
 			
 			if (x > 0)
 				this->SetState(Action::CameraRight, x);

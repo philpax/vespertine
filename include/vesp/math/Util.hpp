@@ -34,4 +34,23 @@ namespace vesp { namespace math {
 		return ret;
 	}
 
+	inline U16 LowWord(U32 v)
+	{
+		return static_cast<U16>(v);
+	}
+
+	inline U16 HighWord(U32 v)
+	{
+		return static_cast<U16>((v >> 16) & 0xffff);
+	}
+	
+	inline U32 LowDword(U64 v)
+	{
+		return static_cast<U32>(v);
+	}
+
+	inline U32 HighDword(U64 v)
+	{
+		return static_cast<U32>((v >> 32) & 0xffffffff);
+	}
 } }
