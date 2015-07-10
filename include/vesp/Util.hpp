@@ -4,3 +4,4 @@
 #include "vesp/util/GlobalSystem.hpp"
 #include "vesp/util/MurmurHash.hpp"
 #include "vesp/util/Timer.hpp"
+#include "vesp/util/StringConversion.hpp"

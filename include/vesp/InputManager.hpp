@@ -2,8 +2,9 @@
 
 #include "vesp/Util.hpp"
 #include "vesp/Containers.hpp"
+#include "vesp/Types.hpp"
 
-union SDL_Event;
+struct tagMSG;
 
 namespace vesp
 {
@@ -27,7 +28,7 @@ namespace vesp
 		InputManager();
 		~InputManager();
 
-		void FeedEvent(SDL_Event const* event);
+		void FeedEvent(MSG const* event);
 		
 		F32 GetState(Action action);
 		void SetState(Action action, F32 state);
@@ -36,5 +37,8 @@ namespace vesp
 
 	private:
 		Array<U16, static_cast<U32>(Action::EndOfEnum)> state_;
+
+		S16 lastCursorX_ = 0;
+		S16 lastCursorY_ = 0;
 	};
 }
