@@ -66,11 +66,11 @@ namespace vesp
 			S16 currentCursorX = GET_X_LPARAM(event->lParam);
 			S16 currentCursorY = GET_Y_LPARAM(event->lParam);
 
-			S16 deltaCursorX = currentCursorX - lastCursorX_;
-			S16 deltaCursorY = currentCursorY - lastCursorY_;
+			S16 deltaCursorX = currentCursorX - this->lastCursorX_;
+			S16 deltaCursorY = currentCursorY - this->lastCursorY_;
 
-			lastCursorX_ = currentCursorX;
-			lastCursorY_ = currentCursorY;
+			this->lastCursorX_ = currentCursorX;
+			this->lastCursorY_ = currentCursorY;
 
 			auto x = math::Clamp(deltaCursorX / 16.0f, -1.0f, 1.0f);
 			auto y = -math::Clamp(deltaCursorY / 16.0f, -1.0f, 1.0f);

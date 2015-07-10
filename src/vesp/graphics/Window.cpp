@@ -51,51 +51,51 @@ namespace vesp { namespace graphics {
 		VESP_ENFORCE(atom != 0 && "Failed to register window class");
 
 		auto wideTitle = util::MultiToWide(title, CP_UTF8);
-		hwnd_ = CreateWindowW(className, wideTitle.data(),
+		this->hwnd_ = CreateWindowW(className, wideTitle.data(),
 			WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
 			size.x, size.y, nullptr, nullptr, nullptr, nullptr);
 
-		VESP_ENFORCE(hwnd_ != NULL && "Failed to create window");
+		VESP_ENFORCE(this->hwnd_ != NULL && "Failed to create window");
 
 		// Center the window
 		RECT rect{};
-		GetWindowRect(hwnd_, &rect);
+		GetWindowRect(this->hwnd_, &rect);
 
 		int x = (GetSystemMetrics(SM_CXSCREEN) - rect.right) / 2;
 		int y = (GetSystemMetrics(SM_CYSCREEN) - rect.bottom) / 2;
 		SetPosition(IVec2(x, y));
 
 		ShowCursor(FALSE);
-		ShowWindow(hwnd_, SW_SHOW);
-		UpdateWindow(hwnd_);
+		ShowWindow(this->hwnd_, SW_SHOW);
+		UpdateWindow(this->hwnd_);
 	}
 
 	Window::~Window()
 	{
-		if (hwnd_)
-			DestroyWindow(hwnd_);
+		if (this->hwnd_)
+			DestroyWindow(this->hwnd_);
 	}
 
 	void Window::SetTitle(RawStringPtr title)
 	{
 		auto  wideString = util::MultiToWide(title, CP_UTF8);
-		SetWindowTextW(hwnd_, wideString.data());
+		SetWindowTextW(this->hwnd_, wideString.data());
 	}
 
 	void Window::SetPosition(IVec2 position)
 	{
-		SetWindowPos(hwnd_, nullptr, position.x, position.y, 0, 0, SWP_NOSIZE);
+		SetWindowPos(this->hwnd_, nullptr, position.x, position.y, 0, 0, SWP_NOSIZE);
 	}
 
 	void Window::SetSize(IVec2 size)
 	{
-		SetWindowPos(hwnd_, nullptr, 0, 0, GetSize().x, GetSize().y, SWP_NOREPOSITION);
+		SetWindowPos(this->hwnd_, nullptr, 0, 0, GetSize().x, GetSize().y, SWP_NOREPOSITION);
 	}
 
 	IVec2 Window::GetPosition()
 	{
 		RECT rect{};
-		GetWindowRect(hwnd_, &rect);
+		GetWindowRect(this->hwnd_, &rect);
 
 		return IVec2(rect.left, rect.top);
 	}
@@ -103,7 +103,7 @@ namespace vesp { namespace graphics {
 	IVec2 Window::GetSize()
 	{
 		RECT rect{};
-		GetClientRect(hwnd_, &rect);
+		GetClientRect(this->hwnd_, &rect);
 
 		return IVec2(rect.right - rect.left, rect.bottom - rect.top);
 	}
@@ -116,13 +116,13 @@ namespace vesp { namespace graphics {
 
 	void* Window::GetSystemRepresentation()
 	{
-		return hwnd_;
+		return this->hwnd_;
 	}
 
 	bool Window::IsFullscreen()
 	{
 		// There is probably a much better way of handling this..
-		return (GetWindowLong(hwnd_, GWL_STYLE) & WS_POPUP) == WS_POPUP;
+		return (GetWindowLong(this->hwnd_, GWL_STYLE) & WS_POPUP) == WS_POPUP;
 	}
 
 	void Window::Pulse()
