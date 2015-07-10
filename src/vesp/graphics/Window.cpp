@@ -32,7 +32,7 @@ namespace vesp { namespace graphics {
 			break;
 		}
 		default:
-			return DefWindowProc(hwnd, msg, wparam, lparam);
+			return DefWindowProcW(hwnd, msg, wparam, lparam);
 		}
 
 		return 0;
@@ -50,7 +50,8 @@ namespace vesp { namespace graphics {
 
 		VESP_ENFORCE(atom != 0 && "Failed to register window class");
 
-		hwnd_ = CreateWindowW(className, util::MultiToWide(title, CP_UTF8).data(),
+		auto wideTitle = util::MultiToWide(title, CP_UTF8);
+		hwnd_ = CreateWindowW(className, wideTitle.data(),
 			WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
 			size.x, size.y, nullptr, nullptr, nullptr, nullptr);
 
