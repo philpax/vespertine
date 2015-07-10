@@ -11,7 +11,7 @@
 
 namespace vesp
 {
-	bool Initialize(StringPtr name)
+	bool Initialize(RawStringPtr name)
 	{
 		FileSystem::Create();
 

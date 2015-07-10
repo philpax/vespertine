@@ -15,8 +15,8 @@ namespace vesp
 
 		typedef std::function<bool (void*)> EventHandler;
 
-		void Subscribe(StringPtr eventName, EventHandler function);
-		bool Fire(StringPtr eventName, void* argument = nullptr);
+		void Subscribe(RawStringPtr eventName, EventHandler function);
+		bool Fire(RawStringPtr eventName, void* argument = nullptr);
 	
 	private:
 		UnorderedMap<U32, Vector<EventHandler>> events_;

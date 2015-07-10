@@ -20,10 +20,10 @@ namespace vesp { namespace graphics {
 	class Shader
 	{
 	public:
-		Shader(StringPtr name);
+		Shader(RawStringPtr name);
 
 	protected:
-		void* Compile(StringPtr shaderSource);
+		void* Compile(RawStringPtr shaderSource);
 		ShaderType type_;
 		StringByte name_[32];
 	};
@@ -31,9 +31,9 @@ namespace vesp { namespace graphics {
 	class VertexShader : public Shader
 	{
 	public:
-		VertexShader(StringPtr name);
+		VertexShader(RawStringPtr name);
 
-		bool Load(StringPtr shaderSource, 
+		bool Load(RawStringPtr shaderSource, 
 			D3D11_INPUT_ELEMENT_DESC* inputLayoutElements, U32 inputLayoutSize);
 		void Activate();
 
@@ -45,9 +45,9 @@ namespace vesp { namespace graphics {
 	class PixelShader : public Shader
 	{
 	public:
-		PixelShader(StringPtr name);
+		PixelShader(RawStringPtr name);
 
-		bool Load(StringPtr shaderSource);
+		bool Load(RawStringPtr shaderSource);
 		void Activate();
 
 	private:

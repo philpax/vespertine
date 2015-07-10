@@ -38,7 +38,7 @@ namespace vesp { namespace graphics {
 		return 0;
 	}
 
-	Window::Window(StringPtr title, IVec2 size)
+	Window::Window(RawStringPtr title, IVec2 size)
 	{
 		static const wchar_t className[] = L"VespertineD3D";
 
@@ -75,7 +75,7 @@ namespace vesp { namespace graphics {
 			DestroyWindow(hwnd_);
 	}
 
-	void Window::SetTitle(StringPtr title)
+	void Window::SetTitle(RawStringPtr title)
 	{
 		auto  wideString = util::MultiToWide(title, CP_UTF8);
 		SetWindowTextW(hwnd_, wideString.data());

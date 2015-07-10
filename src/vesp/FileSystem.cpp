@@ -39,7 +39,7 @@ namespace vesp
 		fflush(this->file_);
 	}
 
-	FileSystem::File FileSystem::Open(StringPtr fileName, StringPtr mode)
+	FileSystem::File FileSystem::Open(RawStringPtr fileName, RawStringPtr mode)
 	{
 		File file;
 		fopen_s(&file.file_, fileName, mode);
@@ -52,12 +52,12 @@ namespace vesp
 		fclose(file.file_);
 	}
 
-	bool FileSystem::Exists(StringPtr fileName)
+	bool FileSystem::Exists(RawStringPtr fileName)
 	{
 		return GetFileAttributes(fileName) != INVALID_FILE_ATTRIBUTES;
 	}
 
-	void FileSystem::Read(StringPtr fileName, String& output)
+	void FileSystem::Read(RawStringPtr fileName, String& output)
 	{
 		auto file = this->Open(fileName, "r");
 

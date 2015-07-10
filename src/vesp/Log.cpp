@@ -10,7 +10,7 @@ namespace vesp
 	const char* LogTypeStrings[] = { VESP_LOG_TYPES };
 #undef LOG_TYPE
 
-	Logger::Logger(StringPtr path)
+	Logger::Logger(RawStringPtr path)
 	{
 		this->logFile_ = FileSystem::Get()->Open(path, "a");
 	}
@@ -20,7 +20,7 @@ namespace vesp
 		FileSystem::Get()->Close(this->logFile_);
 	}
 
-	void Logger::WriteLog(LogType type, StringPtr fmt, ...)
+	void Logger::WriteLog(LogType type, RawStringPtr fmt, ...)
 	{
 		static StringByte tempBuffer[4096];
 		static StringByte finalBuffer[4500];

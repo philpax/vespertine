@@ -34,7 +34,7 @@ namespace vesp { namespace graphics {
 	ID3D11Device* Engine::Device;
 	ID3D11DeviceContext* Engine::ImmediateContext;
 
-	Engine::Engine(StringPtr title)
+	Engine::Engine(RawStringPtr title)
 	{
 		this->window_ = std::make_unique<Window>(title, IVec2(1280, 800));
 		this->frameCount_ = 0;

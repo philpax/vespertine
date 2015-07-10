@@ -11,12 +11,12 @@
 namespace vesp { namespace graphics {
 
 	// Shader
-	Shader::Shader(StringPtr name)
+	Shader::Shader(RawStringPtr name)
 	{
 		strcpy_s(this->name_, name);
 	}
 
-	void* Shader::Compile(StringPtr shaderSource)
+	void* Shader::Compile(RawStringPtr shaderSource)
 	{
 		HRESULT hr = S_OK;
 		const bool DebuggingEnabled = false;
@@ -27,7 +27,7 @@ namespace vesp { namespace graphics {
 			shaderFlags |= D3DCOMPILE_SKIP_OPTIMIZATION;
 		}
 
-		StringPtr target = nullptr;
+		RawStringPtr target = nullptr;
 		switch (this->type_)
 		{
 		case ShaderType::Pixel:
@@ -51,7 +51,7 @@ namespace vesp { namespace graphics {
 
 		if (FAILED(hr))
 		{
-			auto error = static_cast<StringPtr>(errorBlob->GetBufferPointer());
+			auto error = static_cast<RawStringPtr>(errorBlob->GetBufferPointer());
 			LogError("Failed to compile shader %s! Error: %s",
 				this->name_, error);
 
@@ -62,14 +62,14 @@ namespace vesp { namespace graphics {
 	}
 
 	// Vertex Shader
-	VertexShader::VertexShader(StringPtr name)
+	VertexShader::VertexShader(RawStringPtr name)
 		: Shader(name)
 	{
 		this->type_ = ShaderType::Vertex;
 	}
 
 	bool VertexShader::Load(
-		StringPtr shaderSource, D3D11_INPUT_ELEMENT_DESC* inputLayoutElements, 
+		RawStringPtr shaderSource, D3D11_INPUT_ELEMENT_DESC* inputLayoutElements, 
 		U32 inputLayoutSize)
 	{
 		CComPtr<ID3DBlob> blob = static_cast<ID3DBlob*>(this->Compile(shaderSource));
@@ -112,13 +112,13 @@ namespace vesp { namespace graphics {
 	}
 	
 	// Pixel Shader
-	PixelShader::PixelShader(StringPtr name)
+	PixelShader::PixelShader(RawStringPtr name)
 		: Shader(name)
 	{
 		this->type_ = ShaderType::Pixel;
 	}
 
-	bool PixelShader::Load(StringPtr shaderSource)
+	bool PixelShader::Load(RawStringPtr shaderSource)
 	{
 		CComPtr<ID3DBlob> blob = static_cast<ID3DBlob*>(this->Compile(shaderSource));
 

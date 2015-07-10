@@ -9,10 +9,10 @@ namespace vesp { namespace graphics {
 	class Window
 	{
 	public:
-		Window(StringPtr title, IVec2 size);
+		Window(RawStringPtr title, IVec2 size);
 		~Window();
 
-		void SetTitle(StringPtr title);
+		void SetTitle(RawStringPtr title);
 		void SetPosition(IVec2 position);
 		void SetSize(IVec2 size);
 

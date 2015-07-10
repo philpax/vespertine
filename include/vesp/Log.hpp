@@ -24,10 +24,10 @@ namespace vesp
 	class Logger : public util::GlobalSystem<Logger>
 	{
 	public:
-		Logger(StringPtr path);
+		Logger(RawStringPtr path);
 		~Logger();
 
-		void WriteLog(LogType type, StringPtr fmt, ...);
+		void WriteLog(LogType type, RawStringPtr fmt, ...);
 
 	private:
 		FileSystem::File logFile_;

@@ -24,10 +24,10 @@ namespace vesp
 			FILE* file_;
 		};
 
-		File Open(StringPtr fileName, StringPtr mode);
+		File Open(RawStringPtr fileName, RawStringPtr mode);
 		void Close(File const& file);
-		bool Exists(StringPtr fileName);
+		bool Exists(RawStringPtr fileName);
 
-		void Read(StringPtr fileName, String& output);
+		void Read(RawStringPtr fileName, String& output);
 	};
 }

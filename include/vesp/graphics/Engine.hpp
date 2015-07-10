@@ -25,7 +25,7 @@ namespace vesp { namespace graphics {
 	class Engine : public util::GlobalSystem<Engine>
 	{
 	public:
-		Engine(StringPtr title);
+		Engine(RawStringPtr title);
 		~Engine();
 
 		void Initialize();

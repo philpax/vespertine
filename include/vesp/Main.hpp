@@ -5,7 +5,7 @@
 
 namespace vesp
 {
-	bool Initialize(StringPtr name);
+	bool Initialize(RawStringPtr name);
 	void Shutdown();
 	void Loop();
 }
