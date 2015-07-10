@@ -28,6 +28,6 @@ namespace vesp
 		void Close(File const& file);
 		bool Exists(StringPtr fileName);
 
-		void Read(StringPtr fileName, Vector<StringByte>& output);
+		void Read(StringPtr fileName, String& output);
 	};
 }

@@ -385,7 +385,7 @@ namespace vesp { namespace graphics {
 				D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		};
 
-		Vector<StringByte> shaderSource;
+		String shaderSource;
 	
 		// g-buffer write
 		FileSystem::Get()->Read("data/shaders/default.vsh", shaderSource);

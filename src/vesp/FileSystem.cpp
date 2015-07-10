@@ -57,7 +57,7 @@ namespace vesp
 		return GetFileAttributes(fileName) != INVALID_FILE_ATTRIBUTES;
 	}
 
-	void FileSystem::Read(StringPtr fileName, Vector<StringByte>& output)
+	void FileSystem::Read(StringPtr fileName, String& output)
 	{
 		auto file = this->Open(fileName, "r");
 
