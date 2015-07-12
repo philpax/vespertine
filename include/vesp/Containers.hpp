@@ -70,11 +70,15 @@ namespace vesp
 		template <typename Y>
 		ArrayView(ArrayView<Y> array)
 		{
-			static_assert(std::is_convertible<
-				std::remove_pointer<Y>::type, 
-				std::remove_pointer<T>::type>::value, "Type must be convertible");
 			this->data = reinterpret_cast<T*>(array.data);
-			this->size = array.size * (sizeof(T) / sizeof(Y));
+
+			size_t scaleFactor = 0;
+			if (sizeof(T) > sizeof(Y))
+				scaleFactor = sizeof(T) / sizeof(Y);
+			else
+				scaleFactor = sizeof(Y) / sizeof(T);
+
+			this->size = array.size * scaleFactor;
 		}
 	};
 }
