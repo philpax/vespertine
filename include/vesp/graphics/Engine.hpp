@@ -16,6 +16,7 @@ struct ID3D11DepthStencilView;
 struct ID3D11BlendState;
 struct ID3D11ShaderResourceView;
 struct ID3D11SamplerState;
+struct ID3D11RasterizerState;
 
 namespace vesp { namespace graphics {
 
@@ -68,6 +69,7 @@ namespace vesp { namespace graphics {
 		CComPtr<ID3D11DepthStencilView> depthStencilView_;
 		CComPtr<ID3D11BlendState> blendState_;
 		CComPtr<ID3D11SamplerState> samplerState_;
+		CComPtr<ID3D11RasterizerState> rasterizerState_;
 
 		util::Timer timer_;
 		util::Timer fpsTimer_;

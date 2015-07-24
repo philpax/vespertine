@@ -95,6 +95,8 @@ namespace vesp { namespace graphics {
 		ImmediateContext->PSSetSamplers(0, 1, &this->samplerState_.p);
 		ImmediateContext->PSSetShaderResources(0, 2, views);
 
+		ImmediateContext->RSSetState(this->rasterizerState_);
+
 		// Activate g-buffer render targets
 		ImmediateContext->OMSetRenderTargets(
 			this->renderTargetViews_.size() - 1, 
@@ -199,6 +201,20 @@ namespace vesp { namespace graphics {
 			0, nullptr, 0, D3D11_SDK_VERSION, &desc, &SwapChain,
 			&Device, nullptr, &ImmediateContext);
 		VESP_ENFORCE(SUCCEEDED(hr));
+
+		D3D11_RASTERIZER_DESC rasterizerDesc;
+		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+		rasterizerDesc.CullMode = D3D11_CULL_BACK;
+		rasterizerDesc.FrontCounterClockwise = FALSE;
+		rasterizerDesc.DepthBias = 0;
+		rasterizerDesc.SlopeScaledDepthBias = 0.0f;
+		rasterizerDesc.DepthBiasClamp = 0.0f;
+		rasterizerDesc.DepthClipEnable = TRUE;
+		rasterizerDesc.ScissorEnable = FALSE;
+		rasterizerDesc.MultisampleEnable = FALSE;
+		rasterizerDesc.AntialiasedLineEnable = FALSE;
+
+		hr = Device->CreateRasterizerState(&rasterizerDesc, &this->rasterizerState_);
 	}
 
 	void Engine::CreateDepthStencil(IVec2 size)
@@ -342,7 +358,7 @@ namespace vesp { namespace graphics {
 		renderTargetBlendDesc.SrcBlendAlpha			 = D3D11_BLEND_ONE;
 		renderTargetBlendDesc.DestBlendAlpha		 = D3D11_BLEND_ZERO;
 		renderTargetBlendDesc.BlendOpAlpha			 = D3D11_BLEND_OP_ADD;
-		renderTargetBlendDesc.RenderTargetWriteMask	 = D3D10_COLOR_WRITE_ENABLE_ALL;
+		renderTargetBlendDesc.RenderTargetWriteMask	 = D3D11_COLOR_WRITE_ENABLE_ALL;
 
 		blendDesc.AlphaToCoverageEnable = false;
 		blendDesc.RenderTarget[0] = renderTargetBlendDesc;
