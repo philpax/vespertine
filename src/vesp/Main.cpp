@@ -55,7 +55,7 @@ namespace vesp
 				{
 				case WM_QUIT:
 					running = false;
-					EventManager::Get()->Fire("Quit");
+					EventManager::Get()->Fire("Engine.Quit");
 					break;
 				}
 				

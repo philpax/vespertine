@@ -6,6 +6,8 @@
 #include "vesp/util/StringConversion.hpp"
 #include "vesp/Assert.hpp"
 
+#include "vesp/EventManager.hpp"
+
 namespace vesp { namespace graphics {
 
 	LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -18,6 +20,16 @@ namespace vesp { namespace graphics {
 
 		case WM_DESTROY:
 			PostQuitMessage(0);
+			break;
+
+		case WM_SETFOCUS:
+			EventManager::Get()->Fire("Window.Focus");
+			ShowCursor(FALSE);
+			break;
+
+		case WM_KILLFOCUS:
+			EventManager::Get()->Fire("Window.Unfocus");
+			ShowCursor(TRUE);
 			break;
 
 		case WM_SIZE:
@@ -63,9 +75,8 @@ namespace vesp { namespace graphics {
 
 		int x = (GetSystemMetrics(SM_CXSCREEN) - rect.right) / 2;
 		int y = (GetSystemMetrics(SM_CYSCREEN) - rect.bottom) / 2;
-		SetPosition(IVec2(x, y));
+		this->SetPosition(IVec2(x, y));
 
-		ShowCursor(FALSE);
 		ShowWindow(this->hwnd_, SW_SHOW);
 		UpdateWindow(this->hwnd_);
 	}
@@ -78,7 +89,7 @@ namespace vesp { namespace graphics {
 
 	void Window::SetTitle(RawStringPtr title)
 	{
-		auto  wideString = util::MultiToWide(title, CP_UTF8);
+		auto wideString = util::MultiToWide(title, CP_UTF8);
 		SetWindowTextW(this->hwnd_, wideString.data());
 	}
 
@@ -119,10 +130,15 @@ namespace vesp { namespace graphics {
 		return this->hwnd_;
 	}
 
-	bool Window::IsFullscreen()
+	bool Window::IsFullscreen() const
 	{
 		// There is probably a much better way of handling this..
 		return (GetWindowLong(this->hwnd_, GWL_STYLE) & WS_POPUP) == WS_POPUP;
+	}
+
+	bool Window::HasFocus() const
+	{
+		return GetActiveWindow() == this->hwnd_;
 	}
 
 	void Window::Pulse()

@@ -22,7 +22,8 @@ namespace vesp { namespace graphics {
 
 		void* GetSystemRepresentation();
 
-		bool IsFullscreen();
+		bool IsFullscreen() const;
+		bool HasFocus() const;
 
 		void Pulse();
 
