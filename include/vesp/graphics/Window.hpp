@@ -16,6 +16,8 @@ namespace vesp { namespace graphics {
 		void SetPosition(IVec2 position);
 		void SetSize(IVec2 size);
 
+		void ClipToWindow(bool clip);
+
 		IVec2 GetPosition();
 		IVec2 GetSize();
 		float GetAspectRatio();

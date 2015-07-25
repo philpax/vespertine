@@ -12,6 +12,19 @@ namespace vesp { namespace graphics {
 
 	LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	{
+		Window* self = nullptr;
+
+		if (msg == WM_NCCREATE)
+		{
+			auto createStruct = reinterpret_cast<LPCREATESTRUCT>(lparam);
+			self = reinterpret_cast<Window*>(createStruct->lpCreateParams);
+			SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(self));
+		}
+		else
+		{
+			self = reinterpret_cast<Window*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+		}
+
 		switch (msg)
 		{
 		case WM_CLOSE:
@@ -23,31 +36,28 @@ namespace vesp { namespace graphics {
 			break;
 
 		case WM_SETFOCUS:
-		{
 			EventManager::Get()->Fire("Window.Focus");
 			ShowCursor(FALSE);
-			RECT rect;
-			GetClientRect(hwnd, &rect);
-			ClientToScreen(hwnd, reinterpret_cast<POINT*>(&rect.left));
-			ClientToScreen(hwnd, reinterpret_cast<POINT*>(&rect.right));
-			ClipCursor(&rect);
+			if (self)
+				self->ClipToWindow(true);
 			break;
-		}
 
 		case WM_KILLFOCUS:
 			EventManager::Get()->Fire("Window.Unfocus");
 			ShowCursor(TRUE);
-			ClipCursor(nullptr);
+			if (self)
+				self->ClipToWindow(false);
 			break;
 
-		case WM_SIZE:
+		case WM_EXITSIZEMOVE:
 		{
 			auto engine = Engine::Get();
 
-			if (engine)
+			if (engine && self)
 			{
-				engine->HandleResize(
-					IVec2(math::LowWord(lparam), math::HighWord(lparam)));
+				engine->HandleResize(self->GetSize());
+				if (self->HasFocus())
+					self->ClipToWindow(true);
 			}
 			break;
 		}
@@ -73,7 +83,7 @@ namespace vesp { namespace graphics {
 		auto wideTitle = util::MultiToWide(title, CP_UTF8);
 		this->hwnd_ = CreateWindowW(className, wideTitle.data(),
 			WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
-			size.x, size.y, nullptr, nullptr, nullptr, nullptr);
+			size.x, size.y, nullptr, nullptr, nullptr, this);
 
 		VESP_ENFORCE(this->hwnd_ != NULL && "Failed to create window");
 
@@ -109,6 +119,22 @@ namespace vesp { namespace graphics {
 	void Window::SetSize(IVec2 size)
 	{
 		SetWindowPos(this->hwnd_, nullptr, 0, 0, GetSize().x, GetSize().y, SWP_NOREPOSITION);
+	}
+
+	void Window::ClipToWindow(bool clip)
+	{
+		if (clip)
+		{
+			RECT rect;
+			GetClientRect(this->hwnd_, &rect);
+			ClientToScreen(this->hwnd_, reinterpret_cast<POINT*>(&rect.left));
+			ClientToScreen(this->hwnd_, reinterpret_cast<POINT*>(&rect.right));
+			ClipCursor(&rect);
+		}
+		else
+		{
+			ClipCursor(nullptr);
+		}
 	}
 
 	IVec2 Window::GetPosition()
