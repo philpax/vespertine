@@ -5,6 +5,8 @@
 #include "vesp/graphics/Buffer.hpp"
 #include "vesp/graphics/FreeCamera.hpp"
 #include "vesp/graphics/Mesh.hpp"
+#include "vesp/graphics/ImGui.hpp"
+#include "vesp/graphics/ImGuiDX11.hpp"
 
 #include "vesp/math/Vector.hpp"
 #include "vesp/math/Matrix.hpp"
@@ -42,6 +44,8 @@ namespace vesp { namespace graphics {
 
 	Engine::~Engine()
 	{
+		ImGui_ImplDX11_Shutdown();
+
 		this->DestroyRenderTargets();
 		this->DestroyDepthStencil();
 
@@ -59,7 +63,10 @@ namespace vesp { namespace graphics {
 		this->CreateRenderTargets(size);
 		this->CreateBlendState();
 		this->CreateSamplerState();
-		this->CreateTestData();		
+		this->CreateTestData();
+
+		ImGui_ImplDX11_Init(
+			this->window_->GetSystemRepresentation(), Device, ImmediateContext);
 
 		this->camera_ = std::make_unique<FreeCamera>(
 			Vec3(0.0f, 2.0f, -4.0f), 
@@ -69,6 +76,8 @@ namespace vesp { namespace graphics {
 
 	void Engine::HandleResize(IVec2 size)
 	{
+		ImGui_ImplDX11_InvalidateDeviceObjects();
+
 		this->DestroyRenderTargets();
 		this->DestroyDepthStencil();
 
@@ -77,12 +86,22 @@ namespace vesp { namespace graphics {
 		this->CreateDepthStencil(size);
 		this->CreateRenderTargets(size);
 
+		ImGui_ImplDX11_CreateDeviceObjects();
+
 		LogInfo("Resized to (%d, %d)", size.x, size.y);
 	}
 
 	void Engine::Pulse()
 	{
 		this->window_->Pulse();
+		ImGui_ImplDX11_NewFrame();
+
+		{
+			ImGui::Begin("Stats");
+			ImGui::Text("Frametime: %.02f ms", 1000.0f / ImGui::GetIO().Framerate);
+			ImGui::Text("Framerate: %.01f FPS", ImGui::GetIO().Framerate);
+			ImGui::End();
+		}
 
 		F32 clearColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 		for (auto& rt : this->renderTargetViews_)
@@ -94,8 +113,9 @@ namespace vesp { namespace graphics {
 		ID3D11ShaderResourceView* views[2] = {};
 		ImmediateContext->PSSetSamplers(0, 1, &this->samplerState_.p);
 		ImmediateContext->PSSetShaderResources(0, 2, views);
-
 		ImmediateContext->RSSetState(this->rasterizerState_);
+
+		this->SetBlendingEnabled(false);
 
 		// Activate g-buffer render targets
 		ImmediateContext->OMSetRenderTargets(
@@ -145,8 +165,9 @@ namespace vesp { namespace graphics {
 			screenMesh.SetPosition(Vec3(-3.0f + i * 2.0f, 3.0f, 0.0f));
 			screenMesh.Draw();
 		}
-		this->SetDepthEnabled(true);
+		ImGui::Render();
 		
+		this->SetDepthEnabled(true);
 		SwapChain->Present(0, 0);
 
 		this->frameCount_++;

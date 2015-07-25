@@ -8,10 +8,15 @@
 
 #include "vesp/EventManager.hpp"
 
+extern LRESULT ImGui_ImplDX11_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 namespace vesp { namespace graphics {
 
 	LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	{
+		if (ImGui_ImplDX11_WndProcHandler(hwnd, msg, wparam, lparam))
+			return true;
+
 		Window* self = nullptr;
 
 		if (msg == WM_NCCREATE)

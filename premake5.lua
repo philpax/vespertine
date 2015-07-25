@@ -7,7 +7,7 @@ project "Vespertine"
 
 	includedirs(VENDOR_INCLUDES)
 	includedirs { "include/" }
-	files { "include/**.hpp", "src/**.cpp" }
+	files { "include/**.hpp", "include/**.h", "src/**.cpp" }
 	flags { "NoExceptions", "NoRTTI", "FatalWarnings", "MultiProcessorCompile" }
 	defines { "NOMINMAX", "_USE_MATH_DEFINES" }
 
