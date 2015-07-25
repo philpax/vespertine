@@ -1,5 +1,7 @@
 #include "vesp/InputManager.hpp"
-#include "vesp/Math/Util.hpp"
+#include "vesp/math/Util.hpp"
+#include "vesp/graphics/Engine.hpp"
+#include "vesp/graphics/Window.hpp"
 #include "vesp/Log.hpp"
 
 #include <Windowsx.h>
@@ -17,6 +19,9 @@ namespace vesp
 
 	void InputManager::FeedEvent(MSG const* event)
 	{
+		if (!graphics::Engine::Get()->GetWindow()->HasFocus())
+			return;
+
 		if (event->message == WM_KEYDOWN)
 		{
 			// TODO: Settings manager

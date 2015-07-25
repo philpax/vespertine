@@ -23,13 +23,21 @@ namespace vesp { namespace graphics {
 			break;
 
 		case WM_SETFOCUS:
+		{
 			EventManager::Get()->Fire("Window.Focus");
 			ShowCursor(FALSE);
+			RECT rect;
+			GetClientRect(hwnd, &rect);
+			ClientToScreen(hwnd, reinterpret_cast<POINT*>(&rect.left));
+			ClientToScreen(hwnd, reinterpret_cast<POINT*>(&rect.right));
+			ClipCursor(&rect);
 			break;
+		}
 
 		case WM_KILLFOCUS:
 			EventManager::Get()->Fire("Window.Unfocus");
 			ShowCursor(TRUE);
+			ClipCursor(nullptr);
 			break;
 
 		case WM_SIZE:
