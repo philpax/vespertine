@@ -538,6 +538,9 @@ namespace vesp { namespace graphics {
 	void Engine::DestroyRenderTargets()
 	{
 		ImmediateContext->OMSetRenderTargets(0, nullptr, nullptr);
+		for (auto& rtView : this->renderTargetResourceViews_)
+			rtView.Release();
+
 		for (auto& rt : this->renderTargetViews_)
 			rt.Release();
 	}
