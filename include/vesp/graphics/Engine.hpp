@@ -73,7 +73,6 @@ namespace vesp { namespace graphics {
 
 		util::Timer timer_;
 		util::Timer fpsTimer_;
-		U32 frameCount_ = 0;
 	};
 
 } }

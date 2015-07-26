@@ -17,6 +17,7 @@
 
 #include <glm/gtc/noise.hpp>
 
+#include <deque>
 #include <d3d11.h>
 
 namespace vesp { namespace graphics {
@@ -39,7 +40,6 @@ namespace vesp { namespace graphics {
 	Engine::Engine(RawStringPtr title)
 	{
 		this->window_ = std::make_unique<Window>(title, IVec2(1280, 800));
-		this->frameCount_ = 0;
 	}
 
 	Engine::~Engine()
@@ -96,12 +96,39 @@ namespace vesp { namespace graphics {
 		this->window_->Pulse();
 		ImGui_ImplDX11_NewFrame();
 
+		static std::deque<float> fpsRecord;
+
+		ImGui::Begin("Stats", nullptr, ImVec2(), 0.5f,
+			ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
 		{
-			ImGui::Begin("Stats");
-			ImGui::Text("Frametime: %.02f ms", 1000.0f / ImGui::GetIO().Framerate);
-			ImGui::Text("Framerate: %.01f FPS", ImGui::GetIO().Framerate);
-			ImGui::End();
+			ImGui::SetWindowPos(ImVec2(0, 0));
+
+			auto frameRate = ImGui::GetIO().Framerate;
+			auto frameTime = 1000.0f / frameRate;
+
+			if (this->fpsTimer_.GetSeconds() >= 0.2f || fpsRecord.empty())
+			{
+				fpsRecord.push_back(frameRate);
+				this->fpsTimer_.Restart();
+			}
+
+			if (fpsRecord.size() > 50)
+				fpsRecord.pop_front();
+
+			ImGui::PlotLines("FPS", 
+				[](void* data, int index) 
+				{ 
+					auto& deque = *reinterpret_cast<std::deque<float>*>(data); 
+					return deque[index]; 
+				}, 
+				(void*)&fpsRecord, fpsRecord.size());
+
+			ImGui::Separator();
+
+			ImGui::Text("Frametime: %.02f ms", frameTime);
+			ImGui::Text("Framerate: %.01f FPS", frameRate);
 		}
+		ImGui::End();
 
 		F32 clearColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 		for (auto& rt : this->renderTargetViews_)
@@ -169,14 +196,6 @@ namespace vesp { namespace graphics {
 		
 		this->SetDepthEnabled(true);
 		SwapChain->Present(0, 0);
-
-		this->frameCount_++;
-		if (this->fpsTimer_.GetSeconds() > 5)
-		{
-			LogInfo("FPS: %.01f", this->frameCount_ / this->fpsTimer_.GetSeconds());
-			this->fpsTimer_.Restart();
-			this->frameCount_ = 0;
-		}
 	}
 
 	Window* Engine::GetWindow()
