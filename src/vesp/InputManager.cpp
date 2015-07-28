@@ -100,8 +100,19 @@ namespace vesp
 
 	void InputManager::SetState(Action action, F32 state)
 	{
-		this->state_[static_cast<U32>(action)] =
-			static_cast<U16>(state * std::numeric_limits<U16>::max());
+		auto oldValue = this->state_[static_cast<U32>(action)];
+		auto newValue = static_cast<U16>(state * std::numeric_limits<U16>::max());
+
+		this->state_[static_cast<U32>(action)] = newValue;
+
+		if (oldValue != newValue)
+		{
+			for (auto& v : this->callbacks_[static_cast<U32>(action)])
+			{
+				auto handler = v.handler;
+				(v.instance->*handler)(state);
+			}
+		}
 	}
 
 	void InputManager::Pulse()
@@ -110,5 +121,10 @@ namespace vesp
 		this->SetState(Action::CameraRight, 0.0f);
 		this->SetState(Action::CameraUp, 0.0f);
 		this->SetState(Action::CameraDown, 0.0f);
+	}
+
+	void InputManager::SubscribeInternal(Action action, InputHandler* instance, InputHandler::Function handler)
+	{
+		this->callbacks_[static_cast<U32>(action)].push_back({instance, handler});
 	}
 }
