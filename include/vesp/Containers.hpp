@@ -10,6 +10,7 @@
 #pragma warning(pop)
 
 #include "vesp/Types.hpp"
+#include "vesp/util/MurmurHash.hpp"
 
 namespace vesp
 {
@@ -29,7 +30,21 @@ namespace vesp
 	using WideString = Vector<wchar_t>;
 
 	template <typename T>
-	struct ArrayView
+	struct ArrayView;
+
+	template <typename T>
+	struct ArrayViewBase
+	{
+	};
+
+	template <>
+	struct ArrayViewBase<StringByte>
+	{
+		static ArrayView<StringByte> From(StringByte const* str);
+	};
+
+	template <typename T>
+	struct ArrayView : public ArrayViewBase<T>
 	{
 		T* data = nullptr;
 		U32 size = 0;
@@ -82,6 +97,35 @@ namespace vesp
 				scaleFactor = sizeof(Y) / sizeof(T);
 
 			this->size = array.size * scaleFactor;
+		}
+
+		T* begin()
+		{
+			return this->data;
+		}
+
+		T* end()
+		{
+			return this->begin() + this->size;
+		}
+
+		std::vector<T> CopyToVec()
+		{
+			return std::vector<T>(this->begin(), this->end());
+		}
+	};
+
+	typedef ArrayView<StringByte> StringView;
+}
+
+namespace std 
+{
+	template <> struct hash<vesp::String>
+	{
+		size_t operator()(vesp::String const& s) const
+		{
+			return vesp::util::MurmurHash(
+				reinterpret_cast<void const*>(s.data()), s.size());
 		}
 	};
 }
