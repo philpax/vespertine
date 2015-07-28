@@ -26,6 +26,7 @@ namespace vesp {
 
 	private:
 		void ConsolePress(float state);
+		void ProcessInput(ArrayView<StringByte> input);
 		
 		struct Message
 		{

@@ -43,11 +43,11 @@ namespace vesp
 		FileSystem::Destroy();
 	}
 
+	bool Running = true;
+
 	void Loop()
 	{
-		bool running = true;
-
-		while (running)
+		while (Running)
 		{
 			InputManager::Get()->Pulse();
 
@@ -57,7 +57,7 @@ namespace vesp
 				switch (msg.message)
 				{
 				case WM_QUIT:
-					running = false;
+					Quit();
 					EventManager::Get()->Fire("Engine.Quit");
 					break;
 				}
@@ -70,5 +70,10 @@ namespace vesp
 
 			graphics::Engine::Get()->Pulse();
 		}
+	}
+
+	void Quit()
+	{
+		Running = false;
 	}
 }

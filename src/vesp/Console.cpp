@@ -1,6 +1,7 @@
 #include "vesp/Console.hpp"
 #include "vesp/Containers.hpp"
 #include "vesp/Log.hpp"
+#include "vesp/Main.hpp"
 
 #include "vesp/graphics/ImGui.hpp"
 #include "vesp/graphics/Engine.hpp"
@@ -69,7 +70,11 @@ namespace vesp {
 			ImGui::Separator();
 
 			ImGui::PushItemWidth(-1.0f);
-			ImGui::InputText("Input", inputBuffer.data(), inputBuffer.size());
+			if (ImGui::InputText("Input", inputBuffer.data(),
+				inputBuffer.size(), ImGuiInputTextFlags_EnterReturnsTrue))
+			{
+				this->ProcessInput(inputBuffer);
+			}
 			ImGui::PopItemWidth();
 		}
 		ImGui::End();
@@ -79,6 +84,14 @@ namespace vesp {
 	{
 		if (state == 1.0f)
 			this->SetActive(!this->GetActive());
+	}
+
+	void Console::ProcessInput(ArrayView<StringByte> input)
+	{
+		if (strcmp(input.data, "quit") == 0)
+			vesp::Quit();
+		else
+			LogError("Unrecognized console command: `%s`", input);
 	}
 
 }
