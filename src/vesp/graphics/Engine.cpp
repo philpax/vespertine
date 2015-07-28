@@ -97,40 +97,6 @@ namespace vesp { namespace graphics {
 		this->window_->Pulse();
 		ImGui_ImplDX11_NewFrame();
 
-		static std::deque<float> fpsRecord;
-
-		ImGui::Begin("Stats", nullptr, ImVec2(), 0.5f,
-			ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
-		{
-			ImGui::SetWindowPos(ImVec2(0, 0));
-
-			auto frameRate = ImGui::GetIO().Framerate;
-			auto frameTime = 1000.0f / frameRate;
-
-			if (this->fpsTimer_.GetSeconds() >= 0.2f || fpsRecord.empty())
-			{
-				fpsRecord.push_back(frameRate);
-				this->fpsTimer_.Restart();
-			}
-
-			if (fpsRecord.size() > 50)
-				fpsRecord.pop_front();
-
-			ImGui::PlotLines("FPS", 
-				[](void* data, int index) 
-				{ 
-					auto& deque = *reinterpret_cast<std::deque<float>*>(data); 
-					return deque[index]; 
-				}, 
-				(void*)&fpsRecord, fpsRecord.size());
-
-			ImGui::Separator();
-
-			ImGui::Text("Frametime: %.02f ms", frameTime);
-			ImGui::Text("Framerate: %.01f FPS", frameRate);
-		}
-		ImGui::End();
-
 		F32 clearColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 		for (auto& rt : this->renderTargetViews_)
 			ImmediateContext->ClearRenderTargetView(rt, clearColour);
@@ -184,15 +150,58 @@ namespace vesp { namespace graphics {
 		screenMesh.SetPosition(Vec3(0.0f, 0.0f, 0.0f));
 		screenMesh.Draw();
 
-		// Draw the source views on top
-		texturePixelShader.Activate();
-		for (U32 i = 0; i < this->renderTargetResourceViews_.size(); i++)
+		// Render stats
+		static std::deque<float> fpsRecord;
+
+		ImGui::Begin("Stats", nullptr, ImVec2(), 0.5f, ImGuiWindowFlags_NoTitleBar);
 		{
-			ImmediateContext->PSSetShaderResources(0, 1, &this->renderTargetResourceViews_[i].p);
-			screenMesh.SetScale(0.25f);
-			screenMesh.SetPosition(Vec3(-3.0f + i * 2.0f, 3.0f, 0.0f));
-			screenMesh.Draw();
+			ImGui::SetWindowPos(ImVec2(0, 0));
+
+			auto frameRate = ImGui::GetIO().Framerate;
+			auto frameTime = 1000.0f / frameRate;
+
+			if (this->fpsTimer_.GetSeconds() >= 0.2f || fpsRecord.empty())
+			{
+				fpsRecord.push_back(frameRate);
+				this->fpsTimer_.Restart();
+			}
+
+			if (fpsRecord.size() > 50)
+				fpsRecord.pop_front();
+
+			ImGui::PushItemWidth(-1.0f);
+			ImGui::PlotLines("FPS",
+				[](void* data, int index)
+				{
+					auto& deque = *reinterpret_cast<std::deque<float>*>(data);
+					return deque[index];
+				},
+				(void*)&fpsRecord, fpsRecord.size());
+			ImGui::PopItemWidth();
+
+			ImGui::Separator();
+
+			ImGui::Text("Frametime: %.02f ms", frameTime);
+			ImGui::Text("Framerate: %.01f FPS", frameRate);
+
+			auto aspectRatio = this->window_->GetAspectRatio();
+			auto guiWidth = ImGui::GetWindowWidth();
+			auto rtSize = ImVec2(guiWidth, guiWidth / aspectRatio);
+
+			ImGui::Separator();
+
+			auto drawRenderTarget = [&](char const* name, size_t index)
+			{
+				ImGui::BeginGroup();
+				ImGui::Text(name);
+				ImGui::Image(this->renderTargetResourceViews_[index].p, rtSize);
+				ImGui::EndGroup();
+			};
+
+			drawRenderTarget("Diffuse", 0);
+			drawRenderTarget("View-space normals", 1);
 		}
+		ImGui::End();
 
 		Console::Get()->Draw();
 
