@@ -46,9 +46,16 @@ namespace vesp
 			timeBuffer, LogTypeStrings[static_cast<U8>(type)], tempBuffer);
 
 		auto len = strlen(finalBuffer);
+		auto col = graphics::Colour::White;
 
-		Console::Get()->AddMessage(
-			ArrayView<StringByte>(finalBuffer, len), graphics::Colour::White);
+		if (type == LogType::Warn)
+			col = graphics::Colour::Orange;
+		else if (type == LogType::Error)
+			col = graphics::Colour::OrangeRed;
+		else if (type == LogType::Fatal)
+			col = graphics::Colour::Red;
+
+		Console::Get()->AddMessage(StringView(finalBuffer, len), col);
 
 		this->logFile_.Write(ArrayView<U8>(reinterpret_cast<U8*>(finalBuffer), len));
 		this->logFile_.Flush();
