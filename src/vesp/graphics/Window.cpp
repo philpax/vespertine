@@ -4,8 +4,9 @@
 #include "vesp/math/Vector.hpp"
 #include "vesp/math/Util.hpp"
 #include "vesp/util/StringConversion.hpp"
-#include "vesp/Assert.hpp"
 
+#include "vesp/Assert.hpp"
+#include "vesp/InputManager.hpp"
 #include "vesp/EventManager.hpp"
 
 extern LRESULT ImGui_ImplDX11_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -42,16 +43,10 @@ namespace vesp { namespace graphics {
 
 		case WM_SETFOCUS:
 			EventManager::Get()->Fire("Window.Focus");
-			ShowCursor(FALSE);
-			if (self)
-				self->ClipToWindow(true);
 			break;
 
 		case WM_KILLFOCUS:
 			EventManager::Get()->Fire("Window.Unfocus");
-			ShowCursor(TRUE);
-			if (self)
-				self->ClipToWindow(false);
 			break;
 
 		case WM_EXITSIZEMOVE:
@@ -59,11 +54,7 @@ namespace vesp { namespace graphics {
 			auto engine = Engine::Get();
 
 			if (engine && self)
-			{
 				engine->HandleResize(self->GetSize());
-				if (self->HasFocus())
-					self->ClipToWindow(true);
-			}
 			break;
 		}
 		default:
@@ -126,8 +117,14 @@ namespace vesp { namespace graphics {
 		SetWindowPos(this->hwnd_, nullptr, 0, 0, GetSize().x, GetSize().y, SWP_NOREPOSITION);
 	}
 
-	void Window::ClipToWindow(bool clip)
+	void Window::UpdateClip()
 	{
+		bool clip = this->HasFocus() && !InputManager::Get()->HasGuiLock();
+		static bool oldClip = !clip;
+
+		if (clip == oldClip)
+			return;
+
 		if (clip)
 		{
 			RECT rect;
@@ -135,11 +132,15 @@ namespace vesp { namespace graphics {
 			ClientToScreen(this->hwnd_, reinterpret_cast<POINT*>(&rect.left));
 			ClientToScreen(this->hwnd_, reinterpret_cast<POINT*>(&rect.right));
 			ClipCursor(&rect);
+			ShowCursor(FALSE);
 		}
 		else
 		{
 			ClipCursor(nullptr);
+			ShowCursor(TRUE);
 		}
+
+		oldClip = clip;
 	}
 
 	IVec2 Window::GetPosition()
@@ -182,5 +183,6 @@ namespace vesp { namespace graphics {
 
 	void Window::Pulse()
 	{
+		this->UpdateClip();
 	}
 } }
