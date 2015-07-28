@@ -1,7 +1,6 @@
 #include "vesp/Console.hpp"
 #include "vesp/Containers.hpp"
 #include "vesp/Log.hpp"
-#include "vesp/Main.hpp"
 
 #include "vesp/graphics/ImGui.hpp"
 #include "vesp/graphics/Engine.hpp"
@@ -15,6 +14,14 @@ namespace vesp {
 	{
 		InputManager::Get()->Subscribe(
 			Action::Console, this, &Console::ConsolePress);
+
+		this->AddCommand(StringView::From("test_parser"), 
+			[](ArrayView<String> args) 
+			{
+				for (auto& s : args)
+					LogInfo("%.*s", s.size(), s.data()); 
+			}
+		);
 	}
 
 	Console::~Console()
@@ -36,12 +43,24 @@ namespace vesp {
 		return this->active_;
 	}
 
-	void Console::AddMessage(ArrayView<StringByte> text, graphics::Colour colour)
+	void Console::AddMessage(StringView text, graphics::Colour colour)
 	{
-		this->messages_.push_back({String(text.data, text.data + text.size), colour});
+		this->messages_.push_back({text.CopyToVec(), colour});
 
 		if (this->messages_.size() >= 1024)
 			this->messages_.pop_front();
+	}
+
+	void Console::AddCommand(StringView command, CommandType fn)
+	{
+		auto cmd = command.CopyToVec();
+		VESP_ASSERT(this->commands_.find(cmd) == this->commands_.end());
+		this->commands_[cmd] = fn;
+	}
+
+	void Console::AddEmptyCommand(StringView command, EmptyCommandType fn)
+	{
+		this->AddCommand(command, [=](ArrayView<String>) { fn(); });
 	}
 
 	void Console::Draw()
@@ -73,7 +92,7 @@ namespace vesp {
 			if (ImGui::InputText("Input", inputBuffer.data(),
 				inputBuffer.size(), ImGuiInputTextFlags_EnterReturnsTrue))
 			{
-				this->ProcessInput(inputBuffer);
+				this->ProcessInput(StringView::From(inputBuffer.data()));
 			}
 			ImGui::PopItemWidth();
 		}
@@ -86,10 +105,42 @@ namespace vesp {
 			this->SetActive(!this->GetActive());
 	}
 
-	void Console::ProcessInput(ArrayView<StringByte> input)
+	void Console::ProcessInput(StringView input)
 	{
-		if (strcmp(input.data, "quit") == 0)
-			vesp::Quit();
+		Vector<String> tokens;
+		String currentToken;
+		for (auto c : input)
+		{
+			if (isspace(c))
+			{
+				if (!currentToken.empty())
+				{
+					tokens.push_back(currentToken);
+					currentToken.clear();
+				}
+			}
+			else
+			{
+				currentToken.push_back(c);
+			}
+		}
+
+		if (!currentToken.empty())
+			tokens.push_back(currentToken);
+
+		if (tokens.empty())
+			return;
+
+		auto it = this->commands_.find(tokens.front());
+
+		ArrayView<String> args;
+		args.size = tokens.size() - 1;
+
+		if (args.size > 1)
+			args.data = &tokens[1];
+
+		if (it != this->commands_.end())
+			it->second(args);
 		else
 			LogError("Unrecognized console command: `%s`", input);
 	}
