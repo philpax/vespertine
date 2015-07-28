@@ -151,8 +151,6 @@ namespace vesp { namespace graphics {
 		screenMesh.Draw();
 
 		// Render stats
-		static std::deque<float> fpsRecord;
-
 		ImGui::Begin("Stats", nullptr, ImVec2(), 0.5f, ImGuiWindowFlags_NoTitleBar);
 		{
 			ImGui::SetWindowPos(ImVec2(0, 0));
@@ -160,23 +158,22 @@ namespace vesp { namespace graphics {
 			auto frameRate = ImGui::GetIO().Framerate;
 			auto frameTime = 1000.0f / frameRate;
 
-			if (this->fpsTimer_.GetSeconds() >= 0.2f || fpsRecord.empty())
+			if (this->fpsTimer_.GetSeconds() >= 0.2f || this->fpsRecord_.empty())
 			{
-				fpsRecord.push_back(frameRate);
+				this->fpsRecord_.push_back(frameRate);
 				this->fpsTimer_.Restart();
 			}
 
-			if (fpsRecord.size() > 50)
-				fpsRecord.pop_front();
+			if (this->fpsRecord_.size() > 50)
+				this->fpsRecord_.pop_front();
 
 			ImGui::PushItemWidth(-1.0f);
 			ImGui::PlotLines("FPS",
 				[](void* data, int index)
 				{
-					auto& deque = *reinterpret_cast<std::deque<float>*>(data);
-					return deque[index];
+					return (*reinterpret_cast<std::deque<float>*>(data))[index];
 				},
-				(void*)&fpsRecord, fpsRecord.size());
+				(void*)&this->fpsRecord_, this->fpsRecord_.size());
 			ImGui::PopItemWidth();
 
 			ImGui::Separator();

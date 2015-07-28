@@ -73,6 +73,7 @@ namespace vesp { namespace graphics {
 
 		util::Timer timer_;
 		util::Timer fpsTimer_;
+		Deque<F32> fpsRecord_;
 	};
 
 } }
