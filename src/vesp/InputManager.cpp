@@ -3,6 +3,7 @@
 #include "vesp/graphics/Engine.hpp"
 #include "vesp/graphics/Window.hpp"
 #include "vesp/Log.hpp"
+#include "vesp/Assert.hpp"
 
 #include <Windowsx.h>
 
@@ -42,6 +43,9 @@ namespace vesp
 			case VK_SHIFT:
 				this->SetState(Action::Boost, 1.0f);
 				break;
+			case VK_F1:
+				this->SetState(Action::Console, 1.0f);
+				break;
 			}
 		}
 		else if (event->message == WM_KEYUP)
@@ -63,6 +67,9 @@ namespace vesp
 				break;
 			case VK_SHIFT:
 				this->SetState(Action::Boost, 0.0f);
+				break;
+			case VK_F1:
+				this->SetState(Action::Console, 0.0f);
 				break;
 			}
 		}
@@ -100,6 +107,13 @@ namespace vesp
 
 	void InputManager::SetState(Action action, F32 state)
 	{
+		Array<Action, 1> guiActions = { Action::Console };
+
+		// If this is not a GUI action, and we have input lock, drop it
+		if (this->HasGuiLock() && 
+			std::find(guiActions.begin(), guiActions.end(), action) == guiActions.end())
+			return;
+
 		auto oldValue = this->state_[static_cast<U32>(action)];
 		auto newValue = static_cast<U16>(state * std::numeric_limits<U16>::max());
 
@@ -121,6 +135,22 @@ namespace vesp
 		this->SetState(Action::CameraRight, 0.0f);
 		this->SetState(Action::CameraUp, 0.0f);
 		this->SetState(Action::CameraDown, 0.0f);
+	}
+
+	void InputManager::AddGuiLock()
+	{
+		this->guiLockCount_++;
+	}
+
+	void InputManager::RemoveGuiLock()
+	{
+		VESP_ASSERT(this->guiLockCount_ > 0);
+		this->guiLockCount_--;
+	}
+
+	bool InputManager::HasGuiLock()
+	{
+		return this->guiLockCount_ > 0;
 	}
 
 	void InputManager::SubscribeInternal(Action action, InputHandler* instance, InputHandler::Function handler)

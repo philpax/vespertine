@@ -1,6 +1,8 @@
 #include "vesp/Log.hpp"
 #include "vesp/Util.hpp"
 
+#include "vesp/Console.hpp"
+
 #include <cstdarg>
 #include <ctime>
 
@@ -45,7 +47,9 @@ namespace vesp
 
 		auto len = strlen(finalBuffer);
 
-		fwrite(finalBuffer, 1, len, stdout);
+		Console::Get()->AddMessage(
+			ArrayView<StringByte>(finalBuffer, len), graphics::Colour::White);
+
 		this->logFile_.Write(ArrayView<U8>(reinterpret_cast<U8*>(finalBuffer), len));
 		this->logFile_.Flush();
 	}

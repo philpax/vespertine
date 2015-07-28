@@ -14,6 +14,7 @@
 
 #include "vesp/Log.hpp"
 #include "vesp/Assert.hpp"
+#include "vesp/Console.hpp"
 
 #include <glm/gtc/noise.hpp>
 
@@ -192,6 +193,9 @@ namespace vesp { namespace graphics {
 			screenMesh.SetPosition(Vec3(-3.0f + i * 2.0f, 3.0f, 0.0f));
 			screenMesh.Draw();
 		}
+
+		Console::Get()->Draw();
+
 		ImGui::Render();
 		
 		this->SetDepthEnabled(true);

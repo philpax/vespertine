@@ -1,12 +1,12 @@
 #pragma once
 
 // Implemented as standard library containers until otherwise needed
-
 #pragma warning(push)
 #pragma warning(disable: 4530)
 #include <vector>
 #include <unordered_map>
 #include <array>
+#include <deque>
 #pragma warning(pop)
 
 #include "vesp/Types.hpp"
@@ -21,6 +21,9 @@ namespace vesp
 
 	template <typename T, int N>
 	using Array = std::array<T, N>;
+
+	template <typename T>
+	using Deque = std::deque<T>;
 
 	using String = Vector<StringByte>;
 	using WideString = Vector<wchar_t>;

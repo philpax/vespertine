@@ -19,6 +19,7 @@ namespace vesp
 		CameraDown,
 		CameraLeft,
 		CameraRight,
+		Console,
 		EndOfEnum
 	};
 
@@ -46,6 +47,10 @@ namespace vesp
 		{
 			this->SubscribeInternal(action, instance, static_cast<InputHandler::Function>(f));
 		}
+
+		void AddGuiLock();
+		void RemoveGuiLock();
+		bool HasGuiLock();
 		
 	private:
 		void SubscribeInternal(Action action, InputHandler* instance, InputHandler::Function handler);
@@ -61,5 +66,6 @@ namespace vesp
 
 		S16 lastCursorX_ = 0;
 		S16 lastCursorY_ = 0;
+		U32 guiLockCount_ = 0;
 	};
 }

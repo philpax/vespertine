@@ -1,5 +1,6 @@
 #include "vesp/Main.hpp"
 #include "vesp/Log.hpp"
+#include "vesp/Console.hpp"
 #include "vesp/EventManager.hpp"
 #include "vesp/FileSystem.hpp"
 #include "vesp/InputManager.hpp"
@@ -14,12 +15,13 @@ namespace vesp
 	bool Initialize(RawStringPtr name)
 	{
 		FileSystem::Create();
+		InputManager::Create();
 
+		Console::Create();
 		Logger::Create("log.txt");
 		LogInfo("Vespertine (%s %s)", __DATE__, __TIME__);
 
 		EventManager::Create();
-		InputManager::Create();
 
 		graphics::Engine::Create(name);
 		graphics::Engine::Get()->Initialize();
@@ -30,13 +32,14 @@ namespace vesp
 	void Shutdown()
 	{
 		graphics::Engine::Destroy();
-		InputManager::Destroy();
 
 		EventManager::Destroy();
 
 		LogInfo("Vespertine shutting down");
 		Logger::Destroy();
+		Console::Destroy();
 
+		InputManager::Destroy();
 		FileSystem::Destroy();
 	}
 
