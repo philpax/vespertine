@@ -18,6 +18,7 @@ namespace vesp {
 		this->AddCommand(StringView::From("test_parser"), 
 			[](ArrayView<String> args) 
 			{
+				LogInfo("test_parser: %d args", args.size);
 				for (auto& s : args)
 					LogInfo("%.*s", s.size(), s.data()); 
 			}
@@ -109,15 +110,21 @@ namespace vesp {
 	{
 		Vector<String> tokens;
 		String currentToken;
+
+		bool parsingQuote = false;
 		for (auto c : input)
 		{
-			if (isspace(c))
+			if (isspace(c) && !parsingQuote)
 			{
 				if (!currentToken.empty())
 				{
 					tokens.push_back(currentToken);
 					currentToken.clear();
 				}
+			}
+			else if (c == '"')
+			{
+				parsingQuote = !parsingQuote;
 			}
 			else
 			{
@@ -136,7 +143,7 @@ namespace vesp {
 		ArrayView<String> args;
 		args.size = tokens.size() - 1;
 
-		if (args.size > 1)
+		if (args.size > 0)
 			args.data = &tokens[1];
 
 		if (it != this->commands_.end())
