@@ -15,8 +15,11 @@ namespace vesp { namespace graphics {
 
 	LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	{
-		if (ImGui_ImplDX11_WndProcHandler(hwnd, msg, wparam, lparam))
-			return true;
+		if (InputManager::Get()->HasGuiLock())
+		{
+			if (ImGui_ImplDX11_WndProcHandler(hwnd, msg, wparam, lparam))
+				return true;
+		}
 
 		Window* self = nullptr;
 
