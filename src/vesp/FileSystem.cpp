@@ -39,10 +39,11 @@ namespace vesp
 		fflush(this->file_);
 	}
 
-	FileSystem::File FileSystem::Open(RawStringPtr fileName, RawStringPtr mode)
+	FileSystem::File FileSystem::Open(StringView fileName, RawStringPtr mode)
 	{
 		File file;
-		fopen_s(&file.file_, fileName, mode);
+		auto cString = ToCString(fileName);
+		fopen_s(&file.file_, cString.get(), mode);
 
 		return file;
 	}
@@ -52,12 +53,13 @@ namespace vesp
 		fclose(file.file_);
 	}
 
-	bool FileSystem::Exists(RawStringPtr fileName)
+	bool FileSystem::Exists(StringView fileName)
 	{
-		return GetFileAttributes(fileName) != INVALID_FILE_ATTRIBUTES;
+		auto cString = ToCString(fileName);
+		return GetFileAttributes(cString.get()) != INVALID_FILE_ATTRIBUTES;
 	}
 
-	void FileSystem::Read(RawStringPtr fileName, String& output)
+	void FileSystem::Read(StringView fileName, String& output)
 	{
 		auto file = this->Open(fileName, "r");
 
