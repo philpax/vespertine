@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <array>
 #include <deque>
+#include <memory>
 #pragma warning(pop)
 
 #include "vesp/Types.hpp"
@@ -116,6 +117,10 @@ namespace vesp
 	};
 
 	typedef ArrayView<StringByte> StringView;
+	
+	String MakeString(RawStringPtr ptr);
+	String Concat(String const& string, StringView rhs);
+	std::unique_ptr<StringByte[]> ToCString(StringView string);
 }
 
 namespace std 
