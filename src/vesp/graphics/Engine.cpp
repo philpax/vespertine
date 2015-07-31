@@ -473,80 +473,12 @@ namespace vesp { namespace graphics {
 		FileSystem::Get()->Read("data/shaders/texture.psh", shaderSource);
 		texturePixelShader.Load(shaderSource.data());
 
-		const int GridWidth = 21;
-		const int HalfGridWidth = GridWidth / 2;
-		F32 heightMap[GridWidth][GridWidth];
-		Vertex floorVertices[GridWidth * GridWidth * 6];
-		
-		for (U32 yIndex = 0; yIndex < GridWidth; yIndex++)
-		{
-			for (U32 xIndex = 0; xIndex < GridWidth; xIndex++)
-			{
-				float x = xIndex + 0.5f - GridWidth/2.0f;
-				float y = yIndex + 0.5f - GridWidth/2.0f;
-
-				auto height = glm::simplex(glm::vec2(x, y) / 8.0f);
-				height += glm::simplex(glm::vec2(x, y) / 3.75f) * 0.6f;
-
-				heightMap[yIndex][xIndex] = height;
-			}
-		}
-
-		auto index = 0u;		
-		for (U32 yIndex = 0; yIndex < GridWidth; yIndex++)
-		{
-			for (U32 xIndex = 0; xIndex < GridWidth; xIndex++)
-			{
-				float x = xIndex + 0.5f - GridWidth/2.0f;
-				float y = yIndex + 0.5f - GridWidth/2.0f;
-
-				auto p = Vec3(x, 0.0f, y);
-
-				auto p1 = p + Vec3(0.5f, 0.0f, -0.5f);
-				auto p2 = p + Vec3(-0.5f, 0.0f, -0.5f);
-				auto p3 = p + Vec3(-0.5f, 0.0f, 0.5f);
-				auto p4 = p + Vec3(0.5f, 0.0f, 0.5f);
-
-				auto PushBack = [&](Vec3 pf)
-				{
-					auto h = [&](float x, float z)
-					{
-						return heightMap
-							[math::Clamp(static_cast<S32>(floor(z)), -HalfGridWidth, HalfGridWidth) + HalfGridWidth]
-							[math::Clamp(static_cast<S32>(floor(x)), -HalfGridWidth, HalfGridWidth) + HalfGridWidth];
-					};
-
-					pf.y = h(pf.x, pf.z);
-
-					float deltaX = h(pf.x + 1, pf.z) - h(pf.x - 1, pf.z);
-					float deltaZ = h(pf.x, pf.z + 1) - h(pf.x, pf.z - 1);
-					Vec3 normal = glm::normalize(Vec3(-deltaX, 2, -deltaZ));
-
-					auto col = Vec4(
-						(pf.x + HalfGridWidth) / static_cast<float>(GridWidth), 
-						1.0f, 
-						(pf.z + HalfGridWidth) / static_cast<float>(GridWidth),
-						1.0f);
-
-					Vertex vertex;
-					vertex.position = pf;
-					vertex.SetNormal(normal);
-					vertex.colour = col;
-
-					floorVertices[index] = vertex;
-					index++;
-				};
-
-				PushBack(p1);
-				PushBack(p2);
-				PushBack(p3);
-
-				PushBack(p4);
-				PushBack(p1);
-				PushBack(p3);
-			}
-		}
-
+		// Load floor mesh
+		Vector<Vertex> floorVertices;
+		auto file = FileSystem::Get()->Open("data/FloorMesh.vspm", "rb");
+		floorVertices.resize(file.Size() / sizeof(Vertex));
+		file.Read(ArrayView<Vertex>(floorVertices));
+		FileSystem::Get()->Close(file);
 		floorMesh.Create(floorVertices);
 
 		Vertex gizmoVertices[] =
