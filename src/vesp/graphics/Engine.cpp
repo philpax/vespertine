@@ -473,12 +473,12 @@ namespace vesp { namespace graphics {
 		this->meshes_.push_back(floorMesh);
 
 		// Add command to load an arbitrary mesh
-		Console::Get()->AddCommand("load_mesh",
+		Console::Get()->AddCommand("mesh-load",
 			[&](ArrayView<String> args)
 			{
 				if (args.size < 2)
 				{
-					LogError("load_mesh path topology");
+					LogError("mesh-load path topology");
 					return;
 				}
 

@@ -15,10 +15,10 @@ namespace vesp {
 		InputManager::Get()->Subscribe(
 			Action::Console, this, &Console::ConsolePress);
 
-		this->AddCommand("test_parser",
+		this->AddCommand("parser-test",
 			[](ArrayView<String> args)
 			{
-				LogInfo("test_parser: %d args", args.size);
+				LogInfo("parser-test: %d args", args.size);
 				for (auto& s : args)
 					LogInfo("%.*s", s.size(), s.data()); 
 			}
