@@ -472,7 +472,7 @@ namespace vesp { namespace graphics {
 		floorMesh.Create(floorVertices);
 		this->meshes_.push_back(floorMesh);
 
-		// Add command to load an arbitrary mesh
+		// Add commands to load and modify meshes
 		Console::Get()->AddCommand("mesh-load",
 			[&](ArrayView<String> args)
 			{
@@ -520,7 +520,40 @@ namespace vesp { namespace graphics {
 				mesh.Create(vertices, topology);
 				this->meshes_.push_back(mesh);
 
-				LogInfo("Successfully loaded %.*s", path.size(), path.data());
+				LogInfo("Successfully loaded %.*s (index: %d)", 
+					path.size(), path.data(), this->meshes_.size() - 1);
+			}
+		);
+
+		Console::Get()->AddCommand("mesh-set-position",
+			[&](ArrayView<String> args)
+			{
+				if (args.size < 4)
+				{
+					LogError("mesh-set-position mesh_index x y z");
+					return;
+				}
+
+				auto meshIndexString = ToCString(args[0]);
+				auto xString = ToCString(args[1]);
+				auto yString = ToCString(args[2]);
+				auto zString = ToCString(args[3]);
+
+				auto meshIndex = std::atoi(meshIndexString.get());
+				if (meshIndex < 0 || (size_t)meshIndex >= this->meshes_.size())
+				{
+					LogError("Invalid mesh index: %d", meshIndex);
+					return;
+				}
+
+				auto x = std::atof(xString.get());
+				auto y = std::atof(yString.get());
+				auto z = std::atof(zString.get());
+
+				this->meshes_[meshIndex].SetPosition(Vec3(x, y, z));
+
+				LogInfo("Successfully moved mesh %d to (%f, %f, %f)", 
+					meshIndex, x, y, z);
 			}
 		);
 
