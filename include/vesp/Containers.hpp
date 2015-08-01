@@ -96,6 +96,16 @@ namespace vesp
 			return this->begin() + this->size;
 		}
 
+		T& operator[](size_t index)
+		{
+			return this->data[index];
+		}
+
+		T const& operator[](size_t index) const
+		{
+			return this->data[index];
+		}
+
 		Vector<T> CopyToVector()
 		{
 			return Vector<T>(this->begin(), this->end());

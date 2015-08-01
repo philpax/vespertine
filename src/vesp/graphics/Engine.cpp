@@ -482,7 +482,7 @@ namespace vesp { namespace graphics {
 					return;
 				}
 
-				auto path = Concat("data/", args.data[0]);
+				auto path = Concat("data/", args[0]);
 				auto file = FileSystem::Get()->Open(path, "rb");
 
 				if (!file.Exists())
@@ -497,7 +497,7 @@ namespace vesp { namespace graphics {
 				file.Read(ArrayView<Vertex>(vertices));
 
 				D3D_PRIMITIVE_TOPOLOGY topology;
-				auto& topologyString = args.data[1];
+				auto& topologyString = args[1];
 
 				if (topologyString == "triangle_list")
 					topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
