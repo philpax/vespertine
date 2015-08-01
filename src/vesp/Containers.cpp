@@ -1,11 +1,37 @@
 #include "vesp/Containers.hpp"
 
+#include <string>
+
 namespace vesp
 {	
 	String Concat(StringView lhs, StringView rhs)
 	{
 		String ret = lhs.CopyToVector();
 		ret.insert(ret.end(), rhs.begin(), rhs.end());
+		return ret;
+	}
+
+	String ToString(size_t value)
+	{
+		String ret;
+		auto s = std::to_string(value);
+		ret.insert(ret.begin(), s.begin(), s.end());
+		return ret;
+	}
+
+	String ToString(int value)
+	{
+		String ret;
+		auto s = std::to_string(value);
+		ret.insert(ret.begin(), s.begin(), s.end());
+		return ret;
+	}
+
+	String ToString(float value)
+	{
+		String ret;
+		auto s = std::to_string(value);
+		ret.insert(ret.begin(), s.begin(), s.end());
 		return ret;
 	}
 
