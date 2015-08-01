@@ -112,8 +112,11 @@ namespace vesp {
 		String currentToken;
 
 		bool parsingQuote = false;
-		for (auto c : input)
+		size_t semicolonIndex = 0;
+		for (size_t i = 0; i < input.size; ++i)
 		{
+			auto c = input[i];
+
 			if (isspace(c) && !parsingQuote)
 			{
 				if (!currentToken.empty())
@@ -125,6 +128,11 @@ namespace vesp {
 			else if (c == '"')
 			{
 				parsingQuote = !parsingQuote;
+			}
+			else if (c == ';' && !parsingQuote)
+			{
+				semicolonIndex = i;
+				break;
 			}
 			else
 			{
@@ -150,6 +158,13 @@ namespace vesp {
 			it->second(args);
 		else
 			LogError("Unrecognized console command: `%s`", input);
+
+		if (semicolonIndex)
+		{
+			auto offset = semicolonIndex + 1;
+			auto view = StringView(input.data + offset, input.size - offset);
+			this->ProcessInput(view);
+		}
 	}
 
 }
