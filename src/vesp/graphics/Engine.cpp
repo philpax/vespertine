@@ -26,8 +26,6 @@ namespace vesp { namespace graphics {
 	VertexShader vertexShader("vs");
 	PixelShader pixelShader("ps");
 	PixelShader gridPixelShader("psGrid");
-	Mesh floorMesh;
-	Mesh gizmoMesh;
 
 	VertexShader identityVertexShader("vsIdentity");
 	PixelShader compositePixelShader("psComposite");
@@ -123,17 +121,8 @@ namespace vesp { namespace graphics {
 
 		vertexShader.Activate();
 		gridPixelShader.Activate();
-		floorMesh.Draw();
-
-		// Draw rotating gizmo
-		pixelShader.Activate();
-		auto seconds = this->timer_.GetSeconds();
-		gizmoMesh.SetPositionAngle(Vec3(1,1,1), Quat(Vec3(0, seconds, 0)));
-		gizmoMesh.Draw();
-
-		// Draw stationary gizmo
-		gizmoMesh.SetPositionAngle(Vec3(0,1,0), Quat());
-		gizmoMesh.Draw();
+		for (auto& mesh : this->meshes_)
+			mesh.Draw();
 
 		// Activate backbuffer
 		ImmediateContext->OMSetRenderTargets(
@@ -478,22 +467,62 @@ namespace vesp { namespace graphics {
 		auto file = FileSystem::Get()->Open("data/FloorMesh.vspm", "rb");
 		floorVertices.resize(file.Size() / sizeof(Vertex));
 		file.Read(ArrayView<Vertex>(floorVertices));
-		FileSystem::Get()->Close(file);
+
+		Mesh floorMesh;
 		floorMesh.Create(floorVertices);
+		this->meshes_.push_back(floorMesh);
 
-		Vertex gizmoVertices[] =
-		{
-			{Vec3(0.0f, 0.0f, 0.0f), Vec3(1.0f, 0.0f, 0.0f), Colour::Red},
-			{Vec3(1.0f, 0.0f, 0.0f), Vec3(1.0f, 0.0f, 0.0f), Colour::Red},
+		// Add command to load an arbitrary mesh
+		Console::Get()->AddCommand("load_mesh",
+			[&](ArrayView<String> args)
+			{
+				if (args.size < 2)
+				{
+					LogError("load_mesh path topology");
+					return;
+				}
 
-			{Vec3(0.0f, 0.0f, 0.0f), Vec3(0.0f, 1.0f, 0.0f), Colour::Green},
-			{Vec3(0.0f, 1.0f, 0.0f), Vec3(0.0f, 1.0f, 0.0f), Colour::Green},
+				auto path = Concat("data/", args.data[0]);
+				auto file = FileSystem::Get()->Open(path, "rb");
 
-			{Vec3(0.0f, 0.0f, 0.0f), Vec3(0.0f, 0.0f, 1.0f), Colour::Blue},
-			{Vec3(0.0f, 0.0f, 1.0f), Vec3(0.0f, 0.0f, 1.0f), Colour::Blue},
-		};
+				if (!file.Exists())
+				{
+					LogError("%.*s doesn't exist", path.size(), path.data());
+					return;
+				}
 
-		gizmoMesh.Create(gizmoVertices, D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+				Vector<Vertex> vertices;
+
+				vertices.resize(file.Size() / sizeof(Vertex));
+				file.Read(ArrayView<Vertex>(vertices));
+
+				D3D_PRIMITIVE_TOPOLOGY topology;
+				auto& topologyString = args.data[1];
+
+				if (topologyString == "triangle_list")
+					topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+				else if (topologyString == "triangle_strip")
+					topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
+				else if (topologyString == "line_list")
+					topology = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
+				else if (topologyString == "line_strip")
+					topology = D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP;
+				else if (topologyString == "point_list")
+					topology = D3D11_PRIMITIVE_TOPOLOGY_POINTLIST;
+				else
+				{
+					LogError("%.*s is an invalid topology", 
+						topologyString.size(), topologyString.data());
+					return;
+				}
+
+				Mesh mesh;
+				mesh.Create(vertices, topology);
+				this->meshes_.push_back(mesh);
+
+				LogInfo("Successfully loaded %.*s", path.size(), path.data());
+			}
+		);
 
 		Vertex screenVertices[] =
 		{

@@ -20,6 +20,7 @@ struct ID3D11RasterizerState;
 
 namespace vesp { namespace graphics {
 
+	class Mesh;
 	class Window;
 	class Camera;
 
@@ -70,6 +71,8 @@ namespace vesp { namespace graphics {
 		CComPtr<ID3D11BlendState> blendState_;
 		CComPtr<ID3D11SamplerState> samplerState_;
 		CComPtr<ID3D11RasterizerState> rasterizerState_;
+
+		Vector<Mesh> meshes_;
 
 		util::Timer timer_;
 		util::Timer fpsTimer_;
