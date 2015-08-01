@@ -123,8 +123,7 @@ namespace vesp
 
 	bool operator==(StringView const lhs, StringView const rhs);
 	
-	String MakeString(RawStringPtr ptr);
-	String Concat(String const& string, StringView rhs);
+	String Concat(StringView lhs, StringView rhs);
 	std::unique_ptr<StringByte[]> ToCString(StringView string);
 }
 

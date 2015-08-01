@@ -1,17 +1,10 @@
 #include "vesp/Containers.hpp"
 
 namespace vesp
-{
-	String MakeString(RawStringPtr ptr)
+{	
+	String Concat(StringView lhs, StringView rhs)
 	{
-		String ret;
-		ret.insert(ret.begin(), ptr, ptr + strlen(ptr));
-		return ret;
-	}
-	
-	String Concat(String const& string, StringView rhs)
-	{
-		String ret = string;
+		String ret = lhs.CopyToVec();
 		ret.insert(ret.end(), rhs.begin(), rhs.end());
 		return ret;
 	}
