@@ -23,6 +23,106 @@ namespace vesp {
 					LogInfo("%.*s", s.size(), s.data()); 
 			}
 		);
+
+		this->AddCommand("add",
+			[](ArrayView<String> args)
+			{
+				if (args.size < 2)
+				{
+					LogError("Expected at least two arguments");
+					return;
+				}
+
+				float ret = 0.0f;
+				for (size_t i = 0; i < args.size; ++i)
+				{
+					auto argString = ToCString(args[i]);
+					auto value = float(std::atof(argString.get()));
+
+					if (i == 0)
+						ret = value;
+					else
+						ret += value;
+				}
+
+				Console::Get()->WriteOutput(ToString(ret));
+			}
+		);
+
+		this->AddCommand("sub",
+			[](ArrayView<String> args)
+			{
+				if (args.size < 2)
+				{
+					LogError("Expected at least two arguments");
+					return;
+				}
+
+				float ret = 0.0f;
+				for (size_t i = 0; i < args.size; ++i)
+				{
+					auto argString = ToCString(args[i]);
+					auto value = float(std::atof(argString.get()));
+
+					if (i == 0)
+						ret = value;
+					else
+						ret -= value;
+				}
+
+				Console::Get()->WriteOutput(ToString(ret));
+			}
+		);
+
+		this->AddCommand("mul",
+			[](ArrayView<String> args)
+			{
+				if (args.size < 2)
+				{
+					LogError("Expected at least two arguments");
+					return;
+				}
+
+				float ret = 0.0f;
+				for (size_t i = 0; i < args.size; ++i)
+				{
+					auto argString = ToCString(args[i]);
+					auto value = float(std::atof(argString.get()));
+
+					if (i == 0)
+						ret = value;
+					else
+						ret *= value;
+				}
+
+				Console::Get()->WriteOutput(ToString(ret));
+			}
+		);
+
+		this->AddCommand("div",
+			[](ArrayView<String> args)
+			{
+				if (args.size < 2)
+				{
+					LogError("Expected at least two arguments");
+					return;
+				}
+
+				float ret = 0.0f;
+				for (size_t i = 0; i < args.size; ++i)
+				{
+					auto argString = ToCString(args[i]);
+					auto value = float(std::atof(argString.get()));
+
+					if (i == 0)
+						ret = value;
+					else
+						ret /= value;
+				}
+
+				Console::Get()->WriteOutput(ToString(ret));
+			}
+		);
 	}
 
 	Console::~Console()
@@ -64,6 +164,11 @@ namespace vesp {
 		this->AddCommand(command, [=](ArrayView<String>) { fn(); });
 	}
 
+	void Console::WriteOutput(StringView output)
+	{
+		this->output_ = output.CopyToVector();
+	}
+
 	void Console::Draw()
 	{
 		if (!this->active_)
@@ -94,8 +199,12 @@ namespace vesp {
 				inputBuffer.size(), ImGuiInputTextFlags_EnterReturnsTrue))
 			{
 				StringView view = inputBuffer.data();
-				this->AddMessage(view, graphics::Colour::CornflowerBlue);
-				this->ProcessInput(view);
+
+				if (view.size)
+				{
+					this->AddMessage(view, graphics::Colour::CornflowerBlue);
+					this->ProcessInput(view, true);
+				}
 			}
 			ImGui::PopItemWidth();
 		}
@@ -108,42 +217,82 @@ namespace vesp {
 			this->SetActive(!this->GetActive());
 	}
 
-	void Console::ProcessInput(StringView input)
+	void Console::ProcessInput(StringView input, bool topLevel)
 	{
 		Vector<String> tokens;
 		String currentToken;
 
 		bool parsingQuote = false;
 		size_t semicolonIndex = 0;
+		size_t nestingLevel = 0;
+		size_t nestingStartIndex = 0;
+
 		for (size_t i = 0; i < input.size; ++i)
 		{
 			auto c = input[i];
 
-			if (isspace(c) && !parsingQuote)
+			if (c == '(')
 			{
-				if (!currentToken.empty())
+				nestingLevel++;
+
+				if (nestingLevel == 1)
+					nestingStartIndex = i;
+				continue;
+			}
+			else if (c == ')')
+			{
+				if (nestingLevel == 1)
 				{
-					tokens.push_back(currentToken);
-					currentToken.clear();
+					auto offset = nestingStartIndex + 1;
+					auto commandView = StringView(input.data + offset, i - offset);
+
+					this->ProcessInput(commandView, false);
+					tokens.push_back(this->output_);
 				}
+				else if (nestingLevel == 0)
+				{
+					LogError("Too many right parenthesis in command");
+					return;
+				}
+
+				nestingLevel--;				
+				continue;
 			}
-			else if (c == '"')
+
+			if (nestingLevel == 0)
 			{
-				parsingQuote = !parsingQuote;
-			}
-			else if (c == ';' && !parsingQuote)
-			{
-				semicolonIndex = i;
-				break;
-			}
-			else
-			{
-				currentToken.push_back(c);
+				if (isspace(c) && !parsingQuote)
+				{
+					if (!currentToken.empty())
+					{
+						tokens.push_back(currentToken);
+						currentToken.clear();
+					}
+				}
+				else if (c == '"')
+				{
+					parsingQuote = !parsingQuote;
+				}
+				else if (c == ';' && !parsingQuote)
+				{
+					semicolonIndex = i;
+					break;
+				}
+				else
+				{
+					currentToken.push_back(c);
+				}
 			}
 		}
 
 		if (!currentToken.empty())
 			tokens.push_back(currentToken);
+
+		if (nestingLevel > 0)
+		{
+			LogError("Unmatched parenthesis in command");
+			return;
+		}
 
 		if (tokens.empty())
 			return;
@@ -156,16 +305,21 @@ namespace vesp {
 		if (args.size > 0)
 			args.data = &tokens[1];
 
+		this->output_.clear();
+
 		if (it != this->commands_.end())
 			it->second(args);
 		else
 			LogError("Unrecognized console command: `%s`", input);
 
+		if (topLevel && this->output_.size())
+			LogInfo("%.*s", this->output_.size(), this->output_.data());
+
 		if (semicolonIndex)
 		{
 			auto offset = semicolonIndex + 1;
 			auto view = StringView(input.data + offset, input.size - offset);
-			this->ProcessInput(view);
+			this->ProcessInput(view, topLevel);
 		}
 	}
 

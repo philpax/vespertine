@@ -33,11 +33,13 @@ namespace vesp {
 		void AddCommand(StringView command, CommandType fn);
 		void AddEmptyCommand(StringView command, EmptyCommandType fn);
 
+		void WriteOutput(StringView output);
+
 		void Draw();
 
 	private:
 		void ConsolePress(float state);
-		void ProcessInput(StringView input);
+		void ProcessInput(StringView input, bool topLevel);
 		
 		struct Message
 		{
@@ -47,6 +49,7 @@ namespace vesp {
 
 		Deque<Message> messages_;
 		UnorderedMap<String, CommandType> commands_;
+		String output_;
 
 		bool active_ = false;
 	};
