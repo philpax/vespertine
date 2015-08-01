@@ -93,7 +93,9 @@ namespace vesp {
 			if (ImGui::InputText("Input", inputBuffer.data(),
 				inputBuffer.size(), ImGuiInputTextFlags_EnterReturnsTrue))
 			{
-				this->ProcessInput(inputBuffer.data());
+				StringView view = inputBuffer.data();
+				this->AddMessage(view, graphics::Colour::CornflowerBlue);
+				this->ProcessInput(view);
 			}
 			ImGui::PopItemWidth();
 		}
