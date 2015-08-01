@@ -23,4 +23,9 @@ namespace vesp
 		ret[string.size] = '\0';
 		return ret;
 	}
+
+	bool operator==(StringView const lhs, StringView const rhs)
+	{
+		return memcmp(lhs.data, rhs.data, lhs.size) == 0;
+	}
 }

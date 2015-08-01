@@ -120,6 +120,8 @@ namespace vesp
 		{
 		}
 	};
+
+	bool operator==(StringView const lhs, StringView const rhs);
 	
 	String MakeString(RawStringPtr ptr);
 	String Concat(String const& string, StringView rhs);
