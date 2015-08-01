@@ -7,6 +7,21 @@ namespace vesp
 {
 	// Temporary implementation based on the standard library
 	// Will switch to more appropriate measures when necessary
+	FileSystem::File::File()
+	{
+	}
+
+	FileSystem::File::File(File&& rhs)
+	{
+		this->file_ = rhs.file_;
+		rhs.file_ = nullptr;
+	}
+
+	FileSystem::File::~File()
+	{
+		if (this->file_)
+			FileSystem::Get()->Close(*this);
+	}
 
 	void FileSystem::File::Write(ArrayView<U8> const array)
 	{
@@ -48,9 +63,10 @@ namespace vesp
 		return file;
 	}
 
-	void FileSystem::Close(FileSystem::File const& file)
+	void FileSystem::Close(FileSystem::File& file)
 	{
 		fclose(file.file_);
+		file.file_ = nullptr;
 	}
 
 	bool FileSystem::Exists(StringView fileName)
@@ -69,7 +85,5 @@ namespace vesp
 		output.clear();
 		output.resize(size);
 		file.Read(ArrayView<StringByte>(output));
-
-		this->Close(file);
 	}
 }

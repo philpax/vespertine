@@ -13,6 +13,11 @@ namespace vesp
 		{
 		public:
 			friend class FileSystem;
+			File();
+			File(File&& rhs);
+			~File();
+
+			File(File const&) = delete;
 
 			void Write(ArrayView<U8> const array);
 			U32 Read(ArrayView<U8> array);
@@ -32,7 +37,7 @@ namespace vesp
 			return this->Open(StringView::From(fileName), mode);
 		}
 
-		void Close(File const& file);
+		void Close(File& file);
 		bool Exists(StringView fileName);
 
 		void Read(StringView fileName, String& output);
