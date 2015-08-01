@@ -26,7 +26,7 @@ namespace vesp
 		graphics::Engine::Create(name);
 		graphics::Engine::Get()->Initialize();
 
-		Console::Get()->AddEmptyCommand(StringView::From("quit"), &vesp::Quit);
+		Console::Get()->AddEmptyCommand("quit", &vesp::Quit);
 
 		return true;
 	}

@@ -31,24 +31,10 @@ namespace vesp
 	using WideString = Vector<wchar_t>;
 
 	template <typename T>
-	struct ArrayView;
-
-	template <typename T>
-	struct ArrayViewBase
-	{
-	};
-
-	template <>
-	struct ArrayViewBase<StringByte>
-	{
-		static ArrayView<StringByte> From(StringByte const* str);
-	};
-
-	template <typename T>
-	struct ArrayView : public ArrayViewBase<T>
+	struct ArrayView
 	{
 		T* data = nullptr;
-		U32 size = 0;
+		size_t size = 0;
 
 		ArrayView()
 		{
@@ -60,7 +46,7 @@ namespace vesp
 			this->size = 1;
 		}
 
-		ArrayView(T* data, U32 size)
+		ArrayView(T* data, size_t size)
 		{
 			this->data = data;
 			this->size = size;
@@ -116,7 +102,24 @@ namespace vesp
 		}
 	};
 
-	typedef ArrayView<StringByte> StringView;
+	class StringView : public ArrayView<StringByte>
+	{
+	public:
+		StringView(RawStringPtr ptr)
+			: ArrayView(const_cast<StringByte*>(ptr), strlen(ptr))
+		{
+		}
+
+		StringView(Vector<StringByte>& v)
+			: ArrayView(v)
+		{
+		}
+
+		StringView(StringByte* data, size_t size)
+			: ArrayView(data, size)
+		{
+		}
+	};
 	
 	String MakeString(RawStringPtr ptr);
 	String Concat(String const& string, StringView rhs);

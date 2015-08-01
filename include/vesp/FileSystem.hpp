@@ -30,22 +30,10 @@ namespace vesp
 		};
 
 		File Open(StringView fileName, RawStringPtr mode);
-		// TEMPORARY SHIM: Need to upgrade compiler so we can implicitly
-		// convert from RawStringPtr to StringView
-		File Open(RawStringPtr fileName, RawStringPtr mode)
-		{
-			return this->Open(StringView::From(fileName), mode);
-		}
 
 		void Close(File& file);
 		bool Exists(StringView fileName);
 
 		void Read(StringView fileName, String& output);
-		// TEMPORARY SHIM: Need to upgrade compiler so we can implicitly
-		// convert from RawStringPtr to StringView
-		void Read(RawStringPtr fileName, String& output)
-		{
-			this->Read(StringView::From(fileName), output);
-		}
 	};
 }

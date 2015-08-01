@@ -15,8 +15,8 @@ namespace vesp {
 		InputManager::Get()->Subscribe(
 			Action::Console, this, &Console::ConsolePress);
 
-		this->AddCommand(StringView::From("test_parser"), 
-			[](ArrayView<String> args) 
+		this->AddCommand("test_parser",
+			[](ArrayView<String> args)
 			{
 				LogInfo("test_parser: %d args", args.size);
 				for (auto& s : args)
@@ -93,7 +93,7 @@ namespace vesp {
 			if (ImGui::InputText("Input", inputBuffer.data(),
 				inputBuffer.size(), ImGuiInputTextFlags_EnterReturnsTrue))
 			{
-				this->ProcessInput(StringView::From(inputBuffer.data()));
+				this->ProcessInput(inputBuffer.data());
 			}
 			ImGui::PopItemWidth();
 		}
