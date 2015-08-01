@@ -1,6 +1,7 @@
 #include "vesp/Console.hpp"
 #include "vesp/Containers.hpp"
 #include "vesp/Log.hpp"
+#include "vesp/Main.hpp"
 
 #include "vesp/graphics/ImGui.hpp"
 #include "vesp/graphics/Engine.hpp"
@@ -121,6 +122,46 @@ namespace vesp {
 				}
 
 				Console::Get()->WriteOutput(ToString(ret));
+			}
+		);
+
+		this->AddCommand("sin",
+			[](ArrayView<String> args)
+			{
+				if (args.size != 1)
+				{
+					LogError("Expected one argument");
+					return;
+				}
+
+				auto argString = ToCString(args[0]);
+				auto value = float(std::atof(argString.get()));
+
+				Console::Get()->WriteOutput(ToString(sin(value)));
+			}
+		);
+
+		this->AddCommand("cos",
+			[](ArrayView<String> args)
+			{
+				if (args.size != 1)
+				{
+					LogError("Expected one argument");
+					return;
+				}
+
+				auto argString = ToCString(args[0]);
+				auto value = float(std::atof(argString.get()));
+
+				Console::Get()->WriteOutput(ToString(cos(value)));
+			}
+		);
+
+		this->AddEmptyCommand("global-time",
+			[]
+			{
+				Console::Get()->WriteOutput(
+					ToString(GetGlobalTimer().GetSeconds()));
 			}
 		);
 	}
