@@ -522,6 +522,8 @@ namespace vesp { namespace graphics {
 
 				LogInfo("Loaded %.*s (index: %d)",
 					path.size(), path.data(), this->meshes_.size() - 1);
+
+				Console::Get()->WriteOutput(ToString(this->meshes_.size() - 1));
 			}
 		);
 
@@ -553,6 +555,8 @@ namespace vesp { namespace graphics {
 				this->meshes_[meshIndex].SetPosition(Vec3(x, y, z));
 				LogInfo("Moved mesh %d to (%f, %f, %f)", 
 					meshIndex, x, y, z);
+
+				Console::Get()->WriteOutput(ToString(meshIndex));
 			}
 		);
 
@@ -596,6 +600,8 @@ namespace vesp { namespace graphics {
 					this->meshes_[meshIndex].SetScale(float(scale));
 					LogInfo("Scaled mesh %d to %f", meshIndex, scale);
 				}
+
+				Console::Get()->WriteOutput(ToString(meshIndex));
 			}
 		);
 
