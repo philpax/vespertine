@@ -46,7 +46,7 @@ namespace vesp {
 
 	void Console::AddMessage(StringView text, graphics::Colour colour)
 	{
-		this->messages_.push_back({text.CopyToVec(), colour});
+		this->messages_.push_back({text.CopyToVector(), colour});
 
 		if (this->messages_.size() >= 1024)
 			this->messages_.pop_front();
@@ -54,7 +54,7 @@ namespace vesp {
 
 	void Console::AddCommand(StringView command, CommandType fn)
 	{
-		auto cmd = command.CopyToVec();
+		auto cmd = command.CopyToVector();
 		VESP_ASSERT(this->commands_.find(cmd) == this->commands_.end());
 		this->commands_[cmd] = fn;
 	}

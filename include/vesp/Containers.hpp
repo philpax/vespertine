@@ -96,9 +96,9 @@ namespace vesp
 			return this->begin() + this->size;
 		}
 
-		std::vector<T> CopyToVec()
+		Vector<T> CopyToVector()
 		{
-			return std::vector<T>(this->begin(), this->end());
+			return Vector<T>(this->begin(), this->end());
 		}
 	};
 

@@ -4,7 +4,7 @@ namespace vesp
 {	
 	String Concat(StringView lhs, StringView rhs)
 	{
-		String ret = lhs.CopyToVec();
+		String ret = lhs.CopyToVector();
 		ret.insert(ret.end(), rhs.begin(), rhs.end());
 		return ret;
 	}
