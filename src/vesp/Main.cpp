@@ -12,8 +12,12 @@
 
 namespace vesp
 {
+	util::Timer GlobalTimer;
+
 	bool Initialize(RawStringPtr name)
 	{
+		GlobalTimer.Restart();
+
 		FileSystem::Create();
 		InputManager::Create();
 
@@ -77,5 +81,10 @@ namespace vesp
 	void Quit()
 	{
 		Running = false;
+	}
+
+	util::Timer const& GetGlobalTimer()
+	{
+		return GlobalTimer;
 	}
 }
