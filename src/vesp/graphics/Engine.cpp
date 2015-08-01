@@ -520,7 +520,7 @@ namespace vesp { namespace graphics {
 				mesh.Create(vertices, topology);
 				this->meshes_.push_back(mesh);
 
-				LogInfo("Successfully loaded %.*s (index: %d)", 
+				LogInfo("Loaded %.*s (index: %d)",
 					path.size(), path.data(), this->meshes_.size() - 1);
 			}
 		);
@@ -540,7 +540,7 @@ namespace vesp { namespace graphics {
 				auto zString = ToCString(args[3]);
 
 				auto meshIndex = std::atoi(meshIndexString.get());
-				if (meshIndex < 0 || (size_t)meshIndex >= this->meshes_.size())
+				if (meshIndex < 0 || size_t(meshIndex) >= this->meshes_.size())
 				{
 					LogError("Invalid mesh index: %d", meshIndex);
 					return;
@@ -551,9 +551,51 @@ namespace vesp { namespace graphics {
 				auto z = std::atof(zString.get());
 
 				this->meshes_[meshIndex].SetPosition(Vec3(x, y, z));
-
-				LogInfo("Successfully moved mesh %d to (%f, %f, %f)", 
+				LogInfo("Moved mesh %d to (%f, %f, %f)", 
 					meshIndex, x, y, z);
+			}
+		);
+
+		Console::Get()->AddCommand("mesh-set-scale",
+			[&](ArrayView<String> args)
+			{
+				if (args.size < 2)
+				{
+					LogError("mesh-set-scale mesh_index uniform|[x y z]");
+					return;
+				}
+
+				auto meshIndexString = ToCString(args[0]);
+
+				auto meshIndex = std::atoi(meshIndexString.get());
+				if (meshIndex < 0 || size_t(meshIndex) >= this->meshes_.size())
+				{
+					LogError("Invalid mesh index: %d", meshIndex);
+					return;
+				}
+
+				if (args.size >= 4)
+				{
+					auto xString = ToCString(args[1]);
+					auto yString = ToCString(args[2]);
+					auto zString = ToCString(args[3]);
+
+					auto x = std::atof(xString.get());
+					auto y = std::atof(yString.get());
+					auto z = std::atof(zString.get());
+
+					this->meshes_[meshIndex].SetScale(Vec3(x, y, z));
+					LogInfo("Scaled mesh %d to (%f, %f, %f)", 
+						meshIndex, x, y, z);
+				}
+				else
+				{
+					auto scaleString = ToCString(args[1]);
+					auto scale = std::atof(scaleString.get());
+
+					this->meshes_[meshIndex].SetScale(float(scale));
+					LogInfo("Scaled mesh %d to %f", meshIndex, scale);
+				}
 			}
 		);
 
