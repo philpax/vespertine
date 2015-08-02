@@ -25,6 +25,13 @@ namespace vesp {
 			}
 		);
 
+		this->AddCommand("echo",
+			[](ArrayView<String> args)
+			{
+				Console::Get()->WriteOutput(Join(args));
+			}
+		);
+
 		this->AddCommand("add",
 			[](ArrayView<String> args)
 			{
