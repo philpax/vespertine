@@ -3,6 +3,7 @@
 #include "vesp/util/GlobalSystem.hpp"
 #include "vesp/Types.hpp"
 #include "vesp/Containers.hpp"
+#include "vesp/String.hpp"
 
 namespace vesp
 {

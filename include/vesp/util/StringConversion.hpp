@@ -3,6 +3,7 @@
 #include <Windows.h>
 
 #include "vesp/Containers.hpp"
+#include "vesp/String.hpp"
 
 namespace vesp { namespace util {
 	inline String WideToMulti(wchar_t const* str, uint32_t cp = CP_ACP)

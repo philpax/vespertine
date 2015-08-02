@@ -6,6 +6,7 @@
 
 #include "vesp/InputManager.hpp"
 #include "vesp/Types.hpp"
+#include "vesp/String.hpp"
 
 #include <functional>
 
