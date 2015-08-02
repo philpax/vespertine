@@ -285,10 +285,11 @@ namespace vesp {
 		size_t semicolonIndex = 0;
 		size_t nestingLevel = 0;
 		size_t nestingStartIndex = 0;
+		size_t quasiquoteLevel = 0;
 
 		auto lexToken = [&](StringByte c)
 		{
-			if (isspace(c) && !parsingQuote)
+			if (isspace(c) && !parsingQuote && !quasiquoteLevel)
 			{
 				if (!currentToken.empty())
 				{
@@ -296,13 +297,22 @@ namespace vesp {
 					currentToken.clear();
 				}
 			}
-			else if (c == '"')
+			else if (c == '"' && !quasiquoteLevel)
 			{
 				parsingQuote = !parsingQuote;
 			}
 			else
 			{
-				currentToken.push_back(c);
+				if (c == ']')
+					quasiquoteLevel--;
+
+				// If quasiquote level > 0, emit everything.
+				// Otherwise, emit everything that isn't a quasiquote
+				if (quasiquoteLevel > 0 || (c != '[' && c != ']'))
+					currentToken.push_back(c);
+
+				if (c == '[')
+					quasiquoteLevel++;
 			}
 		};
 
@@ -359,6 +369,12 @@ namespace vesp {
 		if (nestingLevel > 0)
 		{
 			LogError("Unmatched parenthesis in command");
+			return;
+		}
+
+		if (quasiquoteLevel > 0)
+		{
+			LogError("Unmatched quasiquote in command");
 			return;
 		}
 
