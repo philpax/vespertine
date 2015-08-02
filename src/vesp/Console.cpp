@@ -32,6 +32,29 @@ namespace vesp {
 			}
 		);
 
+		this->AddMacro("for",
+			[](ArrayView<String> args, bool topLevel)
+			{
+				if (args.size < 3)
+				{
+					LogError("Expected at least three arguments");
+					return;
+				}
+
+				auto startIndex = ToS32(args[0]);
+				auto endIndex = ToS32(args[1]);
+
+				if (startIndex > endIndex)
+				{
+					LogError("Start index must be lower than end index");
+					return;
+				}
+
+				for (auto i = startIndex; i < endIndex; ++i)
+					Console::Get()->Execute(args[2], topLevel);
+			}
+		);
+
 		this->AddCommand("add",
 			[](ArrayView<String> args)
 			{
@@ -211,9 +234,18 @@ namespace vesp {
 			this->messages_.pop_front();
 	}
 
+	void Console::AddMacro(StringView command, MacroType fn)
+	{
+		auto cmd = command.CopyToVector();
+		VESP_ASSERT(this->macros_.find(cmd) == this->macros_.end());
+		VESP_ASSERT(this->commands_.find(cmd) == this->commands_.end());
+		this->macros_[cmd] = fn;
+	}
+
 	void Console::AddCommand(StringView command, CommandType fn)
 	{
 		auto cmd = command.CopyToVector();
+		VESP_ASSERT(this->macros_.find(cmd) == this->macros_.end());
 		VESP_ASSERT(this->commands_.find(cmd) == this->commands_.end());
 		this->commands_[cmd] = fn;
 	}
@@ -381,8 +413,6 @@ namespace vesp {
 		if (tokens.empty())
 			return;
 
-		auto it = this->commands_.find(tokens.front());
-
 		ArrayView<String> args;
 		args.size = tokens.size() - 1;
 
@@ -391,8 +421,12 @@ namespace vesp {
 
 		this->output_.clear();
 
-		if (it != this->commands_.end())
-			it->second(args);
+		auto commandIt = this->commands_.find(tokens.front());
+		auto macroIt = this->macros_.find(tokens.front());
+		if (commandIt != this->commands_.end())
+			commandIt->second(args);
+		else if (macroIt != this->macros_.end())
+			macroIt->second(args, topLevel);
 		else
 			LogError("Unrecognized console command: `%s`", input);
 
