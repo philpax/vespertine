@@ -35,7 +35,7 @@ namespace vesp
 		return ret;
 	}
 
-	String ToString(int value)
+	String ToString(S32 value)
 	{
 		String ret;
 		auto s = std::to_string(value);
@@ -43,12 +43,29 @@ namespace vesp
 		return ret;
 	}
 
-	String ToString(float value)
+	String ToString(F32 value)
 	{
 		String ret;
 		auto s = std::to_string(value);
 		ret.insert(ret.begin(), s.begin(), s.end());
 		return ret;
+	}
+
+	S32 ToS32(StringView string)
+	{
+		auto cString = ToCString(string);
+		return std::atoi(cString.get());
+	}
+
+	F64 ToF64(StringView string)
+	{
+		auto cString = ToCString(string);
+		return std::atof(cString.get());
+	}
+
+	F32 ToF32(StringView string)
+	{
+		return float(ToF64(string));
 	}
 
 	std::unique_ptr<StringByte[]> ToCString(StringView string)

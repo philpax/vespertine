@@ -135,9 +135,15 @@ namespace vesp
 	
 	String Concat(StringView lhs, StringView rhs);
 	String Join(ArrayView<String> strings, StringByte sep = ' ');
+
 	String ToString(size_t value);
-	String ToString(int value);
-	String ToString(float value);
+	String ToString(S32 value);
+	String ToString(F32 value);
+
+	S32 ToS32(StringView string);
+	F64 ToF64(StringView string);
+	F32 ToF32(StringView string);
+
 	std::unique_ptr<StringByte[]> ToCString(StringView string);
 }
 

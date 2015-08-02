@@ -44,8 +44,7 @@ namespace vesp {
 				float ret = 0.0f;
 				for (size_t i = 0; i < args.size; ++i)
 				{
-					auto argString = ToCString(args[i]);
-					auto value = float(std::atof(argString.get()));
+					auto value = ToF32(args[i]);
 
 					if (i == 0)
 						ret = value;
@@ -69,8 +68,7 @@ namespace vesp {
 				float ret = 0.0f;
 				for (size_t i = 0; i < args.size; ++i)
 				{
-					auto argString = ToCString(args[i]);
-					auto value = float(std::atof(argString.get()));
+					auto value = ToF32(args[i]);
 
 					if (i == 0)
 						ret = value;
@@ -94,8 +92,7 @@ namespace vesp {
 				float ret = 0.0f;
 				for (size_t i = 0; i < args.size; ++i)
 				{
-					auto argString = ToCString(args[i]);
-					auto value = float(std::atof(argString.get()));
+					auto value = ToF32(args[i]);
 
 					if (i == 0)
 						ret = value;
@@ -119,8 +116,7 @@ namespace vesp {
 				float ret = 0.0f;
 				for (size_t i = 0; i < args.size; ++i)
 				{
-					auto argString = ToCString(args[i]);
-					auto value = float(std::atof(argString.get()));
+					auto value = ToF32(args[i]);
 
 					if (i == 0)
 						ret = value;
@@ -141,10 +137,7 @@ namespace vesp {
 					return;
 				}
 
-				auto argString = ToCString(args[0]);
-				auto value = float(std::atof(argString.get()));
-
-				Console::Get()->WriteOutput(ToString(sin(value)));
+				Console::Get()->WriteOutput(ToString(sin(ToF32(args[0]))));
 			}
 		);
 
@@ -157,10 +150,7 @@ namespace vesp {
 					return;
 				}
 
-				auto argString = ToCString(args[0]);
-				auto value = float(std::atof(argString.get()));
-
-				Console::Get()->WriteOutput(ToString(cos(value)));
+				Console::Get()->WriteOutput(ToString(cos(ToF32(args[0]))));
 			}
 		);
 
@@ -173,16 +163,15 @@ namespace vesp {
 					return;
 				}
 
-				auto argString = ToCString(args[0]);
-				auto value = std::atoi(argString.get());
+				auto index = ToS32(args[0]);
 				
-				if (value < 0 || size_t(value) >= args.size - 1)
+				if (index < 0 || size_t(index) >= args.size - 1)
 				{
 					LogError("Invalid index");
 					return;
 				}
 
-				Console::Get()->WriteOutput(args[value + 1]);
+				Console::Get()->WriteOutput(args[index + 1]);
 			}
 		);
 

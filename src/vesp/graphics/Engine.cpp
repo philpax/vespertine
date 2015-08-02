@@ -536,21 +536,16 @@ namespace vesp { namespace graphics {
 					return;
 				}
 
-				auto meshIndexString = ToCString(args[0]);
-				auto xString = ToCString(args[1]);
-				auto yString = ToCString(args[2]);
-				auto zString = ToCString(args[3]);
-
-				auto meshIndex = std::atoi(meshIndexString.get());
+				auto meshIndex = ToS32(args[0]);
 				if (meshIndex < 0 || size_t(meshIndex) >= this->meshes_.size())
 				{
 					LogError("Invalid mesh index: %d", meshIndex);
 					return;
 				}
 
-				auto x = std::atof(xString.get());
-				auto y = std::atof(yString.get());
-				auto z = std::atof(zString.get());
+				auto x = ToF32(args[1]);
+				auto y = ToF32(args[2]);
+				auto z = ToF32(args[3]);
 
 				this->meshes_[meshIndex].SetPosition(Vec3(x, y, z));
 				LogInfo("Moved mesh %d to (%f, %f, %f)", 
@@ -569,9 +564,7 @@ namespace vesp { namespace graphics {
 					return;
 				}
 
-				auto meshIndexString = ToCString(args[0]);
-
-				auto meshIndex = std::atoi(meshIndexString.get());
+				auto meshIndex = ToS32(args[0]);
 				if (meshIndex < 0 || size_t(meshIndex) >= this->meshes_.size())
 				{
 					LogError("Invalid mesh index: %d", meshIndex);
@@ -580,13 +573,9 @@ namespace vesp { namespace graphics {
 
 				if (args.size >= 4)
 				{
-					auto xString = ToCString(args[1]);
-					auto yString = ToCString(args[2]);
-					auto zString = ToCString(args[3]);
-
-					auto x = std::atof(xString.get());
-					auto y = std::atof(yString.get());
-					auto z = std::atof(zString.get());
+					auto x = ToF32(args[1]);
+					auto y = ToF32(args[2]);
+					auto z = ToF32(args[3]);
 
 					this->meshes_[meshIndex].SetScale(Vec3(x, y, z));
 					LogInfo("Scaled mesh %d to (%f, %f, %f)", 
@@ -594,8 +583,7 @@ namespace vesp { namespace graphics {
 				}
 				else
 				{
-					auto scaleString = ToCString(args[1]);
-					auto scale = std::atof(scaleString.get());
+					auto scale = ToF32(args[1]);
 
 					this->meshes_[meshIndex].SetScale(float(scale));
 					LogInfo("Scaled mesh %d to %f", meshIndex, scale);
