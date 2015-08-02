@@ -157,6 +157,28 @@ namespace vesp {
 			}
 		);
 
+		this->AddCommand("index",
+			[](ArrayView<String> args)
+			{
+				if (args.size < 2)
+				{
+					LogError("Expected at least two arguments");
+					return;
+				}
+
+				auto argString = ToCString(args[0]);
+				auto value = std::atoi(argString.get());
+				
+				if (value < 0 || size_t(value) >= args.size - 1)
+				{
+					LogError("Invalid index");
+					return;
+				}
+
+				Console::Get()->WriteOutput(args[value + 1]);
+			}
+		);
+
 		this->AddEmptyCommand("global-time",
 			[]
 			{
