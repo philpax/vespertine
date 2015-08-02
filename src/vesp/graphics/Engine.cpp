@@ -593,6 +593,56 @@ namespace vesp { namespace graphics {
 			}
 		);
 
+		Console::Get()->AddCommand("mesh-get-position",
+			[&](ArrayView<String> args)
+			{
+				if (args.size < 1)
+				{
+					LogError("mesh-get-position mesh_index");
+					return;
+				}
+
+				auto meshIndex = ToS32(args[0]);
+				if (meshIndex < 0 || size_t(meshIndex) >= this->meshes_.size())
+				{
+					LogError("Invalid mesh index: %d", meshIndex);
+					return;
+				}
+
+				auto v = this->meshes_[meshIndex].GetPosition();
+				Vector<String> strings;
+				for (size_t i = 0; i < 3; ++i)
+					strings.push_back(ToString(v[i]));
+
+				Console::Get()->WriteOutput(Join(strings));
+			}
+		);
+
+		Console::Get()->AddCommand("mesh-get-scale",
+			[&](ArrayView<String> args)
+			{
+				if (args.size < 1)
+				{
+					LogError("mesh-get-scale mesh_index");
+					return;
+				}
+
+				auto meshIndex = ToS32(args[0]);
+				if (meshIndex < 0 || size_t(meshIndex) >= this->meshes_.size())
+				{
+					LogError("Invalid mesh index: %d", meshIndex);
+					return;
+				}
+
+				auto v = this->meshes_[meshIndex].GetScale();
+				Vector<String> strings;
+				for (size_t i = 0; i < 3; ++i)
+					strings.push_back(ToString(v[i]));
+
+				Console::Get()->WriteOutput(Join(strings));
+			}
+		);
+
 		Vertex screenVertices[] =
 		{
 			{Vec3(1, -1, 0), Vec3(0, 0, -1), Vec2(1, 1)},
