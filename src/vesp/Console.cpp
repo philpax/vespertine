@@ -339,8 +339,8 @@ namespace vesp {
 					quasiquoteLevel--;
 
 				// If quasiquote level > 0, emit everything.
-				// Otherwise, emit everything that isn't a quasiquote
-				if (quasiquoteLevel > 0 || (c != '[' && c != ']'))
+				// Otherwise, emit everything that isn't a quasiquote if we're not in a quote
+				if (quasiquoteLevel > 0 || parsingQuote || (c != '[' && c != ']'))
 					currentToken.push_back(c);
 
 				if (c == '[')
