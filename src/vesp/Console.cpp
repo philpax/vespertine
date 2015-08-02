@@ -262,7 +262,7 @@ namespace vesp {
 				if (view.size)
 				{
 					this->AddMessage(view, graphics::Colour::CornflowerBlue);
-					this->ProcessInput(view, true);
+					this->Execute(view, true);
 				}
 			}
 			ImGui::PopItemWidth();
@@ -276,7 +276,7 @@ namespace vesp {
 			this->SetActive(!this->GetActive());
 	}
 
-	void Console::ProcessInput(StringView input, bool topLevel)
+	void Console::Execute(StringView input, bool topLevel)
 	{
 		Vector<String> tokens;
 		String currentToken;
@@ -335,7 +335,7 @@ namespace vesp {
 					auto offset = nestingStartIndex + 1;
 					auto commandView = StringView(input.data + offset, i - offset);
 
-					this->ProcessInput(commandView, false);
+					this->Execute(commandView, false);
 					for (auto c : this->output_)
 						lexToken(c);
 				}
@@ -403,7 +403,7 @@ namespace vesp {
 		{
 			auto offset = semicolonIndex + 1;
 			auto view = StringView(input.data + offset, input.size - offset);
-			this->ProcessInput(view, topLevel);
+			this->Execute(view, topLevel);
 		}
 	}
 

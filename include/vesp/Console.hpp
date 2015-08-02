@@ -39,7 +39,7 @@ namespace vesp {
 
 	private:
 		void ConsolePress(float state);
-		void ProcessInput(StringView input, bool topLevel);
+		void Execute(StringView input, bool topLevel);
 		
 		struct Message
 		{
