@@ -297,6 +297,26 @@ namespace vesp {
 		size_t nestingLevel = 0;
 		size_t nestingStartIndex = 0;
 
+		auto lexToken = [&](StringByte c)
+		{
+			if (isspace(c) && !parsingQuote)
+			{
+				if (!currentToken.empty())
+				{
+					tokens.push_back(currentToken);
+					currentToken.clear();
+				}
+			}
+			else if (c == '"')
+			{
+				parsingQuote = !parsingQuote;
+			}
+			else
+			{
+				currentToken.push_back(c);
+			}
+		};
+
 		for (size_t i = 0; i < input.size; ++i)
 		{
 			auto c = input[i];
@@ -317,7 +337,8 @@ namespace vesp {
 					auto commandView = StringView(input.data + offset, i - offset);
 
 					this->ProcessInput(commandView, false);
-					tokens.push_back(this->output_);
+					for (auto c : this->output_)
+						lexToken(c);
 				}
 				else if (nestingLevel == 0)
 				{
@@ -331,26 +352,14 @@ namespace vesp {
 
 			if (nestingLevel == 0)
 			{
-				if (isspace(c) && !parsingQuote)
-				{
-					if (!currentToken.empty())
-					{
-						tokens.push_back(currentToken);
-						currentToken.clear();
-					}
-				}
-				else if (c == '"')
-				{
-					parsingQuote = !parsingQuote;
-				}
-				else if (c == ';' && !parsingQuote)
+				if (c == ';' && !parsingQuote)
 				{
 					semicolonIndex = i;
 					break;
 				}
 				else
 				{
-					currentToken.push_back(c);
+					lexToken(c);
 				}
 			}
 		}
