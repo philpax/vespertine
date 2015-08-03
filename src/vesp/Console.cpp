@@ -198,6 +198,19 @@ namespace vesp {
 			}
 		);
 
+		this->AddCommand("string-replace",
+			[](ArrayView<String> args)
+			{
+				if (args.size < 3)
+				{
+					LogError("Expected at least two arguments");
+					return;
+				}
+
+				Console::Get()->WriteOutput(Replace(args[0], args[1], args[2]));
+			}
+		);
+
 		this->AddEmptyCommand("global-time",
 			[]
 			{

@@ -31,6 +31,7 @@ namespace vesp
 	
 	String Concat(StringView lhs, StringView rhs);
 	String Join(ArrayView<String> strings, StringByte sep = ' ');
+	String Replace(StringView str, StringView toReplace, StringView replacement);
 
 	String ToString(size_t value);
 	String ToString(S32 value);

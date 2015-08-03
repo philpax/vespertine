@@ -51,6 +51,27 @@ namespace vesp
 		return ret;
 	}
 
+	String Replace(StringView str, StringView toReplace, StringView replacement)
+	{
+		String ret;
+
+		auto maxSize = str.size - toReplace.size;
+		for (size_t i = 0; i < str.size;)
+		{
+			if (i < maxSize && memcmp(&str[i], toReplace.data, toReplace.size) == 0)
+			{
+				ret.insert(ret.end(), replacement.begin(), replacement.end());
+				i += toReplace.size;
+			}
+			else
+			{
+				ret.push_back(str[i]);
+				++i;
+			}
+		}
+		return ret;
+	}
+
 	S32 ToS32(StringView string)
 	{
 		auto cString = ToCString(string);
