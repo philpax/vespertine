@@ -51,7 +51,11 @@ namespace vesp {
 				}
 
 				for (auto i = startIndex; i < endIndex; ++i)
-					Console::Get()->Execute(args[2], topLevel);
+				{
+					auto indexString = ToString(i);
+					auto executionStr = Replace(args[2], "$i", indexString);
+					Console::Get()->Execute(executionStr, topLevel);
+				}
 			}
 		);
 
