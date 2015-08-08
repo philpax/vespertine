@@ -23,6 +23,13 @@ namespace vesp
 			FileSystem::Get()->Close(*this);
 	}
 
+	FileSystem::File& FileSystem::File::operator=(File&& rhs)
+	{
+		this->file_ = rhs.file_;
+		rhs.file_ = nullptr;
+		return *this;
+	}
+
 	void FileSystem::File::Write(ArrayView<U8> const array)
 	{
 		fwrite(array.data, 1, array.size, this->file_);

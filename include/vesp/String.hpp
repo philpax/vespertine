@@ -16,15 +16,7 @@ namespace vesp
 		{
 		}
 
-		StringView(Vector<StringByte>& v)
-			: ArrayView(v)
-		{
-		}
-
-		StringView(StringByte* data, size_t size)
-			: ArrayView(data, size)
-		{
-		}
+		using ArrayView::ArrayView;
 	};
 
 	bool operator==(StringView const lhs, StringView const rhs);

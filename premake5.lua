@@ -19,5 +19,8 @@ project "Vespertine"
 		defines { "NDEBUG" }
 		optimize "On"
 
+	configuration { "vs*" }
+		buildoptions { "/EHsc" }
+
 	configuration { "gmake" }
 		buildoptions { "-std=c++11" }

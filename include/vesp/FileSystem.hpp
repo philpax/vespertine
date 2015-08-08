@@ -20,6 +20,8 @@ namespace vesp
 
 			File(File const&) = delete;
 
+			File& operator=(File&& rhs);
+
 			void Write(ArrayView<U8> const array);
 			U32 Read(ArrayView<U8> array);
 			U32 Size();

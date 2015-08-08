@@ -335,7 +335,7 @@ namespace vesp { namespace graphics {
 		D3D11_SHADER_RESOURCE_VIEW_DESC diffuseSRVDesc;
 		diffuseSRVDesc.Format = diffuseTextureDesc.Format;
 		diffuseSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-		diffuseSRVDesc.Texture2D = {0, -1};
+		diffuseSRVDesc.Texture2D = {0, static_cast<UINT>(-1)};
 
 		hr = Device->CreateShaderResourceView(
 			diffuseTexture, &diffuseSRVDesc, &this->renderTargetResourceViews_[0]);
@@ -365,7 +365,7 @@ namespace vesp { namespace graphics {
 		D3D11_SHADER_RESOURCE_VIEW_DESC normalSRVDesc;
 		normalSRVDesc.Format = normalTextureDesc.Format;
 		normalSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-		normalSRVDesc.Texture2D = {0, -1};
+		normalSRVDesc.Texture2D = {0, static_cast<UINT>(-1)};
 
 		hr = Device->CreateShaderResourceView(
 			normalTexture, &normalSRVDesc, &this->renderTargetResourceViews_[1]);
