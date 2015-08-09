@@ -96,6 +96,11 @@ namespace vesp { namespace graphics {
 		ImGui_ImplDX11_NewFrame();
 
 		F32 clearColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+		ID3D11ShaderResourceView* nullViews[
+			D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT] = { 0 };
+		ImmediateContext->PSSetShaderResources(
+			0, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT, nullViews);
+
 		for (auto& rt : this->renderTargetViews_)
 			ImmediateContext->ClearRenderTargetView(rt, clearColour);
 
@@ -126,7 +131,7 @@ namespace vesp { namespace graphics {
 
 		// Activate backbuffer
 		ImmediateContext->OMSetRenderTargets(
-			1, &this->renderTargetViews_[0].p, this->depthStencilView_);
+			1, &this->renderTargetViews_[0].p, nullptr);
 		
 		ImmediateContext->PSSetShaderResources(0, this->renderTargetResourceViews_.size(), 
 			reinterpret_cast<ID3D11ShaderResourceView**>(this->renderTargetResourceViews_.data()));
@@ -171,21 +176,24 @@ namespace vesp { namespace graphics {
 			ImGui::Text("Framerate: %.01f FPS", frameRate);
 
 			auto aspectRatio = this->window_->GetAspectRatio();
-			auto guiWidth = ImGui::GetWindowWidth();
-			auto rtSize = ImVec2(guiWidth, guiWidth / aspectRatio);
 
 			ImGui::Separator();
-
 			auto drawRenderTarget = [&](char const* name, size_t index)
 			{
-				ImGui::BeginGroup();
 				ImGui::Text(name);
+				ImGui::BeginGroup();
+				auto guiWidth = ImGui::GetWindowWidth() / ImGui::GetColumnsCount();
+				auto rtSize = ImVec2(guiWidth, guiWidth / aspectRatio);
 				ImGui::Image(this->renderTargetResourceViews_[index].p, rtSize);
 				ImGui::EndGroup();
+				ImGui::NextColumn();
 			};
 
+			ImGui::Columns(3, 0, false);
 			drawRenderTarget("Diffuse", 0);
 			drawRenderTarget("View-space normals", 1);
+			drawRenderTarget("Depth buffer", 2);
+			ImGui::Columns();
 		}
 		ImGui::End();
 
@@ -284,18 +292,35 @@ namespace vesp { namespace graphics {
 		depthTextureDesc.Height = size.y;
 		depthTextureDesc.MipLevels = 1;
 		depthTextureDesc.ArraySize = 1;
-		depthTextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		depthTextureDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
 		depthTextureDesc.SampleDesc.Count = 1;
 		depthTextureDesc.SampleDesc.Quality = 0;
 		depthTextureDesc.Usage = D3D11_USAGE_DEFAULT;
-		depthTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+		depthTextureDesc.BindFlags = 
+			D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
 		depthTextureDesc.CPUAccessFlags = 0;
 		depthTextureDesc.MiscFlags = 0;
 		hr = Device->CreateTexture2D(&depthTextureDesc, NULL, &depthTexture);
 		VESP_ENFORCE(SUCCEEDED(hr));
 
 		// Create depth stencil view
-		hr = Device->CreateDepthStencilView(depthTexture, nullptr, &this->depthStencilView_);
+		D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
+		depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+		depthStencilViewDesc.Texture2D.MipSlice = 0;
+		depthStencilViewDesc.Flags = 0;
+		hr = Device->CreateDepthStencilView(
+			depthTexture, &depthStencilViewDesc, &this->depthStencilView_);
+		VESP_ENFORCE(SUCCEEDED(hr));
+
+		// Create depth buffer shader resource view
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+		srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		srvDesc.Texture2D = { 0, static_cast<UINT>(-1) };
+
+		hr = Device->CreateShaderResourceView(
+			depthTexture, &srvDesc, &this->renderTargetResourceViews_[2]);
 		VESP_ENFORCE(SUCCEEDED(hr));
 	}
 

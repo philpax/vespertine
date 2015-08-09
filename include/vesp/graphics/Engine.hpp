@@ -64,7 +64,8 @@ namespace vesp { namespace graphics {
 		Array<CComPtr<ID3D11RenderTargetView>, 3> renderTargetViews_;
 		// 0 - diffuse
 		// 1 - normals
-		Array<CComPtr<ID3D11ShaderResourceView>, 2> renderTargetResourceViews_;
+		// 2 - depth buffer
+		Array<CComPtr<ID3D11ShaderResourceView>, 3> renderTargetResourceViews_;
 		CComPtr<ID3D11DepthStencilState> enabledDepthStencilState_;
 		CComPtr<ID3D11DepthStencilState> disabledDepthStencilState_;
 		CComPtr<ID3D11DepthStencilView> depthStencilView_;
