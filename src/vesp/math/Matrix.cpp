@@ -25,8 +25,8 @@ namespace vesp { namespace math {
 	{
 		Mat4 result;
 
-		result = glm::scale(result, scale);
 		result = glm::translate(result, position);
+		result = glm::scale(result, scale);
 		result *= glm::mat4_cast(angle);
 
 		return result;
