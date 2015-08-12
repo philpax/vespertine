@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/fwd.hpp>
+#include <memory>
 
 namespace vesp
 {
@@ -41,4 +42,7 @@ namespace vesp
 
 	// Quaternion types
 	typedef glm::quat			Quat;
+
+	template <typename T>
+	using UniquePtr = std::unique_ptr<T>;
 }
