@@ -7,6 +7,9 @@
 
 namespace vesp { namespace graphics {
 
+	class VertexShader;
+	class PixelShader;
+
 	class Mesh
 	{
 	public:
@@ -30,6 +33,9 @@ namespace vesp { namespace graphics {
 		void SetTopology(D3D11_PRIMITIVE_TOPOLOGY topology);
 		D3D11_PRIMITIVE_TOPOLOGY GetTopology();
 
+		void SetVertexShader(VertexShader* shader);
+		void SetPixelShader(PixelShader* shader);
+
 		void Draw();
 
 	private:
@@ -41,6 +47,9 @@ namespace vesp { namespace graphics {
 			Mat4 worldView;
 			Mat4 worldViewInverseTranspose;
 		};
+		
+		VertexShader* vertexShader_ = nullptr;
+		PixelShader* pixelShader_ = nullptr;
 
 		VertexBuffer vertexBuffer_;
 		ConstantBuffer<PerMeshConstants> perMeshConstantBuffer_;

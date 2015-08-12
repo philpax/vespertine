@@ -2,6 +2,9 @@
 #include "vesp/graphics/Mesh.hpp"
 #include "vesp/graphics/Engine.hpp"
 #include "vesp/graphics/Camera.hpp"
+#include "vesp/graphics/Shader.hpp"
+
+#include "vesp/Assert.hpp"
 
 namespace vesp { namespace graphics {
 
@@ -76,8 +79,24 @@ namespace vesp { namespace graphics {
 		return this->topology_;
 	}
 
+	void Mesh::SetVertexShader(VertexShader* shader)
+	{
+		this->vertexShader_ = shader;
+	}
+
+	void Mesh::SetPixelShader(PixelShader* shader)
+	{
+		this->pixelShader_ = shader;
+	}
+
 	void Mesh::Draw()
 	{
+		VESP_ASSERT(this->vertexShader_);
+		VESP_ASSERT(this->pixelShader_);
+
+		this->vertexShader_->Activate();
+		this->pixelShader_->Activate();
+
 		this->UpdateMatrix();
 		this->vertexBuffer_.Use(0);
 		this->perMeshConstantBuffer_.UseVS(1);

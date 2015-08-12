@@ -124,8 +124,6 @@ namespace vesp { namespace graphics {
 		auto freeCamera = static_cast<FreeCamera*>(this->camera_.get());
 		freeCamera->Update();
 
-		vertexShader.Activate();
-		gridPixelShader.Activate();
 		for (auto& mesh : this->meshes_)
 			mesh.Draw();
 
@@ -138,8 +136,6 @@ namespace vesp { namespace graphics {
 
 		// Draw composite view to backbuffer
 		this->SetDepthEnabled(false);
-		identityVertexShader.Activate();
-		compositePixelShader.Activate();
 		screenMesh.SetScale(1.0f);
 		screenMesh.SetPosition(Vec3(0.0f, 0.0f, 0.0f));
 		screenMesh.Draw();
@@ -495,6 +491,8 @@ namespace vesp { namespace graphics {
 
 		Mesh floorMesh;
 		floorMesh.Create(floorVertices);
+		floorMesh.SetVertexShader(&vertexShader);
+		floorMesh.SetPixelShader(&gridPixelShader);
 		this->meshes_.push_back(floorMesh);
 
 		// Add commands to load and modify meshes
@@ -680,6 +678,8 @@ namespace vesp { namespace graphics {
 		};
 
 		screenMesh.Create(screenVertices);
+		screenMesh.SetVertexShader(&identityVertexShader);
+		screenMesh.SetPixelShader(&compositePixelShader);
 	}
 
 	void Engine::DestroyDepthStencil()
