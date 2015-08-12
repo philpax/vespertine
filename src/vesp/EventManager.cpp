@@ -1,4 +1,6 @@
 #include "vesp/EventManager.hpp"
+#include "vesp/String.hpp"
+
 #include "vesp/util/MurmurHash.hpp"
 
 namespace vesp

@@ -1,5 +1,7 @@
 #include "vesp/util/MurmurHash.hpp"
 
+#include "vesp/String.hpp"
+
 #include <cstring>
 
 #if defined(_MSC_VER)
@@ -147,9 +149,9 @@ namespace vesp { namespace util {
 		return result;
 	}
 
-	U32 MurmurHash(RawStringPtr key, U32 seed)
+	U32 MurmurHash(StringView const key, U32 seed)
 	{
-		return MurmurHash(key, strlen(key), seed);
+		return MurmurHash(key.data, key.size, seed);
 	}
 
 } }

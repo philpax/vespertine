@@ -38,12 +38,20 @@ namespace vesp
 
 namespace std 
 {
+	template <> struct hash<vesp::StringView>
+	{
+		size_t operator()(vesp::StringView const& s) const
+		{
+			return vesp::util::MurmurHash(s);
+		}
+	};
+
 	template <> struct hash<vesp::String>
 	{
 		size_t operator()(vesp::String const& s) const
 		{
 			return vesp::util::MurmurHash(
-				reinterpret_cast<void const*>(s.data()), s.size());
+				const_cast<vesp::String&>(s));
 		}
 	};
 }
