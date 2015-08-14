@@ -11,12 +11,12 @@
 namespace vesp { namespace graphics {
 
 	// Shader
-	Shader::Shader(RawStringPtr name)
+	Shader::Shader(StringView const name)
 	{
-		strcpy_s(this->name_, name);
+		std::copy(name.cbegin(), name.cend(), this->name_);
 	}
 
-	void* Shader::Compile(RawStringPtr shaderSource)
+	void* Shader::Compile(StringView const shaderSource)
 	{
 		HRESULT hr = S_OK;
 		const bool DebuggingEnabled = false;
@@ -45,7 +45,7 @@ namespace vesp { namespace graphics {
 		ID3DBlob* output = nullptr;
 
 		hr = D3DCompile(
-			shaderSource, strlen(shaderSource), 
+			shaderSource.data, shaderSource.size, 
 			this->name_, nullptr, nullptr, "main", target, 
 			shaderFlags, 0, &output, &errorBlob);
 
@@ -62,15 +62,15 @@ namespace vesp { namespace graphics {
 	}
 
 	// Vertex Shader
-	VertexShader::VertexShader(RawStringPtr name)
+	VertexShader::VertexShader(StringView const name)
 		: Shader(name)
 	{
 		this->type_ = ShaderType::Vertex;
 	}
 
 	bool VertexShader::Load(
-		RawStringPtr shaderSource, D3D11_INPUT_ELEMENT_DESC* inputLayoutElements, 
-		U32 inputLayoutSize)
+		StringView const shaderSource, 
+		ArrayView<D3D11_INPUT_ELEMENT_DESC> inputLayoutElements)
 	{
 		CComPtr<ID3DBlob> blob = static_cast<ID3DBlob*>(this->Compile(shaderSource));
 
@@ -89,7 +89,8 @@ namespace vesp { namespace graphics {
 			return false;
 		}
 
-		hr = device->CreateInputLayout(inputLayoutElements, inputLayoutSize,
+		hr = device->CreateInputLayout(
+			inputLayoutElements.data, inputLayoutElements.size,
 			blob->GetBufferPointer(), blob->GetBufferSize(),
 			&this->inputLayout_);
 
@@ -112,13 +113,13 @@ namespace vesp { namespace graphics {
 	}
 	
 	// Pixel Shader
-	PixelShader::PixelShader(RawStringPtr name)
+	PixelShader::PixelShader(StringView const name)
 		: Shader(name)
 	{
 		this->type_ = ShaderType::Pixel;
 	}
 
-	bool PixelShader::Load(RawStringPtr shaderSource)
+	bool PixelShader::Load(StringView const shaderSource)
 	{
 		CComPtr<ID3DBlob> blob = static_cast<ID3DBlob*>(this->Compile(shaderSource));
 

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "vesp/Types.hpp"
+#include "vesp/Containers.hpp"
+#include "vesp/String.hpp"
 #include <atlbase.h>
 #include <d3dcommon.h>
 
@@ -20,21 +22,21 @@ namespace vesp { namespace graphics {
 	class Shader
 	{
 	public:
-		Shader(RawStringPtr name);
+		Shader(StringView const name);
 
 	protected:
-		void* Compile(RawStringPtr shaderSource);
+		void* Compile(StringView const shaderSource);
 		ShaderType type_;
-		StringByte name_[32];
+		StringByte name_[32] = {0};
 	};
 
 	class VertexShader : public Shader
 	{
 	public:
-		VertexShader(RawStringPtr name);
+		VertexShader(StringView const name);
 
-		bool Load(RawStringPtr shaderSource, 
-			D3D11_INPUT_ELEMENT_DESC* inputLayoutElements, U32 inputLayoutSize);
+		bool Load(StringView const shaderSource,
+			ArrayView<D3D11_INPUT_ELEMENT_DESC> inputLayoutElements);
 		void Activate();
 
 	private:
@@ -45,9 +47,9 @@ namespace vesp { namespace graphics {
 	class PixelShader : public Shader
 	{
 	public:
-		PixelShader(RawStringPtr name);
+		PixelShader(StringView const name);
 
-		bool Load(RawStringPtr shaderSource);
+		bool Load(StringView const shaderSource);
 		void Activate();
 
 	private:

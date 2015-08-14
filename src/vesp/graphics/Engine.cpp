@@ -7,6 +7,7 @@
 #include "vesp/graphics/Mesh.hpp"
 #include "vesp/graphics/ImGui.hpp"
 #include "vesp/graphics/ImGuiDX11.hpp"
+#include "vesp/graphics/ShaderManager.hpp"
 
 #include "vesp/math/Vector.hpp"
 #include "vesp/math/Matrix.hpp"
@@ -23,13 +24,6 @@
 
 namespace vesp { namespace graphics {
 
-	VertexShader vertexShader("vs");
-	PixelShader pixelShader("ps");
-	PixelShader gridPixelShader("psGrid");
-
-	VertexShader identityVertexShader("vsIdentity");
-	PixelShader compositePixelShader("psComposite");
-	PixelShader texturePixelShader("psTexture");
 	Mesh screenMesh;	
 
 	IDXGISwapChain* Engine::SwapChain;
@@ -48,6 +42,7 @@ namespace vesp { namespace graphics {
 		this->DestroyRenderTargets();
 		this->DestroyDepthStencil();
 
+		ShaderManager::Destroy();
 		ImmediateContext->Release();
 		SwapChain->Release();
 		Device->Release();
@@ -58,6 +53,8 @@ namespace vesp { namespace graphics {
 		auto size = this->window_->GetSize();
 
 		this->CreateDevice(size);
+		ShaderManager::Create();
+
 		this->CreateDepthStencil(size);
 		this->CreateRenderTargets(size);
 		this->CreateBlendState();
@@ -449,39 +446,13 @@ namespace vesp { namespace graphics {
 
 	void Engine::CreateTestData()
 	{
-		D3D11_INPUT_ELEMENT_DESC layout[] =
-		{
-			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 
-				D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "NORMAL", 0, DXGI_FORMAT_R16G16_UNORM, 0, 
-				D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "TEXCOORD", 0, DXGI_FORMAT_R16G16_UNORM, 0, 
-				D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "COLOR", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, 
-				D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		};
-
-		String shaderSource;
-	
-		// g-buffer write
-		FileSystem::Get()->Read("data/shaders/default.vsh", shaderSource);
-		vertexShader.Load(shaderSource.data(), layout, util::SizeOfArray(layout));
-
-		FileSystem::Get()->Read("data/shaders/default.psh", shaderSource);
-		pixelShader.Load(shaderSource.data());
-
-		FileSystem::Get()->Read("data/shaders/grid.psh", shaderSource);
-		gridPixelShader.Load(shaderSource.data());		
-
-		// deferred composite
-		FileSystem::Get()->Read("data/shaders/identity.vsh", shaderSource);
-		identityVertexShader.Load(shaderSource.data(), layout, util::SizeOfArray(layout));
-
-		FileSystem::Get()->Read("data/shaders/composite.psh", shaderSource);
-		compositePixelShader.Load(shaderSource.data());
-
-		FileSystem::Get()->Read("data/shaders/texture.psh", shaderSource);
-		texturePixelShader.Load(shaderSource.data());
+		auto shaderManager = ShaderManager::Get();
+		shaderManager->LoadShader("default", ShaderType::Vertex);
+		shaderManager->LoadShader("default", ShaderType::Pixel);
+		shaderManager->LoadShader("grid", ShaderType::Pixel);
+		shaderManager->LoadShader("identity", ShaderType::Vertex);
+		shaderManager->LoadShader("composite", ShaderType::Pixel);
+		shaderManager->LoadShader("texture", ShaderType::Pixel);
 
 		// Load floor mesh
 		Vector<Vertex> floorVertices;
@@ -491,8 +462,8 @@ namespace vesp { namespace graphics {
 
 		Mesh floorMesh;
 		floorMesh.Create(floorVertices);
-		floorMesh.SetVertexShader(&vertexShader);
-		floorMesh.SetPixelShader(&gridPixelShader);
+		floorMesh.SetVertexShader(shaderManager->GetVertexShader("default"));
+		floorMesh.SetPixelShader(shaderManager->GetPixelShader("grid"));
 		this->meshes_.push_back(floorMesh);
 
 		// Add commands to load and modify meshes
@@ -678,8 +649,8 @@ namespace vesp { namespace graphics {
 		};
 
 		screenMesh.Create(screenVertices);
-		screenMesh.SetVertexShader(&identityVertexShader);
-		screenMesh.SetPixelShader(&compositePixelShader);
+		screenMesh.SetVertexShader(shaderManager->GetVertexShader("identity"));
+		screenMesh.SetPixelShader(shaderManager->GetPixelShader("composite"));
 	}
 
 	void Engine::DestroyDepthStencil()
