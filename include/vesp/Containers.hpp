@@ -92,6 +92,16 @@ namespace vesp
 			return this->begin() + this->size;
 		}
 
+		T const* cbegin() const
+		{
+			return this->data;
+		}
+
+		T const* cend() const
+		{
+			return this->cbegin() + this->size;
+		}
+
 		T& operator[](size_t index)
 		{
 			return this->data[index];
