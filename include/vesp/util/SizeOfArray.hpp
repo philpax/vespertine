@@ -3,7 +3,7 @@
 namespace vesp { namespace util {
 
 	template <typename T, int N>
-	const int SizeOfArray(T (&)[N])
+	const size_t SizeOfArray(T (&)[N])
 	{
 		return N;
 	}
