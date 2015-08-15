@@ -15,7 +15,7 @@ namespace vesp
 		events_[hash].push_back(function);
 	}
 
-	bool EventManager::Fire(RawStringPtr eventName, void* argument)
+	bool EventManager::Fire(RawStringPtr eventName, void const* argument)
 	{
 		auto hash = util::MurmurHash(eventName);
 		auto it = events_.find(hash);

@@ -13,10 +13,10 @@ namespace vesp
 	public:
 		EventManager();
 
-		typedef std::function<bool (void*)> EventHandler;
+		typedef std::function<bool (void const*)> EventHandler;
 
 		void Subscribe(RawStringPtr eventName, EventHandler function);
-		bool Fire(RawStringPtr eventName, void* argument = nullptr);
+		bool Fire(RawStringPtr eventName, void const* argument = nullptr);
 	
 	private:
 		UnorderedMap<U32, Vector<EventHandler>> events_;
