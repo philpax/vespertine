@@ -29,6 +29,13 @@ namespace vesp { namespace graphics {
 		this->a = static_cast<U8>(vec.w * 255.0f);
 	}
 
+	Colour::operator Vec4() const
+	{
+		return Vec4(
+			this->r / 255.0f, this->g / 255.0f, 
+			this->b / 255.0f, this->a / 255.0f);
+	}
+
 	const Colour Colour::AliceBlue = Colour(240, 248, 255);
 	const Colour Colour::AntiqueWhite = Colour(250, 235, 215);
 	const Colour Colour::Aqua = Colour(0, 255, 255);

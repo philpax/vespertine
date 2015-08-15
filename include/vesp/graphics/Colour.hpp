@@ -24,6 +24,8 @@ namespace vesp { namespace graphics {
 			};
 		};
 
+		operator Vec4() const;
+
 		static const Colour AliceBlue;
 		static const Colour AntiqueWhite;
 		static const Colour Aqua;
