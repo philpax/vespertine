@@ -8,6 +8,7 @@ cbuffer PerMeshBuffer : register(b1)
 	float4x4 world;
 	float4x4 worldView;
 	float4x4 worldViewInverseTranspose;
+	float4 colour;
 }
 
 struct VertexIn
@@ -52,7 +53,7 @@ PixelIn main(VertexIn input)
 	output.viewPosition = mul(viewProjection, output.viewPosition);
 	float3 normal = UnpackNormal(input.sphericalNormal);
 	output.viewNormal = normalize(mul(normal, worldViewInverseTranspose));
-	output.colour = input.colour;
+	output.colour = input.colour * colour;
 	output.texcoord = input.texcoord;
 	return output;
 }

@@ -54,6 +54,16 @@ namespace vesp { namespace graphics {
 		this->angle_ = angle;
 	}
 
+	Colour Mesh::GetColour()
+	{
+		return this->colour_;
+	}
+
+	void Mesh::SetColour(Colour colour)
+	{
+		this->colour_ = colour;
+	}
+
 	Vec3 Mesh::GetScale()
 	{
 		return this->scale_;
@@ -114,6 +124,7 @@ namespace vesp { namespace graphics {
 			this->world_ * Engine::Get()->GetCamera()->GetView();
 		constants.worldViewInverseTranspose = 
 			glm::transpose(glm::inverse(constants.worldView));
+		constants.colour = this->colour_;
 
 		this->perMeshConstantBuffer_.Load(constants);
 	}

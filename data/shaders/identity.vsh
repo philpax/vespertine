@@ -8,6 +8,7 @@ cbuffer PerMeshBuffer : register(b1)
 	float4x4 world;
 	float4x4 worldView;
 	float4x4 worldViewInverseTranspose;
+	float4 colour;
 }
 
 struct VertexIn

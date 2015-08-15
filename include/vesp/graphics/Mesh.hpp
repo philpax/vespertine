@@ -30,6 +30,9 @@ namespace vesp { namespace graphics {
 
 		void SetPositionAngle(Vec3 const& position, Quat const& angle);
 
+		Colour GetColour();
+		void SetColour(Colour colour);
+
 		void SetTopology(D3D11_PRIMITIVE_TOPOLOGY topology);
 		D3D11_PRIMITIVE_TOPOLOGY GetTopology();
 
@@ -46,6 +49,7 @@ namespace vesp { namespace graphics {
 			Mat4 world;
 			Mat4 worldView;
 			Mat4 worldViewInverseTranspose;
+			Vec4 colour;
 		};
 		
 		VertexShader* vertexShader_ = nullptr;
@@ -59,6 +63,7 @@ namespace vesp { namespace graphics {
 		Vec3 position_;
 		Quat angle_;
 		Vec3 scale_;
+		Colour colour_ = Colour::White;
 	};
 
 } }
