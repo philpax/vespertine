@@ -3,12 +3,16 @@
 #include "vesp/Types.hpp"
 #include "vesp/Containers.hpp"
 #include "vesp/Log.hpp"
+#include "vesp/Assert.hpp"
 
 #include "vesp/graphics/Vertex.hpp"
 #include "vesp/graphics/Engine.hpp"
 
+#pragma warning(push)
+#pragma warning(disable: 4005)
 #include <atlbase.h>
 #include <d3d11.h>
+#pragma warning(pop)
 
 namespace vesp { namespace graphics {
 
@@ -89,6 +93,8 @@ namespace vesp { namespace graphics {
 
 		void* Map()
 		{
+			VESP_ASSERT(this->buffer_);
+
 			D3D11_MAPPED_SUBRESOURCE mappedSubresource;
 			Engine::ImmediateContext->Map(
 				this->buffer_, 0, D3D11_MAP_WRITE_DISCARD, 
