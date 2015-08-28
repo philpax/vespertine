@@ -12,7 +12,7 @@ project "Vespertine"
 	defines { "NOMINMAX", "_USE_MATH_DEFINES" }
 
 	filter "configurations:Debug"
-		defines { "DEBUG" }
+		defines { "DEBUG", "VESP_ASSERT_ENABLED" }
 		flags { "Symbols" }
 
 	filter "configurations:Release"
