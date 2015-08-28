@@ -25,6 +25,7 @@ namespace vesp { namespace graphics {
 		Quat angle_;
 		float pitch_;
 		float yaw_;
+		float speed_ = 10.0f;
 		util::Timer frameDeltaTimer_;
 	};
 

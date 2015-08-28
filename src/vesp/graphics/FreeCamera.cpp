@@ -4,6 +4,7 @@
 #include "vesp/Math/Util.hpp"
 
 #include "vesp/InputManager.hpp"
+#include "vesp/Console.hpp"
 
 namespace vesp { namespace graphics {
 
@@ -12,6 +13,26 @@ namespace vesp { namespace graphics {
 	{
 		this->SetPosition(position);
 		this->SetAngle(angle);
+
+		Console::Get()->AddEmptyCommand("camera-get-speed",
+			[&]
+			{
+				Console::Get()->WriteOutput(ToString(this->speed_));
+			}
+		);
+
+		Console::Get()->AddCommand("camera-set-speed",
+			[&](ArrayView<String> args)
+			{
+				if (args.size != 1)
+				{
+					LogError("Expected one argument");
+					return;
+				}
+
+				this->speed_ = ToF32(args[0]);
+			}
+		);
 	}
 
 	FreeCamera::~FreeCamera()
@@ -38,7 +59,7 @@ namespace vesp { namespace graphics {
 		auto timeDelta		= this->frameDeltaTimer_.GetSeconds();
 
 		// Calculate absolute translational delta
-		auto speed			= 1.0f * boostMult * timeDelta; // ms^-1
+		auto speed			= this->speed_ * boostMult * timeDelta; // ms^-1
 		auto forwardDelta	= (forwardState - backwardState) * speed;
 		auto sideDelta		= (rightState - leftState) * speed;
 
