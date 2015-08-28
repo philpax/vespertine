@@ -59,9 +59,14 @@ namespace vesp { namespace graphics {
 			return this->count_;
 		}
 
+		bool Initialized()
+		{
+			return GetCount() > 0;
+		}
+
 	protected:
 		CComPtr<ID3D11Buffer> buffer_;
-		U32 count_;
+		U32 count_ = 0;
 	};
 
 	class VertexBuffer : public Buffer<Vertex>
@@ -70,6 +75,14 @@ namespace vesp { namespace graphics {
 		bool Create(ArrayView<Vertex> const array, D3D11_USAGE usage = D3D11_USAGE_DEFAULT);
 
 		void Use(U32 slot);
+	};
+
+	class IndexBuffer : public Buffer<U32>
+	{
+	public:
+		bool Create(ArrayView<U32> const array, D3D11_USAGE usage = D3D11_USAGE_DEFAULT);
+
+		void Use();
 	};
 
 	template <typename T>

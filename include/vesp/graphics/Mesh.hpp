@@ -15,6 +15,9 @@ namespace vesp { namespace graphics {
 	public:
 		Mesh();
 
+		bool Create(ArrayView<Vertex> vertices, ArrayView<U32> indices,
+			D3D11_PRIMITIVE_TOPOLOGY topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 		bool Create(ArrayView<Vertex> vertices, 
 			D3D11_PRIMITIVE_TOPOLOGY topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -56,6 +59,7 @@ namespace vesp { namespace graphics {
 		PixelShader* pixelShader_ = nullptr;
 
 		VertexBuffer vertexBuffer_;
+		IndexBuffer indexBuffer_;
 		ConstantBuffer<PerMeshConstants> perMeshConstantBuffer_;
 		D3D11_PRIMITIVE_TOPOLOGY topology_;
 

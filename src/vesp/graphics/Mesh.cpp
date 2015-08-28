@@ -13,6 +13,18 @@ namespace vesp { namespace graphics {
 		this->scale_ = Vec3(1, 1, 1);
 	}
 
+	bool Mesh::Create(ArrayView<Vertex> vertices, ArrayView<U32> indices, D3D11_PRIMITIVE_TOPOLOGY topology)
+	{
+		auto ret = this->Create(vertices, topology);
+		if (!ret)
+			return ret;
+
+		if (!this->indexBuffer_.Create(indices))
+			return false;
+
+		return true;
+	}
+
 	bool Mesh::Create(ArrayView<Vertex> vertices, D3D11_PRIMITIVE_TOPOLOGY topology)
 	{
 		if (!this->vertexBuffer_.Create(vertices))
@@ -109,9 +121,20 @@ namespace vesp { namespace graphics {
 
 		this->UpdateMatrix();
 		this->vertexBuffer_.Use(0);
+
 		this->perMeshConstantBuffer_.UseVS(1);
 		Engine::ImmediateContext->IASetPrimitiveTopology(this->topology_);
-		Engine::ImmediateContext->Draw(this->vertexBuffer_.GetCount(), 0);
+
+		if (this->indexBuffer_.Initialized())
+		{
+			this->indexBuffer_.Use();
+			Engine::ImmediateContext->DrawIndexed(
+				this->indexBuffer_.GetCount(), 0, 0);
+		}
+		else
+		{
+			Engine::ImmediateContext->Draw(this->vertexBuffer_.GetCount(), 0);
+		}
 	}
 
 	void Mesh::UpdateMatrix()
