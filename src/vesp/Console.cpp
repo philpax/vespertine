@@ -207,7 +207,7 @@ namespace vesp {
 			{
 				if (args.size < 3)
 				{
-					LogError("Expected at least two arguments");
+					LogError("Expected at least three arguments");
 					return;
 				}
 
