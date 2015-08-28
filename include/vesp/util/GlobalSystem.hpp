@@ -9,7 +9,8 @@ namespace vesp { namespace util {
 		template <typename... Values>
 		static void Create(Values&&... values)
 		{
-			ptr_ = new T(values...);
+			ptr_ = reinterpret_cast<T*>(_aligned_malloc(sizeof(T), alignof(T)));
+			new (ptr_) T(values...);
 		}
 
 		static void Destroy()
