@@ -165,6 +165,10 @@ namespace vesp { namespace graphics {
 	float Window::GetAspectRatio()
 	{
 		auto size = this->GetSize();
+
+		if (size.x == 0 || size.y == 0)
+			return 1.0f;
+
 		return (float)size.x / (float)size.y;
 	}
 
