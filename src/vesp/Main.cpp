@@ -8,6 +8,8 @@
 #include "vesp/graphics/Engine.hpp"
 #include "vesp/graphics/Window.hpp"
 
+#include "vesp/world/TerrainManager.hpp"
+
 #include "vesp/math/Vector.hpp"
 
 namespace vesp
@@ -30,6 +32,8 @@ namespace vesp
 		graphics::Engine::Create(name);
 		graphics::Engine::Get()->Initialize();
 
+		world::TerrainManager::Create();
+
 		Console::Get()->AddEmptyCommand("quit", &vesp::Quit);
 
 		return true;
@@ -37,6 +41,8 @@ namespace vesp
 
 	void Shutdown()
 	{
+		world::TerrainManager::Destroy();
+
 		graphics::Engine::Destroy();
 
 		EventManager::Destroy();
@@ -64,7 +70,6 @@ namespace vesp
 				{
 				case WM_QUIT:
 					Quit();
-					EventManager::Get()->Fire("Engine.Quit");
 					break;
 				}
 				
@@ -81,6 +86,7 @@ namespace vesp
 	void Quit()
 	{
 		Running = false;
+		EventManager::Get()->Fire("Engine.Quit");
 	}
 
 	util::Timer const& GetGlobalTimer()

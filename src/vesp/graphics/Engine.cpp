@@ -13,6 +13,8 @@
 #include "vesp/math/Matrix.hpp"
 #include "vesp/math/Util.hpp"
 
+#include "vesp/world/TerrainManager.hpp"
+
 #include "vesp/Log.hpp"
 #include "vesp/Assert.hpp"
 #include "vesp/Console.hpp"
@@ -120,6 +122,8 @@ namespace vesp { namespace graphics {
 
 		auto freeCamera = static_cast<FreeCamera*>(this->camera_.get());
 		freeCamera->Update();
+
+		world::TerrainManager::Get()->Draw();
 
 		for (auto& mesh : this->meshes_)
 			mesh.Draw();
@@ -453,18 +457,6 @@ namespace vesp { namespace graphics {
 		shaderManager->LoadShader("identity", ShaderType::Vertex);
 		shaderManager->LoadShader("composite", ShaderType::Pixel);
 		shaderManager->LoadShader("texture", ShaderType::Pixel);
-
-		// Load floor mesh
-		Vector<Vertex> floorVertices;
-		auto file = FileSystem::Get()->Open("data/FloorMesh.vspm", "rb");
-		floorVertices.resize(file.Size() / sizeof(Vertex));
-		file.Read(ArrayView<Vertex>(floorVertices));
-
-		Mesh floorMesh;
-		floorMesh.Create(floorVertices);
-		floorMesh.SetVertexShader(shaderManager->GetVertexShader("default"));
-		floorMesh.SetPixelShader(shaderManager->GetPixelShader("grid"));
-		this->meshes_.push_back(floorMesh);
 
 		// Add commands to load and modify meshes
 		Console::Get()->AddCommand("mesh-load",
