@@ -15,7 +15,8 @@ namespace vesp { namespace util {
 
 		static void Destroy()
 		{
-			delete ptr_;
+			ptr_->~T();
+			_aligned_free(ptr_);
 		}
 
 		static T* Get()
