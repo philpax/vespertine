@@ -18,8 +18,7 @@ Texture2D RenderTargets[2] : register(t0);
 
 float4 main(PixelIn input) : SV_Target
 {
-	float4 base = RenderTargets[0].Sample(DefaultTextureSampler, input.texcoord) +
-				  RenderTargets[1].Sample(DefaultTextureSampler, input.texcoord);
+	float4 base = RenderTargets[0].Sample(DefaultTextureSampler, input.texcoord);
 
 	base = saturate(base);
 
