@@ -3,7 +3,7 @@
 #include "vesp/Log.hpp"
 #include "vesp/Main.hpp"
 
-#include "vesp/graphics/ImGui.hpp"
+#include "vesp/graphics/imgui.h"
 #include "vesp/graphics/Engine.hpp"
 #include "vesp/graphics/Window.hpp"
 
@@ -282,7 +282,8 @@ namespace vesp {
 		if (!this->active_)
 			return;
 
-		Array<StringByte, 256> inputBuffer;		
+		Array<StringByte, 256> inputBuffer;	
+		inputBuffer.assign(0);
 
 		auto size = graphics::Engine::Get()->GetWindow()->GetSize() / 2;
 		ImGui::SetNextWindowSize(

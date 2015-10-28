@@ -5,8 +5,8 @@
 #include "vesp/graphics/Buffer.hpp"
 #include "vesp/graphics/FreeCamera.hpp"
 #include "vesp/graphics/Mesh.hpp"
-#include "vesp/graphics/ImGui.hpp"
-#include "vesp/graphics/ImGuiDX11.hpp"
+#include "vesp/graphics/imgui.h"
+#include "vesp/graphics/imgui_impl_dx11.h"
 #include "vesp/graphics/ShaderManager.hpp"
 
 #include "vesp/math/Vector.hpp"
