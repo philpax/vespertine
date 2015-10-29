@@ -4,6 +4,8 @@
 #include "vesp/Containers.hpp"
 #include "vesp/Types.hpp"
 
+#include "vesp/math/Vector.hpp"
+
 struct tagMSG;
 
 namespace vesp
@@ -64,8 +66,6 @@ namespace vesp
 		};
 		Array<Vector<Callback>, static_cast<U32>(Action::EndOfEnum)> callbacks_;
 
-		S16 lastCursorX_ = 0;
-		S16 lastCursorY_ = 0;
 		U32 guiLockCount_ = 0;
 	};
 }

@@ -20,6 +20,7 @@ namespace vesp { namespace graphics {
 
 		IVec2 GetPosition();
 		IVec2 GetSize();
+		IVec2 GetCentre();
 		float GetAspectRatio();
 
 		void* GetSystemRepresentation();
