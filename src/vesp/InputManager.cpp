@@ -77,25 +77,6 @@ namespace vesp
 		{
 			S16 currentCursorX = GET_X_LPARAM(event->lParam);
 			S16 currentCursorY = GET_Y_LPARAM(event->lParam);
-
-			S16 deltaCursorX = currentCursorX - this->lastCursorX_;
-			S16 deltaCursorY = currentCursorY - this->lastCursorY_;
-
-			this->lastCursorX_ = currentCursorX;
-			this->lastCursorY_ = currentCursorY;
-
-			auto x = math::Clamp(deltaCursorX / 16.0f, -1.0f, 1.0f);
-			auto y = -math::Clamp(deltaCursorY / 16.0f, -1.0f, 1.0f);
-			
-			if (x > 0)
-				this->SetState(Action::CameraRight, x);
-			else
-				this->SetState(Action::CameraLeft, -x);
-
-			if (y > 0)
-				this->SetState(Action::CameraUp, y);
-			else
-				this->SetState(Action::CameraDown, -y);
 		}
 	}
 
@@ -131,10 +112,44 @@ namespace vesp
 
 	void InputManager::Pulse()
 	{
-		this->SetState(Action::CameraLeft, 0.0f);
+		// Reset inputs to 0
 		this->SetState(Action::CameraRight, 0.0f);
+		this->SetState(Action::CameraLeft, 0.0f);
+
 		this->SetState(Action::CameraUp, 0.0f);
 		this->SetState(Action::CameraDown, 0.0f);
+
+		if (!graphics::Engine::Get()->GetWindow()->HasFocus())
+			return;
+
+		// Get the centre point of the window; if we're already there, no need to set inputs
+		auto centre = graphics::Engine::Get()->GetWindow()->GetCentre();
+		POINT currentCursorPoint;
+		GetCursorPos(&currentCursorPoint);
+
+		auto currentCursor = IVec2(currentCursorPoint.x, currentCursorPoint.y);
+
+		if (currentCursor != centre)
+		{
+			// Calculate the new mouse inputs based on deltas
+			auto deltaCursor = currentCursor - centre;
+
+			auto x = math::Clamp(deltaCursor.x / 16.0f, -1.0f, 1.0f);
+			auto y = -math::Clamp(deltaCursor.y / 16.0f, -1.0f, 1.0f);
+
+			if (x > 0)
+				this->SetState(Action::CameraRight, x);
+			else
+				this->SetState(Action::CameraLeft, -x);
+
+			if (y > 0)
+				this->SetState(Action::CameraUp, y);
+			else
+				this->SetState(Action::CameraDown, -y);
+
+			// Reset cursor to centre of window
+			SetCursorPos(centre.x, centre.y);
+		}
 	}
 
 	void InputManager::AddGuiLock()

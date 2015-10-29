@@ -162,6 +162,14 @@ namespace vesp { namespace graphics {
 		return IVec2(rect.right - rect.left, rect.bottom - rect.top);
 	}
 
+	IVec2 Window::GetCentre()
+	{
+		RECT rect{};
+		GetClientRect(this->hwnd_, &rect);
+
+		return this->GetPosition() + this->GetSize()/2;
+	}
+
 	float Window::GetAspectRatio()
 	{
 		auto size = this->GetSize();
