@@ -61,6 +61,7 @@ namespace vesp
 	{
 		while (Running)
 		{
+			graphics::Engine::Get()->PrePulse();
 			InputManager::Get()->Pulse();
 
 			MSG msg{};

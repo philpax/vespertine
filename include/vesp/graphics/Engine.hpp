@@ -32,6 +32,7 @@ namespace vesp { namespace graphics {
 
 		void Initialize();
 		void HandleResize(IVec2 size);
+		void PrePulse();
 		void Pulse();
 
 		Window* GetWindow();

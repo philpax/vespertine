@@ -89,10 +89,14 @@ namespace vesp { namespace graphics {
 		LogInfo("Resized to (%d, %d)", size.x, size.y);
 	}
 
+	void Engine::PrePulse()
+	{
+		ImGui_ImplDX11_NewFrame();
+	}
+
 	void Engine::Pulse()
 	{
 		this->window_->Pulse();
-		ImGui_ImplDX11_NewFrame();
 
 		F32 clearColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 		ID3D11ShaderResourceView* nullViews[
