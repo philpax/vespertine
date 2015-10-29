@@ -54,20 +54,22 @@ void TerrainManager::Load(StringView const path)
 	vertices.reserve(xSize * ySize);
 	indices.reserve(xSize * ySize * 6);
 
-	const S32 SampleRate = 2;
+	for (S32 y = 0; y < ySize; y += 1)
+		for (S32 x = 0; x < xSize; x += 1)
+			vertices.push_back(Sample(x, y));
+
+	const S32 SampleRate = 4;
 	for (S32 y = 0; y < ySize; y += SampleRate)
 	{
 		for (S32 x = 0; x < xSize; x += SampleRate)
 		{
-			vertices.push_back(Sample(x, y));
-
-			indices.push_back(GetIndex(x+SampleRate, y+SampleRate));
-			indices.push_back(GetIndex(x+SampleRate, y));
+			indices.push_back(GetIndex(x + SampleRate, y + SampleRate));
+			indices.push_back(GetIndex(x + SampleRate, y));
 			indices.push_back(GetIndex(x, y));
 
 			indices.push_back(GetIndex(x, y));
-			indices.push_back(GetIndex(x, y+SampleRate));
-			indices.push_back(GetIndex(x+SampleRate, y+SampleRate));
+			indices.push_back(GetIndex(x, y + SampleRate));
+			indices.push_back(GetIndex(x + SampleRate, y + SampleRate));
 		}
 	}
 
