@@ -162,6 +162,9 @@ namespace vesp
 		VESP_ASSERT(this->guiLockCount_ > 0);
 		this->guiLockCount_--;
 		
+		// If we're exiting GUI lock, we want to reset the cursor position to 0
+		// so that we don't jerk the camera on the next tick (as the cursor's
+		// position will not be at the centre as a result of GUI use)
 		if (this->guiLockCount_ == 0)
 			this->ResetCursorToCentre();
 	}
