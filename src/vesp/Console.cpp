@@ -315,6 +315,7 @@ namespace vesp {
 					this->Execute(view, true);
 				}
 			}
+			ImGui::SetKeyboardFocusHere();
 			ImGui::PopItemWidth();
 		}
 		ImGui::End();
