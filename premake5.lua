@@ -8,8 +8,10 @@ project "Vespertine"
 	includedirs(VENDOR_INCLUDES)
 	includedirs { "include/" }
 	files { "include/**.hpp", "include/**.h", "src/**.cpp" }
-	flags { "NoExceptions", "NoRTTI", "FatalWarnings", "MultiProcessorCompile" }
+	flags { "FatalWarnings", "MultiProcessorCompile" }
 	defines { "NOMINMAX", "_USE_MATH_DEFINES" }
+	exceptionhandling "Off"
+	rtti "Off"
 
 	filter "configurations:Debug"
 		defines { "DEBUG", "VESP_ASSERT_ENABLED" }
@@ -20,7 +22,7 @@ project "Vespertine"
 		optimize "On"
 
 	configuration { "vs*" }
-		buildoptions { "/EHsc" }
+		buildoptions { "/EHsc", "/Ob2", "/Zi" }
 
 	configuration { "gmake" }
 		buildoptions { "-std=c++11" }
