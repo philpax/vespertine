@@ -56,6 +56,7 @@ namespace vesp
 		
 	private:
 		void SubscribeInternal(Action action, InputHandler* instance, InputHandler::Function handler);
+		void ResetCursorToCentre();
 
 		Array<U16, static_cast<U32>(Action::EndOfEnum)> state_;
 

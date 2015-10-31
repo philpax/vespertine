@@ -129,7 +129,7 @@ namespace vesp
 
 		auto currentCursor = IVec2(currentCursorPoint.x, currentCursorPoint.y);
 
-		if (currentCursor != centre)
+		if (currentCursor != centre && !this->HasGuiLock())
 		{
 			// Calculate the new mouse inputs based on deltas
 			auto deltaCursor = currentCursor - centre;
@@ -161,6 +161,16 @@ namespace vesp
 	{
 		VESP_ASSERT(this->guiLockCount_ > 0);
 		this->guiLockCount_--;
+		
+		if (this->guiLockCount_ == 0)
+			this->ResetCursorToCentre();
+	}
+
+	void InputManager::ResetCursorToCentre()
+	{
+		auto centre = graphics::Engine::Get()->GetWindow()->GetCentre();
+		// Reset cursor to centre of window
+		SetCursorPos(centre.x, centre.y);
 	}
 
 	bool InputManager::HasGuiLock()
