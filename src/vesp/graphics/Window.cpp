@@ -96,6 +96,13 @@ namespace vesp { namespace graphics {
 
 		ShowWindow(this->hwnd_, SW_SHOW);
 		UpdateWindow(this->hwnd_);
+
+		// Decrease the cursor counter by 1 if we're not focused; this counteracts
+		// it going up by 1 in UpdateClip (as a result of the window not being focused)
+		// This fixes the bug where the cursor would be permanently on if the window
+		// launched without focus
+		if (!this->HasFocus())
+			ShowCursor(FALSE);
 	}
 
 	Window::~Window()
@@ -193,7 +200,7 @@ namespace vesp { namespace graphics {
 
 	bool Window::HasFocus() const
 	{
-		return GetActiveWindow() == this->hwnd_;
+		return GetForegroundWindow() == this->hwnd_;
 	}
 
 	void Window::Pulse()
