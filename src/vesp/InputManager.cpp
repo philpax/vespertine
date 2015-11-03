@@ -132,10 +132,13 @@ namespace vesp
 		if (currentCursor != centre && !this->HasGuiLock())
 		{
 			// Calculate the new mouse inputs based on deltas
-			auto deltaCursor = currentCursor - centre;
+			auto frameTime = this->lastFrameTimer_.GetSeconds();
+			Vec2 deltaCursor = (currentCursor - centre);
+			deltaCursor *= frameTime;
+			deltaCursor *= 4.0f;
 
-			auto x = math::Clamp(deltaCursor.x / 16.0f, -1.0f, 1.0f);
-			auto y = -math::Clamp(deltaCursor.y / 16.0f, -1.0f, 1.0f);
+			auto x = math::Clamp(deltaCursor.x, -1.0f, 1.0f);
+			auto y = -math::Clamp(deltaCursor.y, -1.0f, 1.0f);
 
 			if (x > 0)
 				this->SetState(Action::CameraRight, x);
@@ -150,6 +153,8 @@ namespace vesp
 			// Reset cursor to centre of window
 			SetCursorPos(centre.x, centre.y);
 		}
+
+		this->lastFrameTimer_.Restart();
 	}
 
 	void InputManager::AddGuiLock()

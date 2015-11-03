@@ -68,5 +68,6 @@ namespace vesp
 		Array<Vector<Callback>, static_cast<U32>(Action::EndOfEnum)> callbacks_;
 
 		U32 guiLockCount_ = 0;
+		util::Timer lastFrameTimer_;
 	};
 }
