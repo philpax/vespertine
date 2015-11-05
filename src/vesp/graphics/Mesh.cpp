@@ -119,6 +119,7 @@ namespace vesp { namespace graphics {
 
 	void Mesh::Draw()
 	{
+		VESP_ASSERT(this->Exists());
 		VESP_ASSERT(this->vertexShader_);
 		VESP_ASSERT(this->pixelShader_);
 
