@@ -42,6 +42,8 @@ namespace vesp { namespace graphics {
 		void SetVertexShader(VertexShader* shader);
 		void SetPixelShader(PixelShader* shader);
 
+		bool Exists() const;
+
 		void Draw();
 
 	private:
@@ -68,6 +70,7 @@ namespace vesp { namespace graphics {
 		Quat angle_;
 		Vec3 scale_;
 		Colour colour_ = Colour::White;
+		bool exists_ = false;
 	};
 
 } }

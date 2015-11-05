@@ -17,27 +17,28 @@ namespace vesp { namespace graphics {
 	{
 		auto ret = this->Create(vertices, topology);
 		if (!ret)
-			return ret;
+			return this->exists_;
 
 		if (!this->indexBuffer_.Create(indices))
-			return false;
+			this->exists_ = false;
 
-		return true;
+		return this->exists_;
 	}
 
 	bool Mesh::Create(ArrayView<Vertex> vertices, D3D11_PRIMITIVE_TOPOLOGY topology)
 	{
 		if (!this->vertexBuffer_.Create(vertices))
-			return false;
+			return this->exists_;
 
 		PerMeshConstants constants;
 
 		if (!this->perMeshConstantBuffer_.Create(constants))
-			return false;
+			return this->exists_;
 
 		this->topology_ = topology;
+		this->exists_ = true;
 
-		return true;
+		return this->exists_;
 	}
 
 	Vec3 Mesh::GetPosition()
@@ -109,6 +110,11 @@ namespace vesp { namespace graphics {
 	void Mesh::SetPixelShader(PixelShader* shader)
 	{
 		this->pixelShader_ = shader;
+	}
+
+	bool Mesh::Exists() const
+	{
+		return this->exists_;
 	}
 
 	void Mesh::Draw()
