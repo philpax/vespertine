@@ -296,7 +296,7 @@ namespace vesp {
 				{
 					auto c = text.colour;
 					ImGui::PushStyleColor(ImGuiCol_Text, ImColor(c.r, c.g, c.b, c.a));
-					ImGui::TextUnformatted(text.text.data());
+					ImGui::TextUnformatted(text.text.data(), text.text.data() + text.text.size());
 					ImGui::PopStyleColor();
 				}
 			}
