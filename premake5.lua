@@ -9,7 +9,7 @@ project "Vespertine"
 	includedirs { "include/" }
 	files { "include/**.hpp", "include/**.h", "src/**.cpp" }
 	flags { "FatalWarnings", "MultiProcessorCompile" }
-	defines { "NOMINMAX", "_USE_MATH_DEFINES" }
+	defines { "NOMINMAX", "_USE_MATH_DEFINES", "Symbols" }
 	exceptionhandling "Off"
 	rtti "Off"
 
