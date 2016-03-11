@@ -10,6 +10,11 @@
 
 #include <functional>
 
+#pragma warning(push)
+#pragma warning(disable: 4200)
+#include <mruby.h>
+#pragma warning(pop)
+
 namespace vesp {
 
 	class Console : 
@@ -31,18 +36,19 @@ namespace vesp {
 		void SetActive(bool active);
 		bool GetActive() const;
 
-		void AddMessage(StringView text, graphics::Colour colour);
+		void AddMessage(StringView text, graphics::Colour colour = graphics::Colour::White);
 		void AddMacro(StringView command, MacroType fn);
 		void AddCommand(StringView command, CommandType fn);
 		void AddEmptyCommand(StringView command, EmptyCommandType fn);
 
-		void WriteOutput(StringView output);
+        void WriteOutput(StringView output);
+		void Execute(StringView code);
 
 		void Draw();
 
 	private:
 		void ConsolePress(float state);
-		void Execute(StringView input, bool topLevel);
+		StringView ToString(mrb_value value);
 		
 		struct Message
 		{
@@ -51,9 +57,9 @@ namespace vesp {
 		};
 
 		Deque<Message> messages_;
-		UnorderedMap<String, MacroType> macros_;
-		UnorderedMap<String, CommandType> commands_;
 		String output_;
+
+		mrb_state* state_;
 
 		bool active_ = false;
 	};
