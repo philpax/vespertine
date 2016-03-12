@@ -20,6 +20,8 @@ namespace vesp {
 			Action::Console, this, &Console::ConsolePress);
 
 		this->state_ = mrb_open();
+		mrb_define_method(this->state_, this->state_->kernel_module, 
+			"quit", &Console::CommandQuit, MRB_ARGS_NONE());
 	}
 
 	Console::~Console()
@@ -117,6 +119,8 @@ namespace vesp {
 			this->AddMessage(this->ToString(mrb_obj_value(this->state_->exc)));
 		else
 			this->AddMessage(this->ToString(obj));
+
+		this->state_->exc = nullptr;
 	}
 
 	void Console::ConsolePress(float state)
@@ -131,4 +135,9 @@ namespace vesp {
 		return StringView(RSTRING_PTR(obj)).CopyToVector();
 	}
 
+	mrb_value Console::CommandQuit(mrb_state* mrb, mrb_value self)
+	{
+		Quit();
+		return self;
+	}
 }

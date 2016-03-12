@@ -41,7 +41,7 @@ namespace vesp {
 		void AddCommand(StringView command, CommandType fn);
 		void AddEmptyCommand(StringView command, EmptyCommandType fn);
 
-        void WriteOutput(StringView output);
+		void WriteOutput(StringView output);
 		void Execute(StringView code);
 
 		void Draw();
@@ -49,6 +49,8 @@ namespace vesp {
 	private:
 		void ConsolePress(float state);
 		StringView ToString(mrb_value value);
+
+		static mrb_value CommandQuit(mrb_state* mrb, mrb_value self);
 		
 		struct Message
 		{
