@@ -64,6 +64,7 @@ namespace vesp {
 		mrb_state* state_;
 
 		bool active_ = false;
+		bool scrollToBottom_ = false;
 	};
 
 }

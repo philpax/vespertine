@@ -49,6 +49,8 @@ namespace vesp {
 
 		if (this->messages_.size() >= 1024)
 			this->messages_.pop_front();
+
+		this->scrollToBottom_ = true;
 	}
 
 	void Console::AddMacro(StringView command, MacroType fn)
@@ -90,7 +92,14 @@ namespace vesp {
 					ImGui::TextUnformatted(text.text.data(), text.text.data() + text.text.size());
 					ImGui::PopStyleColor();
 				}
+
+				if (this->scrollToBottom_)
+				{
+					ImGui::SetScrollHere();
+					this->scrollToBottom_ = false;
+				}
 			}
+
 			ImGui::EndChild();
 			ImGui::Separator();
 
