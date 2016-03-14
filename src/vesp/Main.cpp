@@ -4,6 +4,7 @@
 #include "vesp/EventManager.hpp"
 #include "vesp/FileSystem.hpp"
 #include "vesp/InputManager.hpp"
+#include "vesp/TaskScheduler.hpp"
 
 #include "vesp/graphics/Engine.hpp"
 #include "vesp/graphics/Window.hpp"
@@ -28,6 +29,7 @@ namespace vesp
 		LogInfo("Vespertine (%s %s)", __DATE__, __TIME__);
 
 		EventManager::Create();
+		TaskScheduler::Create();
 
 		graphics::Engine::Create(name);
 		graphics::Engine::Get()->Initialize();
@@ -45,6 +47,7 @@ namespace vesp
 
 		graphics::Engine::Destroy();
 
+		TaskScheduler::Destroy();
 		EventManager::Destroy();
 
 		LogInfo("Vespertine shutting down");

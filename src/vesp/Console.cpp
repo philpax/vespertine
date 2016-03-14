@@ -45,6 +45,8 @@ namespace vesp {
 
 	void Console::AddMessage(StringView text, graphics::Colour colour)
 	{
+		std::unique_lock<std::mutex> guard(this->mutex_);
+
 		this->messages_.push_back({text.CopyToVector(), colour});
 
 		if (this->messages_.size() >= 1024)

@@ -17,7 +17,24 @@ namespace vesp { namespace world {
 		void Draw();
 
 	private:
-		graphics::Mesh terrainMesh_;
-	};
+		struct OctreeNode
+		{
+			struct Corner
+			{
+				bool isValue = false;
+				union
+				{
+					float value;
+					OctreeNode* node;
+				};
+			};
 
+			Corner corners[8];
+
+			float SampleAtCorner(size_t i);
+
+			void Polygonise();
+			graphics::Mesh nodeMesh_;
+		};
+	};
 } }

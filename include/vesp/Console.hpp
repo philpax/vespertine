@@ -9,6 +9,7 @@
 #include "vesp/String.hpp"
 
 #include <functional>
+#include <mutex>
 
 #pragma warning(push)
 #pragma warning(disable: 4200)
@@ -60,6 +61,7 @@ namespace vesp {
 
 		Deque<Message> messages_;
 		String output_;
+		std::mutex mutex_;
 
 		mrb_state* state_;
 
