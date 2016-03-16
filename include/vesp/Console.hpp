@@ -4,16 +4,13 @@
 
 #include "vesp/graphics/Colour.hpp"
 
+#include "vesp/script/Module.hpp"
+
 #include "vesp/InputManager.hpp"
 #include "vesp/Types.hpp"
 #include "vesp/String.hpp"
 
 #include <functional>
-
-#pragma warning(push)
-#pragma warning(disable: 4200)
-#include <mruby.h>
-#pragma warning(pop)
 
 namespace vesp {
 
@@ -48,7 +45,6 @@ namespace vesp {
 
 	private:
 		void ConsolePress(float state);
-		StringView ToString(mrb_value value);
 
 		static mrb_value CommandQuit(mrb_state* mrb, mrb_value self);
 		
@@ -61,7 +57,7 @@ namespace vesp {
 		Deque<Message> messages_;
 		String output_;
 
-		mrb_state* state_;
+		UniquePtr<script::Module> module_;		
 
 		bool active_ = false;
 		bool scrollToBottom_ = false;

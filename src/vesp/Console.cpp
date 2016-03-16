@@ -10,7 +10,6 @@
 #include "vesp/math/Vector.hpp"
 
 #include <mruby/compile.h>
-#include <mruby/string.h>
 
 namespace vesp {
 
@@ -19,8 +18,9 @@ namespace vesp {
 		InputManager::Get()->Subscribe(
 			Action::Console, this, &Console::ConsolePress);
 
-		this->state_ = mrb_open();
-		mrb_define_method(this->state_, this->state_->kernel_module, 
+		this->module_ = std::make_unique<script::Module>("console");
+		auto state = this->module_->GetState();
+		mrb_define_method(state, state->kernel_module, 
 			"quit", &Console::CommandQuit, MRB_ARGS_NONE());
 	}
 
@@ -123,25 +123,20 @@ namespace vesp {
 
 	void Console::Execute(StringView code)
 	{
-		auto obj = mrb_load_nstring(this->state_, code.data, code.size);
-		if (this->state_->exc)
-			this->AddMessage(this->ToString(mrb_obj_value(this->state_->exc)));
+		auto state = this->module_->GetState();
+		auto obj = mrb_load_nstring(state, code.data, code.size);
+		if (state->exc)
+			this->AddMessage(this->module_->ToString(mrb_obj_value(state->exc)));
 		else
-			this->AddMessage(this->ToString(obj));
+			this->AddMessage(this->module_->ToString(obj));
 
-		this->state_->exc = nullptr;
+		state->exc = nullptr;
 	}
 
 	void Console::ConsolePress(float state)
 	{
 		if (state == 1.0f)
 			this->SetActive(!this->GetActive());
-	}
-
-	StringView Console::ToString(mrb_value value)
-	{
-		auto obj = mrb_funcall(this->state_, value, "inspect", 0);
-		return StringView(RSTRING_PTR(obj)).CopyToVector();
 	}
 
 	mrb_value Console::CommandQuit(mrb_state* mrb, mrb_value self)
