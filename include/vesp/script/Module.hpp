@@ -17,6 +17,7 @@ namespace vesp { namespace script {
 
         mrb_state* GetState();
         String ToString(mrb_value const value) const;
+        std::tuple<mrb_value, mrb_value> Execute(StringView code);
 
     private:
         String title_;

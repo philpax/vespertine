@@ -9,7 +9,6 @@
 
 #include "vesp/math/Vector.hpp"
 
-#include <mruby/compile.h>
 
 namespace vesp {
 
@@ -123,14 +122,14 @@ namespace vesp {
 
 	void Console::Execute(StringView code)
 	{
-		auto state = this->module_->GetState();
-		auto obj = mrb_load_nstring(state, code.data, code.size);
-		if (state->exc)
-			this->AddMessage(this->module_->ToString(mrb_obj_value(state->exc)));
-		else
-			this->AddMessage(this->module_->ToString(obj));
+		auto tuple = this->module_->Execute(code);
+		auto result = std::get<0>(tuple);
+		auto error = std::get<1>(tuple);
 
-		state->exc = nullptr;
+		if (!mrb_undef_p(error))
+			this->AddMessage(this->module_->ToString(error));
+		else
+			this->AddMessage(this->module_->ToString(result));
 	}
 
 	void Console::ConsolePress(float state)
