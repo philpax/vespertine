@@ -9,7 +9,6 @@
 
 #include "vesp/math/Vector.hpp"
 
-
 namespace vesp {
 
 	Console::Console()
@@ -18,8 +17,7 @@ namespace vesp {
 			Action::Console, this, &Console::ConsolePress);
 
 		this->module_ = std::make_unique<script::Module>("console");
-		auto state = this->module_->GetState();
-		mrb_define_method(state, state->kernel_module, 
+		this->module_->kernel->DefineStatic(
 			"quit", &Console::CommandQuit, MRB_ARGS_NONE());
 	}
 

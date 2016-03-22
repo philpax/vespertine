@@ -9,16 +9,13 @@ namespace vesp { namespace script {
 	{
 		this->title_ = title.CopyToVector();
 		this->state_ = mrb_open();
+
+		this->kernel = std::make_unique<Class>(this, this->state_->kernel_module);
 	}
 
 	Module::~Module()
 	{
 		mrb_close(this->state_);
-	}
-
-	mrb_state* Module::GetState()
-	{
-		return this->state_;
 	}
 
 	String Module::ToString(mrb_value const value) const
@@ -38,6 +35,11 @@ namespace vesp { namespace script {
 			return std::make_tuple(obj, mrb_obj_value(exception));
 		else
 			return std::make_tuple(obj, mrb_undef_value());
+	}
+
+	mrb_state* Module::GetState()
+	{
+		return this->state_;
 	}
 
 } }
