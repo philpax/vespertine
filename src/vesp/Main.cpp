@@ -21,10 +21,11 @@ namespace vesp
 		GlobalTimer.Restart();
 
 		FileSystem::Create();
+		Logger::Create("log.txt");
+
 		InputManager::Create();
 
 		Console::Create();
-		Logger::Create("log.txt");
 		LogInfo("Vespertine (%s %s)", __DATE__, __TIME__);
 
 		EventManager::Create();

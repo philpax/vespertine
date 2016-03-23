@@ -19,6 +19,19 @@ namespace vesp {
 		this->module_ = std::make_unique<script::Module>("console");
 		this->module_->kernel->DefineStatic(
 			"quit", &Console::CommandQuit, MRB_ARGS_NONE());
+
+		StringView const fileName = "data/autoexec.rb";
+		if (FileSystem::Get()->Exists(fileName))
+		{
+			LogInfo("Running autoexec");
+
+			String autoExec;
+			FileSystem::Get()->Read(fileName, autoExec);
+
+			LogInfo("%.*s", autoExec.size(), autoExec.data());
+
+			this->module_->Execute(autoExec);
+		}
 	}
 
 	Console::~Console()
