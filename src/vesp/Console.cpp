@@ -28,8 +28,6 @@ namespace vesp {
 			String autoExec;
 			FileSystem::Get()->Read(fileName, autoExec);
 
-			LogInfo("%.*s", autoExec.size(), autoExec.data());
-
 			this->module_->Execute(autoExec);
 		}
 	}
