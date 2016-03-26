@@ -3,6 +3,8 @@
 #include <mruby/string.h>
 #include <mruby/compile.h>
 
+#include "vesp/Log.hpp"
+
 namespace vesp { namespace script {
 
 	Module::Module(StringView title)
@@ -19,9 +21,15 @@ namespace vesp { namespace script {
 	}
 
 	String Module::ToString(mrb_value const value) const
-	{   
-		auto obj = mrb_funcall(this->state_, value, "inspect", 0);
-		return StringView(RSTRING_PTR(obj)).CopyToVector();
+	{
+		if (mrb_undef_p(value))
+			return StringView("undefined").CopyToVector();
+
+		auto ret = this->Call(value, "inspect");
+		if (mrb_undef_p(std::get<1>(ret)))
+			return StringView(RSTRING_PTR(std::get<0>(ret))).CopyToVector();
+		else
+			return StringView("[SCRIPT CONVERSION FAILURE]").CopyToVector();
 	}
 
 	std::tuple<mrb_value, mrb_value> Module::Execute(StringView code)

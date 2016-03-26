@@ -16,6 +16,20 @@ namespace vesp { namespace script {
 		String ToString(mrb_value const value) const;
 		std::tuple<mrb_value, mrb_value> Execute(StringView code);
 
+		template <typename... Args>
+		std::tuple<mrb_value, mrb_value> Call(mrb_value object, char const* functionName, Args... args) const
+		{
+			static const int argumentCount = sizeof...(args);
+			auto ret = mrb_funcall(this->state_, object, functionName, argumentCount, args...);
+
+			auto exc = this->state_->exc;
+			this->state_->exc = nullptr;
+			if (exc)
+				return std::make_tuple(mrb_undef_value(), mrb_obj_value(exc));
+			else
+				return std::make_tuple(ret, mrb_undef_value());
+		}
+
 		template <typename T>
 		mrb_value Convert(T const& value)
 		{
