@@ -2,21 +2,22 @@
 
 #include <glm/fwd.hpp>
 #include <memory>
+#include <cstdint>
 
 namespace vesp
 {
 	// Integer types
-	typedef unsigned char		U8;
-	typedef signed char			S8;
+	typedef uint8_t				U8;
+	typedef int8_t				S8;
 
-	typedef unsigned short		U16;
-	typedef signed short		S16;
+	typedef uint16_t			U16;
+	typedef int16_t				S16;
 
-	typedef unsigned int		U32;
-	typedef signed int			S32;
+	typedef uint32_t			U32;
+	typedef int32_t				S32;
 
-	typedef unsigned long long	U64;
-	typedef signed long long	S64;
+	typedef uint64_t			U64;
+	typedef int64_t				S64;
 
 	// Floating point types
 	typedef float				F32;
