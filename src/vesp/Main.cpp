@@ -35,8 +35,6 @@ namespace vesp
 
 		world::TerrainManager::Create();
 
-		Console::Get()->AddEmptyCommand("quit", &vesp::Quit);
-
 		return true;
 	}
 

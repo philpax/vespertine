@@ -14,25 +14,7 @@ namespace vesp { namespace graphics {
 		this->SetPosition(position);
 		this->SetAngle(angle);
 
-		Console::Get()->AddEmptyCommand("camera-get-speed",
-			[&]
-			{
-				Console::Get()->WriteOutput(ToString(this->speed_));
-			}
-		);
-
-		Console::Get()->AddCommand("camera-set-speed",
-			[&](ArrayView<String> args)
-			{
-				if (args.size != 1)
-				{
-					LogError("Expected one argument");
-					return;
-				}
-
-				this->speed_ = ToF32(args[0]);
-			}
-		);
+		// TODO: Add scripting interface
 	}
 
 	FreeCamera::~FreeCamera()

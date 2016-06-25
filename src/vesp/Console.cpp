@@ -61,23 +61,6 @@ namespace vesp {
 		this->scrollToBottom_ = true;
 	}
 
-	void Console::AddMacro(StringView command, MacroType fn)
-	{
-	}
-
-	void Console::AddCommand(StringView command, CommandType fn)
-	{
-	}
-
-	void Console::AddEmptyCommand(StringView command, EmptyCommandType fn)
-	{
-		this->AddCommand(command, [=](ArrayView<String>) { fn(); });
-	}
-
-	void Console::WriteOutput(StringView output)
-	{
-	}
-
 	void Console::Draw()
 	{
 		if (!this->active_)
