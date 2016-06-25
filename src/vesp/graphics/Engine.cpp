@@ -473,7 +473,8 @@ namespace vesp { namespace graphics {
 				}
 
 				auto path = Concat("data/", args[0]);
-				auto file = FileSystem::Get()->Open(path, "rb");
+				auto file = FileSystem::Get()->Open(path, 
+					FileSystem::Mode::Enum(FileSystem::Mode::Read | FileSystem::Mode::Binary));
 
 				if (!file.Exists())
 				{

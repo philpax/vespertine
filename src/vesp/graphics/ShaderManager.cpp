@@ -23,7 +23,7 @@ namespace vesp { namespace graphics {
 		}
 		
 		auto filePath = Concat(basePath, extension);
-		auto file = FileSystem::Get()->Open(filePath, "r");
+		auto file = FileSystem::Get()->Open(filePath, FileSystem::Mode::Read);
 		VESP_ASSERT(file.Exists());
 
 		auto shaderContents = file.Read<StringByte>();

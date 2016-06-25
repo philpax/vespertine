@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vesp/util/GlobalSystem.hpp"
+
 #include "vesp/Types.hpp"
 #include "vesp/Containers.hpp"
 #include "vesp/String.hpp"
@@ -11,6 +12,17 @@ namespace vesp
 	class FileSystem : public util::GlobalSystem<FileSystem>
 	{
 	public:
+		struct Mode
+		{
+			enum Enum
+			{
+				Read	= (1 << 0),
+				Write	= (1 << 1),
+				Append	= (1 << 2),
+				Binary	= (1 << 3)
+			};
+		};
+
 		struct File
 		{
 		public:
@@ -45,7 +57,7 @@ namespace vesp
 			FILE* file_;
 		};
 
-		File Open(StringView fileName, RawStringPtr mode);
+		File Open(StringView fileName, Mode::Enum mode);
 
 		void Close(File& file);
 		bool Exists(StringView fileName) const;

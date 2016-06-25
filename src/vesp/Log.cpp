@@ -14,7 +14,7 @@ namespace vesp
 
 	Logger::Logger(RawStringPtr path)
 	{
-		this->logFile_ = FileSystem::Get()->Open(path, "a");
+		this->logFile_ = FileSystem::Get()->Open(path, FileSystem::Mode::Append);
 	}
 
 	Logger::~Logger()

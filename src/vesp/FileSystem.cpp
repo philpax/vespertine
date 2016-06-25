@@ -63,11 +63,25 @@ namespace vesp
 		fflush(this->file_);
 	}
 
-	FileSystem::File FileSystem::Open(StringView fileName, RawStringPtr mode)
+	FileSystem::File FileSystem::Open(StringView fileName, Mode::Enum mode)
 	{
 		File file;
+
+		char modeString[3] = { '\0' };
+		if (mode & Mode::Read)
+			modeString[0] = 'r';
+		else if (mode & Mode::Write)
+			modeString[0] = 'w';
+		else if (mode & Mode::Append)
+			modeString[0] = 'a';
+		else
+			VESP_ASSERT(false && "Expected a valid mode for file opening!");
+
+		if (mode & Mode::Binary)
+			modeString[1] = 'b';
+
 		auto cString = ToCString(fileName);
-		fopen_s(&file.file_, cString.get(), mode);
+		fopen_s(&file.file_, cString.get(), modeString);
 
 		return file;
 	}
