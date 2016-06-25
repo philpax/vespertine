@@ -1,6 +1,8 @@
 #include "vesp/FileSystem.hpp"
 #include "vesp/Assert.hpp"
 
+#include "vesp/util/StringConversion.hpp"
+
 #include <Windows.h>
 
 namespace vesp
@@ -79,7 +81,8 @@ namespace vesp
 	bool FileSystem::Exists(StringView fileName)
 	{
 		auto cString = ToCString(fileName);
-		return GetFileAttributes(cString.get()) != INVALID_FILE_ATTRIBUTES;
+		auto wideString = util::MultiToWide(cString.get());
+		return GetFileAttributesW(wideString.data()) != INVALID_FILE_ATTRIBUTES;
 	}
 
 	void FileSystem::Read(StringView fileName, String& output)
