@@ -20,8 +20,9 @@ void TerrainManager::Load(StringView const path)
 	auto imageData = file.Read<U8>();
 
 	S32 xSize = 0, ySize = 0, comp = 0;
-	auto data = UniquePtr<stbi_uc, decltype(&stbi_image_free)>(stbi_load_from_memory(
-		imageData.data(), imageData.size(), &xSize, &ySize, &comp, 1), &stbi_image_free);
+	auto data = UniquePtrWithDeleter(stbi_uc, 
+		stbi_load_from_memory(imageData.data(), imageData.size(), &xSize, &ySize, &comp, 1), 
+		stbi_image_free);
 
 	VESP_ASSERT(data);
 

@@ -47,3 +47,6 @@ namespace vesp
 	template <typename T, typename... Args>
 	using UniquePtr = std::unique_ptr<T, Args...>;
 }
+
+#define UniquePtrWithDeleter(T, ptr, deleter) \
+	std::unique_ptr<T, decltype(&(deleter))>((ptr), &(deleter))
