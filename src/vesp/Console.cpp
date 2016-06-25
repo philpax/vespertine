@@ -17,19 +17,8 @@ namespace vesp {
 			Action::Console, this, &Console::ConsolePress);
 
 		this->module_ = std::make_unique<script::Module>("console");
-		this->module_->kernel->DefineStatic(
-			"quit", &Console::CommandQuit, MRB_ARGS_NONE());
-
-		StringView const fileName = "data/autoexec.rb";
-		if (FileSystem::Get()->Exists(fileName))
-		{
-			LogInfo("Running autoexec");
-
-			auto autoExecFile = FileSystem::Get()->Open(fileName, FileSystem::Mode::Read);
-			auto autoExec = autoExecFile.Read<StringByte>();
-
-			this->module_->Execute(autoExec);
-		}
+		// TODO: Default functions (quit)
+		// TODO: Autoexec
 	}
 
 	Console::~Console()
@@ -114,25 +103,12 @@ namespace vesp {
 
 	void Console::Execute(StringView code)
 	{
-		auto tuple = this->module_->Execute(code);
-		auto result = std::get<0>(tuple);
-		auto error = std::get<1>(tuple);
-
-		if (!mrb_undef_p(error))
-			this->AddMessage(this->module_->ToString(error));
-		else
-			this->AddMessage(this->module_->ToString(result));
+		// TODO: Reimplement
 	}
 
 	void Console::ConsolePress(float state)
 	{
 		if (state == 1.0f)
 			this->SetActive(!this->GetActive());
-	}
-
-	mrb_value Console::CommandQuit(mrb_state* mrb, mrb_value self)
-	{
-		Quit();
-		return self;
 	}
 }

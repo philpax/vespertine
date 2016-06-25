@@ -33,8 +33,7 @@ namespace vesp {
 	private:
 		void ConsolePress(float state);
 
-		static mrb_value CommandQuit(mrb_state* mrb, mrb_value self);
-		
+	
 		struct Message
 		{
 			String text;

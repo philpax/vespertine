@@ -1,5 +1,5 @@
-VENDOR_INCLUDES = { "vendor/glm", "vendor/mruby/include" }
-VENDOR_LINKS = { "vendor/mruby/build/host/lib/libmruby.lib" }
+VENDOR_INCLUDES = { "vendor/glm" }
+VENDOR_LINKS = { }
 
 project "Vespertine"
 	kind "StaticLib"
