@@ -1,5 +1,5 @@
-VENDOR_INCLUDES = { "vendor/glm" }
-VENDOR_LINKS = { }
+VENDOR_INCLUDES = { "vendor/glm", "vendor/LuaJIT/src" }
+VENDOR_LINKS = { "vendor/LuaJIT/src/lua51.lib" }
 
 project "Vespertine"
 	kind "StaticLib"
@@ -25,6 +25,8 @@ project "Vespertine"
 	configuration { "vs*" }
 		editandcontinue "off"
 		buildoptions { "/EHsc", "/Ob2" }
+
+		prebuildcommands { "cd \"vespertine/vendor/LuaJIT/src\"", "msvcbuild.bat %{cfg.buildcfg:lower()} static" }
 
 	configuration { "gmake" }
 		buildoptions { "-std=c++11" }
