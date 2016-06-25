@@ -165,6 +165,7 @@ MRuby::Build.new('host-debug') do |conf|
 
   # C compiler settings
   conf.cc.defines = %w(MRB_ENABLE_DEBUG_HOOK)
+  conf.cc.flags.first[conf.cc.flags.first.index "/MD"] = "/MDd"
 
   # Generate mruby debugger command (require mruby-eval)
   conf.gem :core => "mruby-bin-debugger"
