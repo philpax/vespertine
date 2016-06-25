@@ -23,7 +23,8 @@ project "Vespertine"
 		optimize "On"
 
 	configuration { "vs*" }
-		buildoptions { "/EHsc", "/Ob2", "/Zi" }
+		editandcontinue "off"
+		buildoptions { "/EHsc", "/Ob2" }
 
 	configuration { "gmake" }
 		buildoptions { "-std=c++11" }
