@@ -44,6 +44,6 @@ namespace vesp
 	// Quaternion types
 	typedef glm::quat			Quat;
 
-	template <typename T>
-	using UniquePtr = std::unique_ptr<T>;
+	template <typename T, typename... Args>
+	using UniquePtr = std::unique_ptr<T, Args...>;
 }

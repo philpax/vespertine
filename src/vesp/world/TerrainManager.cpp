@@ -20,8 +20,8 @@ void TerrainManager::Load(StringView const path)
 	auto imageData = file.Read<U8>();
 
 	S32 xSize = 0, ySize = 0, comp = 0;
-	auto data = stbi_load_from_memory(
-		imageData.data(), imageData.size(), &xSize, &ySize, &comp, 1);
+	auto data = UniquePtr<stbi_uc, decltype(&stbi_image_free)>(stbi_load_from_memory(
+		imageData.data(), imageData.size(), &xSize, &ySize, &comp, 1), &stbi_image_free);
 
 	VESP_ASSERT(data);
 
@@ -40,7 +40,7 @@ void TerrainManager::Load(StringView const path)
 	
 	auto Sample = [&](S32 x, S32 y) -> graphics::Vertex
 	{
-		auto height = data[GetIndex(x, y)];
+		auto height = data.get()[GetIndex(x, y)];
 
 		graphics::Vertex v;
 		v.position = Vec3(x, height / 2.0f, y);
@@ -75,8 +75,6 @@ void TerrainManager::Load(StringView const path)
 	VESP_ENFORCE(this->terrainMesh_.Create(vertices, indices));
 	this->terrainMesh_.SetVertexShader(shaderManager->GetVertexShader("default"));
 	this->terrainMesh_.SetPixelShader(shaderManager->GetPixelShader("grid"));
-
-	stbi_image_free(data);
 }
 
 void TerrainManager::Draw()
