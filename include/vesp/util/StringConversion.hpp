@@ -6,7 +6,7 @@
 #include "vesp/String.hpp"
 
 namespace vesp { namespace util {
-	inline String WideToMulti(wchar_t const* str, uint32_t cp = CP_ACP)
+	inline String WideToMulti(wchar_t const* str, uint32_t cp = CP_UTF8)
 	{
 		int len = WideCharToMultiByte(cp, 0, str, -1, 0, 0, 0, 0);
 
@@ -26,7 +26,7 @@ namespace vesp { namespace util {
 		return ret;
 	}
 
-	inline WideString MultiToWide(char const* str, uint32_t cp = CP_ACP)
+	inline WideString MultiToWide(char const* str, uint32_t cp = CP_UTF8)
 	{
 		int len = MultiByteToWideChar(cp, 0, str, -1, 0, 0);
 

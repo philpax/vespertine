@@ -79,7 +79,7 @@ namespace vesp { namespace graphics {
 
 		VESP_ENFORCE(atom != 0 && "Failed to register window class");
 
-		auto wideTitle = util::MultiToWide(title, CP_UTF8);
+		auto wideTitle = util::MultiToWide(title);
 		this->hwnd_ = CreateWindowW(className, wideTitle.data(),
 			WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
 			size.x, size.y, nullptr, nullptr, nullptr, this);
@@ -113,7 +113,7 @@ namespace vesp { namespace graphics {
 
 	void Window::SetTitle(RawStringPtr title)
 	{
-		auto wideString = util::MultiToWide(title, CP_UTF8);
+		auto wideString = util::MultiToWide(title);
 		SetWindowTextW(this->hwnd_, wideString.data());
 	}
 
