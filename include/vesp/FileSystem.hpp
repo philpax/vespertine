@@ -4,6 +4,7 @@
 #include "vesp/Types.hpp"
 #include "vesp/Containers.hpp"
 #include "vesp/String.hpp"
+#include "vesp/Assert.hpp"
 
 namespace vesp
 {
@@ -24,6 +25,18 @@ namespace vesp
 
 			void Write(ArrayView<U8> const array);
 			U32 Read(ArrayView<U8> array);
+
+			template <typename T>
+			Vector<T> Read()
+			{
+				VESP_ASSERT(this->Size() % sizeof(T) == 0);
+
+				Vector<T> ret(this->Size() / sizeof(T));
+				this->Read(ArrayView<T>(ret));
+
+				return ret;
+			}
+
 			U32 Size();
 			bool Exists();
 			void Flush();
@@ -36,7 +49,5 @@ namespace vesp
 
 		void Close(File& file);
 		bool Exists(StringView fileName);
-
-		void Read(StringView fileName, String& output);
 	};
 }

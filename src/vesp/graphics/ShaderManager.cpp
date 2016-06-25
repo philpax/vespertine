@@ -21,11 +21,12 @@ namespace vesp { namespace graphics {
 			extension = ".psh";
 			break;
 		}
+		
 		auto filePath = Concat(basePath, extension);
+		auto file = FileSystem::Get()->Open(filePath, "r");
+		VESP_ASSERT(file.Exists());
 
-		String shaderContents;
-		VESP_ASSERT(FileSystem::Get()->Exists(filePath));
-		FileSystem::Get()->Read(filePath, shaderContents);
+		auto shaderContents = file.Read<StringByte>();
 
 		D3D11_INPUT_ELEMENT_DESC layout[] =
 		{

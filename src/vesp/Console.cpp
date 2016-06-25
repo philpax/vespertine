@@ -25,8 +25,8 @@ namespace vesp {
 		{
 			LogInfo("Running autoexec");
 
-			String autoExec;
-			FileSystem::Get()->Read(fileName, autoExec);
+			auto autoExecFile = FileSystem::Get()->Open(fileName, "r");
+			auto autoExec = autoExecFile.Read<StringByte>();
 
 			this->module_->Execute(autoExec);
 		}

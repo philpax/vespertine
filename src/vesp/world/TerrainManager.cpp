@@ -16,10 +16,8 @@ TerrainManager::TerrainManager()
 
 void TerrainManager::Load(StringView const path)
 {
-	Vector<U8> imageData;
-	auto f = FileSystem::Get()->Open(path, "rb");
-	imageData.resize(f.Size());
-	f.Read(imageData);
+	auto file = FileSystem::Get()->Open(path, "rb");
+	auto imageData = file.Read<U8>();
 
 	S32 xSize = 0, ySize = 0, comp = 0;
 	auto data = stbi_load_from_memory(

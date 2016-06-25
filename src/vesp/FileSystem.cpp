@@ -84,16 +84,4 @@ namespace vesp
 		auto wideString = util::MultiToWide(cString.get());
 		return GetFileAttributesW(wideString.data()) != INVALID_FILE_ATTRIBUTES;
 	}
-
-	void FileSystem::Read(StringView fileName, String& output)
-	{
-		auto file = this->Open(fileName, "r");
-
-		VESP_ENFORCE(file.Exists());
-		
-		auto size = file.Size();
-		output.clear();
-		output.resize(size);
-		file.Read(ArrayView<StringByte>(output));
-	}
 }

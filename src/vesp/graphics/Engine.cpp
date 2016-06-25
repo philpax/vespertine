@@ -481,10 +481,7 @@ namespace vesp { namespace graphics {
 					return;
 				}
 
-				Vector<Vertex> vertices;
-
-				vertices.resize(file.Size() / sizeof(Vertex));
-				file.Read(ArrayView<Vertex>(vertices));
+				auto vertices = file.Read<Vertex>();
 
 				D3D_PRIMITIVE_TOPOLOGY topology;
 				auto& topologyString = args[1];
