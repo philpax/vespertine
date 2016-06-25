@@ -37,9 +37,9 @@ namespace vesp
 				return ret;
 			}
 
-			U32 Size();
-			bool Exists();
-			void Flush();
+			U32 Size() const;
+			bool Exists() const;
+			void Flush() const;
 
 		private:
 			FILE* file_;
@@ -48,6 +48,6 @@ namespace vesp
 		File Open(StringView fileName, RawStringPtr mode);
 
 		void Close(File& file);
-		bool Exists(StringView fileName);
+		bool Exists(StringView fileName) const;
 	};
 }

@@ -42,7 +42,7 @@ namespace vesp
 		return fread(array.data, 1, array.size, this->file_);
 	}
 
-	U32 FileSystem::File::Size()
+	U32 FileSystem::File::Size() const
 	{
 		auto currentPosition = ftell(this->file_);
 
@@ -53,12 +53,12 @@ namespace vesp
 		return count;
 	}
 	
-	bool FileSystem::File::Exists()
+	bool FileSystem::File::Exists() const
 	{
 		return this->file_ != nullptr;
 	}
 
-	void FileSystem::File::Flush()
+	void FileSystem::File::Flush() const
 	{
 		fflush(this->file_);
 	}
@@ -78,7 +78,7 @@ namespace vesp
 		file.file_ = nullptr;
 	}
 
-	bool FileSystem::Exists(StringView fileName)
+	bool FileSystem::Exists(StringView fileName) const
 	{
 		auto cString = ToCString(fileName);
 		auto wideString = util::MultiToWide(cString.get());
