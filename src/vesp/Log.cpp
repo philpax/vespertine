@@ -12,9 +12,9 @@ namespace vesp
 	const char* LogTypeStrings[] = { VESP_LOG_TYPES };
 #undef LOG_TYPE
 
-	Logger::Logger(RawStringPtr path)
+	Logger::Logger(RawStringPtr path) :
+		logFile_(FileSystem::Get()->Open(path, FileSystem::Mode::Append))
 	{
-		this->logFile_ = FileSystem::Get()->Open(path, FileSystem::Mode::Append);
 	}
 
 	Logger::~Logger()

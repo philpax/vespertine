@@ -9,8 +9,9 @@ namespace vesp
 {
 	// Temporary implementation based on the standard library
 	// Will switch to more appropriate measures when necessary
-	FileSystem::File::File()
+	FileSystem::File::File(FILE* file)
 	{
+		this->file_ = file;
 	}
 
 	FileSystem::File::File(File&& rhs)
@@ -65,8 +66,6 @@ namespace vesp
 
 	FileSystem::File FileSystem::Open(StringView fileName, Mode::Enum mode)
 	{
-		File file;
-
 		char modeString[3] = { '\0' };
 		if (mode & Mode::Read)
 			modeString[0] = 'r';
@@ -81,9 +80,10 @@ namespace vesp
 			modeString[1] = 'b';
 
 		auto cString = ToCString(fileName);
-		fopen_s(&file.file_, cString.get(), modeString);
+		FILE* filePtr;
+		fopen_s(&filePtr, cString.get(), modeString);
 
-		return file;
+		return File(filePtr);
 	}
 
 	void FileSystem::Close(FileSystem::File& file)

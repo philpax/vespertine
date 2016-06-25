@@ -27,7 +27,10 @@ namespace vesp
 		{
 		public:
 			friend class FileSystem;
-			File();
+		private: 
+			File(FILE* file);
+			File() = delete;
+		public:
 			File(File&& rhs);
 			~File();
 
