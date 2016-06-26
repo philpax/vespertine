@@ -26,7 +26,7 @@ project "Vespertine"
 		editandcontinue "off"
 		buildoptions { "/EHsc", "/Ob2" }
 
-		prebuildcommands { "cd \"vespertine/vendor/LuaJIT/src\"", "msvcbuild.bat %{cfg.buildcfg:lower()} static" }
+		prebuildcommands { "cd \"vespertine/vendor/LuaJIT/src\"", "If Not Exist \"lua51.lib\" (msvcbuild.bat %{cfg.buildcfg:lower()} static)" }
 
 	configuration { "gmake" }
 		buildoptions { "-std=c++11" }
