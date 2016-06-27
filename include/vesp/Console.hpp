@@ -30,9 +30,10 @@ namespace vesp {
 
 		void Draw();
 
+		script::Module* GetModule();
+
 	private:
 		void ConsolePress(float state);
-
 	
 		struct Message
 		{

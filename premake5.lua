@@ -10,7 +10,7 @@ project "Vespertine"
 	includedirs { "include/" }
 	files { "include/**.hpp", "include/**.h", "src/**.cpp" }
 	flags { "FatalWarnings", "MultiProcessorCompile" }
-	defines { "NOMINMAX", "_USE_MATH_DEFINES", "Symbols" }
+	defines { "NOMINMAX", "_USE_MATH_DEFINES", "Symbols", "SOL_NO_EXCEPTIONS", "SOL_NO_RTTI" }
 	exceptionhandling "Off"
 	rtti "Off"
 

@@ -35,6 +35,8 @@ namespace vesp
 
 		world::TerrainManager::Create();
 
+		Console::Get()->GetModule()->GetState().set_function("quit", &vesp::Quit);
+
 		return true;
 	}
 

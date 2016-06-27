@@ -1,7 +1,6 @@
 #include "vesp/Console.hpp"
 #include "vesp/Containers.hpp"
 #include "vesp/Log.hpp"
-#include "vesp/Main.hpp"
 
 #include "vesp/graphics/imgui.h"
 #include "vesp/graphics/Engine.hpp"
@@ -101,9 +100,14 @@ namespace vesp {
 		ImGui::End();
 	}
 
+	script::Module* Console::GetModule()
+	{
+		return this->module_.get();
+	}
+
 	void Console::Execute(StringView code)
 	{
-		// TODO: Reimplement
+		this->GetModule()->RunString(code);
 	}
 
 	void Console::ConsolePress(float state)
