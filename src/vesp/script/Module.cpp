@@ -63,7 +63,13 @@ namespace vesp { namespace script {
 		auto fn = loadResult.get<sol::protected_function>();
 		fn.error_handler = this->state_.registry()["ModuleErrorHandler"];
 
-		fn();
+		auto runResult = fn();
+
+		if (runResult.valid())
+		{
+			auto runResultStr = runResult.get<std::string>();
+			LogInfo("%s", runResultStr.c_str());
+		}
 	}
 
 } }
