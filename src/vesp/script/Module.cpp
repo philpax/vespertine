@@ -74,7 +74,7 @@ namespace vesp { namespace script {
 
 		if (runResult.valid())
 		{
-			auto runResultStr = runResult.get<std::string>();
+			std::string runResultStr = this->state_["tostring"](sol::object(runResult.lua_state(), runResult.stack_index()));
 			LogInfo("%s", runResultStr.c_str());
 		}
 	}
