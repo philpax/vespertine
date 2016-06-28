@@ -50,9 +50,16 @@ namespace vesp { namespace script {
 
 	void Module::RunString(StringView code)
 	{
+		// Try loading with return prefixed
+		auto codeWithReturn = Concat("return ", code);
 		auto nameCString = ToCString(this->title_);
-		auto loadResult = this->state_.load_buffer(code.data, code.size, nameCString.get());
+		auto loadResult = this->state_.load_buffer(codeWithReturn.data(), codeWithReturn.size(), nameCString.get());
 
+		// If that didn't work, try loading original code
+		if (!loadResult.valid())
+			loadResult = this->state_.load_buffer(code.data, code.size, nameCString.get());
+
+		// If that didn't work, error
 		if (!loadResult.valid())
 		{
 			auto errorStr = loadResult.get<std::string>();
