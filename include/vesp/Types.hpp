@@ -46,6 +46,27 @@ namespace vesp
 
 	template <typename T, typename... Args>
 	using UniquePtr = std::unique_ptr<T, Args...>;
+
+	template<class T>
+	struct AlignedDeleter
+	{
+		void operator()(T* data) const
+		{
+			data->~T();
+			_aligned_free(data);
+		}
+	};
+
+	template <typename T>
+	using AlignedUniquePtr = UniquePtr<T, AlignedDeleter<T>>;
+
+	template <typename T, typename... Args>
+	AlignedUniquePtr<T> MakeAlignedUnique(Args&&... args)
+	{
+		auto ptr = reinterpret_cast<T*>(_aligned_malloc(sizeof(T), alignof(T)));
+		new (ptr) T(args...);
+		return AlignedUniquePtr<T> {ptr};
+	}
 }
 
 #define UniquePtrWithDeleter(T, ptr, deleter) \
