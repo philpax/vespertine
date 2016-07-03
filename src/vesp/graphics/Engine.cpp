@@ -14,6 +14,7 @@
 #include "vesp/math/Util.hpp"
 
 #include "vesp/world/HeightMapTerrain.hpp"
+#include "vesp/world/ScalarFieldPolygoniser.hpp"
 
 #include "vesp/Log.hpp"
 #include "vesp/Assert.hpp"
@@ -31,6 +32,8 @@ namespace vesp { namespace graphics {
 	IDXGISwapChain* Engine::SwapChain;
 	ID3D11Device* Engine::Device;
 	ID3D11DeviceContext* Engine::ImmediateContext;
+
+	AlignedUniquePtr<world::ScalarFieldPolygoniser> polygoniser;
 
 	Engine::Engine(RawStringPtr title)
 	{
@@ -62,6 +65,9 @@ namespace vesp { namespace graphics {
 		this->CreateBlendState();
 		this->CreateSamplerState();
 		this->CreateTestData();
+
+		polygoniser = MakeAlignedUnique<world::ScalarFieldPolygoniser>();
+		polygoniser->Load("");
 
 		ImGui_ImplDX11_Init(
 			this->window_->GetSystemRepresentation(), Device, ImmediateContext);
@@ -128,6 +134,7 @@ namespace vesp { namespace graphics {
 		freeCamera->Update();
 
 		world::HeightMapTerrain::Get()->Draw();
+		polygoniser->Draw();
 
 		for (auto& mesh : this->meshes_)
 			mesh.Draw();
