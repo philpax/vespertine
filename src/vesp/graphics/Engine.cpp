@@ -13,7 +13,7 @@
 #include "vesp/math/Matrix.hpp"
 #include "vesp/math/Util.hpp"
 
-#include "vesp/world/TerrainManager.hpp"
+#include "vesp/world/HeightMapTerrain.hpp"
 
 #include "vesp/Log.hpp"
 #include "vesp/Assert.hpp"
@@ -127,7 +127,7 @@ namespace vesp { namespace graphics {
 		auto freeCamera = static_cast<FreeCamera*>(this->camera_.get());
 		freeCamera->Update();
 
-		world::TerrainManager::Get()->Draw();
+		world::HeightMapTerrain::Get()->Draw();
 
 		for (auto& mesh : this->meshes_)
 			mesh.Draw();

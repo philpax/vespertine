@@ -8,10 +8,10 @@
 
 namespace vesp { namespace world {
 
-	class TerrainManager : public util::GlobalSystem<TerrainManager>
+	class HeightMapTerrain : public util::GlobalSystem<HeightMapTerrain>
 	{
 	public:
-		TerrainManager();
+		HeightMapTerrain();
 
 		void Load(StringView const path);
 		void Draw();

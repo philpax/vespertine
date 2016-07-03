@@ -1,4 +1,4 @@
-#include "vesp/world/TerrainManager.hpp"
+#include "vesp/world/HeightMapTerrain.hpp"
 
 #include "vesp/graphics/stb_image.h"
 #include "vesp/graphics/ShaderManager.hpp"
@@ -9,12 +9,12 @@
 
 namespace vesp { namespace world {
 
-TerrainManager::TerrainManager()
+HeightMapTerrain::HeightMapTerrain()
 {
 	this->Load("data/heightmap.png");
 }
 
-void TerrainManager::Load(StringView const path)
+void HeightMapTerrain::Load(StringView const path)
 {
 	auto file = FileSystem::Get()->Open(path, FileSystem::Mode::Enum(FileSystem::Mode::Read | FileSystem::Mode::Binary));
 	auto imageData = file.Read<U8>();
@@ -78,7 +78,7 @@ void TerrainManager::Load(StringView const path)
 	this->terrainMesh_.SetPixelShader(shaderManager->GetPixelShader("grid"));
 }
 
-void TerrainManager::Draw()
+void HeightMapTerrain::Draw()
 {
 	this->terrainMesh_.Draw();
 }

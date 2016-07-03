@@ -8,7 +8,7 @@
 #include "vesp/graphics/Engine.hpp"
 #include "vesp/graphics/Window.hpp"
 
-#include "vesp/world/TerrainManager.hpp"
+#include "vesp/world/HeightMapTerrain.hpp"
 
 #include "vesp/math/Vector.hpp"
 
@@ -33,7 +33,7 @@ namespace vesp
 		graphics::Engine::Create(name);
 		graphics::Engine::Get()->Initialize();
 
-		world::TerrainManager::Create();
+		world::HeightMapTerrain::Create();
 
 		Console::Get()->GetModule()->GetState().set_function("quit", &vesp::Quit);
 
@@ -42,7 +42,7 @@ namespace vesp
 
 	void Shutdown()
 	{
-		world::TerrainManager::Destroy();
+		world::HeightMapTerrain::Destroy();
 
 		graphics::Engine::Destroy();
 
