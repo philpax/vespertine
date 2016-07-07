@@ -8468,6 +8468,7 @@ namespace sol {
 		basic_object& operator=(basic_object&&) = default;
 		basic_object(const stack_reference& r) noexcept : basic_object(r.lua_state(), r.stack_index()) {}
 		basic_object(stack_reference&& r) noexcept : basic_object(r.lua_state(), r.stack_index()) {}
+		basic_object(const protected_function_result& r) noexcept : basic_object(r.lua_state(), r.stack_index()) {}
 		basic_object(lua_State* L, int index = -1) noexcept : base_t(L, index) {}
 
 		template<typename T>
