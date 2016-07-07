@@ -3,6 +3,8 @@
 #include "vesp/Containers.hpp"
 #include "vesp/util/MurmurHash.hpp"
 
+#include <string>
+
 namespace vesp 
 {
 	using String = Vector<StringByte>;
@@ -13,6 +15,11 @@ namespace vesp
 	public:
 		StringView(RawStringPtr ptr)
 			: ArrayView(const_cast<StringByte*>(ptr), strlen(ptr))
+		{
+		}
+
+		StringView(std::string const& s)
+			: StringView(s.c_str())
 		{
 		}
 
