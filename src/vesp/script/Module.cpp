@@ -48,35 +48,45 @@ namespace vesp { namespace script {
 		return 0;
 	}
 
+	Module::ParseResult Module::ParseString(StringView code)
+	{
+		auto nameCString = ToCString(this->title_);
+		return this->state_.load_buffer(code.data, code.size, nameCString.get());
+	}
+
+	Module::FnResult Module::RunParseResult(ParseResult& result)
+	{
+		auto fn = result.get<sol::protected_function>();
+		fn.error_handler = this->state_.registry()["ModuleErrorHandler"];
+
+		return fn();
+	}
+
 	void Module::RunString(StringView code)
 	{
-		// Try loading with return prefixed
-		auto codeWithReturn = Concat("return ", code);
-		auto nameCString = ToCString(this->title_);
-		auto loadResult = this->state_.load_buffer(codeWithReturn.data(), codeWithReturn.size(), nameCString.get());
-
-		// If that didn't work, try loading original code
-		if (!loadResult.valid())
-			loadResult = this->state_.load_buffer(code.data, code.size, nameCString.get());
+		auto parseResult = this->ParseString(code);
 
 		// If that didn't work, error
-		if (!loadResult.valid())
+		if (!parseResult.valid())
 		{
-			auto errorStr = loadResult.get<std::string>();
+			auto errorStr = parseResult.get<std::string>();
 			LogError("Failed to load module %.*s: %s", this->title_.size(), this->title_.data(), errorStr.c_str());
 			return;
 		}
 
-		auto fn = loadResult.get<sol::protected_function>();
-		fn.error_handler = this->state_.registry()["ModuleErrorHandler"];
-
-		auto runResult = fn();
+		auto runResult = this->RunParseResult(parseResult);
 
 		if (runResult.valid())
 		{
-			std::string runResultStr = this->state_["tostring"](sol::object(runResult.lua_state(), runResult.stack_index()));
-			LogInfo("%s", runResultStr.c_str());
+			auto resultStr = this->ToString(runResult);
+			LogInfo("%.*s", resultStr.size(), resultStr.data());
 		}
+	}
+
+	String Module::ToString(Object object)
+	{
+		std::string result = this->state_["tostring"](object);
+		return StringView(result).CopyToVector();
 	}
 
 } }

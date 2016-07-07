@@ -107,7 +107,29 @@ namespace vesp {
 
 	void Console::Execute(StringView code)
 	{
-		this->GetModule()->RunString(code);
+		// Try loading with return prefixed
+		auto codeWithReturn = Concat("return ", code);
+		auto parseResult = this->GetModule()->ParseString(codeWithReturn);
+
+		// If that doesn't work, try loading without return
+		if (!parseResult.valid())
+			parseResult = this->GetModule()->ParseString(code);
+
+		// If it still doesn't work, log and error
+		if (!parseResult.valid())
+		{
+			auto errorStr = parseResult.get<std::string>();
+			LogError("Failed to parse console input: %s", errorStr.c_str());
+			return;
+		}
+
+		auto runResult = this->GetModule()->RunParseResult(parseResult);
+
+		if (runResult.valid())
+		{
+			auto resultStr = this->GetModule()->ToString(runResult);
+			LogInfo("%.*s", resultStr.size(), resultStr.data());
+		}
 	}
 
 	void Console::ConsolePress(float state)
