@@ -81,8 +81,6 @@ Vector<graphics::Vertex> ScalarField::Polygonise(float isolevel)
 // With credits to Paul Bourke: http://paulbourke.net/geometry/polygonise/
 void ScalarField::PolygoniseCell(GRIDCELL grid, float isolevel, Vector<graphics::Vertex>& vertices)
 {
-	Vec3 vertlist[12];
-
 	int edgeTable[256] = {
 		0x000, 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c,
 		0x80c, 0x905, 0xa0f, 0xb06, 0xc0a, 0xd03, 0xe09, 0xf00,
@@ -434,7 +432,7 @@ void ScalarField::PolygoniseCell(GRIDCELL grid, float isolevel, Vector<graphics:
 
 	for (int i = 0; triTable[cubeindex][i] != -1; i += 3)
 	{
-		for (int j = 0; j < 3; ++j)
+		for (int j = 3; j --> 0;)
 			vertices.push_back(vertexList[triTable[cubeindex][i + j]]);
 	}
 }
