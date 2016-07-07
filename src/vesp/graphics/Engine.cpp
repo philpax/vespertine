@@ -14,7 +14,7 @@
 #include "vesp/math/Util.hpp"
 
 #include "vesp/world/HeightMapTerrain.hpp"
-#include "vesp/world/ScalarFieldPolygoniser.hpp"
+#include "vesp/world/ScalarField.hpp"
 
 #include "vesp/Log.hpp"
 #include "vesp/Assert.hpp"
@@ -32,8 +32,6 @@ namespace vesp { namespace graphics {
 	IDXGISwapChain* Engine::SwapChain;
 	ID3D11Device* Engine::Device;
 	ID3D11DeviceContext* Engine::ImmediateContext;
-
-	AlignedUniquePtr<world::ScalarFieldPolygoniser> polygoniser;
 
 	Engine::Engine(RawStringPtr title)
 	{
@@ -65,9 +63,6 @@ namespace vesp { namespace graphics {
 		this->CreateBlendState();
 		this->CreateSamplerState();
 		this->CreateTestData();
-
-		polygoniser = MakeAlignedUnique<world::ScalarFieldPolygoniser>();
-		polygoniser->Load("");
 
 		ImGui_ImplDX11_Init(
 			this->window_->GetSystemRepresentation(), Device, ImmediateContext);
@@ -134,7 +129,6 @@ namespace vesp { namespace graphics {
 		freeCamera->Update();
 
 		world::HeightMapTerrain::Get()->Draw();
-		polygoniser->Draw();
 
 		for (auto& mesh : this->meshes_)
 			mesh.Draw();
@@ -483,6 +477,16 @@ namespace vesp { namespace graphics {
 		screenMesh.Create(screenVertices);
 		screenMesh.SetVertexShader(shaderManager->GetVertexShader("identity"));
 		screenMesh.SetPixelShader(shaderManager->GetPixelShader("composite"));
+
+		auto scalarField = MakeAlignedUnique<world::ScalarField>();
+		auto scalarFieldVerts = scalarField->Polygonise(0.0f);
+
+		graphics::Mesh scalarFieldMesh;
+		scalarFieldMesh.Create(scalarFieldVerts);
+		scalarFieldMesh.SetVertexShader(shaderManager->GetVertexShader("default"));
+		scalarFieldMesh.SetPixelShader(shaderManager->GetPixelShader("default"));
+
+		this->meshes_.push_back(scalarFieldMesh);
 	}
 
 	void Engine::DestroyDepthStencil()

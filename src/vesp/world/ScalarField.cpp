@@ -1,54 +1,54 @@
-#include "vesp/world/ScalarFieldPolygoniser.hpp"
+#include "vesp/world/ScalarField.hpp"
 
-#include "vesp/graphics/stb_image.h"
 #include "vesp/graphics/ShaderManager.hpp"
-
-#include "vesp/math/Util.hpp"
-
-#include "vesp/FileSystem.hpp"
-#include "vesp/TaskScheduler.hpp"
 
 namespace vesp { namespace world {
 
-ScalarFieldPolygoniser::ScalarFieldPolygoniser()
+ScalarField::ScalarField()
 {
-}
+	const size_t CubeSize = 32;
+	this->xSize_ = this->ySize_ = this->zSize_ = CubeSize;
 
-void ScalarFieldPolygoniser::Load(StringView const path)
-{
-	size_t cubeSize = 32;
+	auto xSize = this->xSize_;
+	auto ySize = this->ySize_;
+	auto zSize = this->zSize_;
 
-	util::Timer timer;
-
-	auto data = std::make_unique<float[]>(cubeSize*cubeSize*cubeSize);
-	auto dataPtr = data.get();
-	auto idx = [&](int i, int j, int k) { return i * (cubeSize * cubeSize) + j * (cubeSize) + k; };
+	this->data_ = std::make_unique<float[]>(xSize*ySize*zSize);
+	auto dataPtr = this->data_.get();
+	auto idx = [=](int i, int j, int k) { return i * (ySize * xSize) + j * (xSize) + k; };
 	
-	for (size_t k = 0; k < cubeSize; k++)
+	auto minDim = float(std::min({xSize, ySize, zSize}));
+	for (auto k = 0u; k < zSize; k++)
 	{
-		for (size_t j = 0; j < cubeSize; j++)
+		for (auto j = 0u; j < ySize; j++)
 		{
-			for (size_t i = 0; i < cubeSize; i++)
+			for (auto i = 0u; i < xSize; i++)
 			{
-				auto p = Vec3(i - cubeSize/2.0f, j - cubeSize/2.0f, k - cubeSize/2.0f);
-				auto f = (glm::length(p) / cubeSize) - 0.25f;
+				auto p = Vec3(i - xSize/2.0f, j - ySize/2.0f, k - zSize/2.0f);
+				auto f = (glm::length(p) / minDim) - 0.25f;
 				dataPtr[idx(i, j, k)] = f;
 			}
 		}
 	}
+}
 
-	timer.Restart();
+Vector<graphics::Vertex> ScalarField::Polygonise(float isolevel)
+{
+	auto xSize = this->xSize_;
+	auto ySize = this->ySize_;
+	auto zSize = this->zSize_;
 
-	// Polygonise the grid 
-	LogInfo("Polygonising data");
 	Vector<graphics::Vertex> vertices;
-	vertices.reserve(cubeSize * cubeSize * cubeSize);
+	vertices.reserve(xSize*ySize*zSize);
 
-	for (size_t k = 0; k < cubeSize - 1; k++)
+	auto data = this->data_.get();
+	auto idx = [=](int i, int j, int k) { return i * (ySize * xSize) + j * (xSize)+k; };
+
+	for (auto k = 0u; k < zSize - 1; k++)
 	{
-		for (size_t j = 0; j < cubeSize - 1; j++)
+		for (auto j = 0u; j < ySize - 1; j++)
 		{
-			for (size_t i = 0; i < cubeSize - 1; i++)
+			for (auto i = 0u; i < xSize - 1; i++)
 			{
 				GRIDCELL grid;
 
@@ -68,28 +68,18 @@ void ScalarFieldPolygoniser::Load(StringView const path)
 				updateGridcell(6, 1, 1, 1);
 				updateGridcell(7, 0, 1, 1);
 
-				this->Polygonise(grid, 0.0f, vertices);
+				this->PolygoniseCell(grid, isolevel, vertices);
 			}
 		}
 	}
 
-	LogInfo("Time taken: %.02f seconds", timer.GetSeconds());
-	LogInfo("Vertices: %d", vertices.size());
+	LogInfo("Polygonised, %d vertices", vertices);
 
-	auto shaderManager = graphics::ShaderManager::Get();
-	this->mesh_.Create(vertices);
-	this->mesh_.SetVertexShader(shaderManager->GetVertexShader("default"));
-	this->mesh_.SetPixelShader(shaderManager->GetPixelShader("default"));
-}
-
-void ScalarFieldPolygoniser::Draw()
-{
-	if (this->mesh_.Exists())
-		this->mesh_.Draw();
+	return vertices;
 }
 
 // With credits to Paul Bourke: http://paulbourke.net/geometry/polygonise/
-void ScalarFieldPolygoniser::Polygonise(GRIDCELL grid, double isolevel, std::vector<graphics::Vertex>& vertices)
+void ScalarField::PolygoniseCell(GRIDCELL grid, float isolevel, Vector<graphics::Vertex>& vertices)
 {
 	Vec3 vertlist[12];
 
@@ -404,7 +394,7 @@ void ScalarFieldPolygoniser::Polygonise(GRIDCELL grid, double isolevel, std::vec
 	Return the point between two points in the same ratio as
 	isolevel is between valp1 and valp2
 	*/
-	auto interpolate = [&](Vec3 p1, Vec3 p2, double valp1, double valp2)
+	auto interpolate = [&](Vec3 p1, Vec3 p2, float valp1, float valp2)
 	{
 		auto mu = static_cast<F32>((isolevel - valp1) / (valp2 - valp1));
 		Vec3 p = p1 + mu * (p2 - p1);
@@ -442,8 +432,6 @@ void ScalarFieldPolygoniser::Polygonise(GRIDCELL grid, double isolevel, std::vec
 	if (edgeTable[cubeindex] & 2048)
 		vertexList[11] = interpolate(grid.p[3], grid.p[7], grid.val[3], grid.val[7]);
 
-	graphics::Vertex v;
-	v.colour = graphics::Colour::White;
 	for (int i = 0; triTable[cubeindex][i] != -1; i += 3)
 	{
 		for (int j = 0; j < 3; ++j)
