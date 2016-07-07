@@ -124,10 +124,15 @@ namespace vesp {
 		}
 
 		auto runResult = this->GetModule()->RunParseResult(parseResult);
+		auto runResultObj = sol::object(runResult);
 
 		if (runResult.valid())
 		{
-			auto resultStr = this->GetModule()->ToString(runResult);
+			// If it's a function, run it and use its result
+			if (runResultObj.is<sol::protected_function>())
+				runResultObj = runResult.get<sol::protected_function>()();
+
+			auto resultStr = this->GetModule()->ToString(runResultObj);
 			LogInfo("%.*s", resultStr.size(), resultStr.data());
 		}
 	}
