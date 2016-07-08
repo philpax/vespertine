@@ -7,21 +7,27 @@
 #include "vesp/graphics/Window.hpp"
 
 #include "vesp/math/Vector.hpp"
+#include <vesp/EventManager.hpp>
 
 namespace vesp {
 
 	Console::Console()
 	{
+		this->module_ = std::make_unique<script::Module>("console");
+
 		InputManager::Get()->Subscribe(
 			Action::Console, this, &Console::ConsolePress);
 
-		this->module_ = std::make_unique<script::Module>("console");
-		// TODO: Default functions (quit)
 		// TODO: Autoexec
 	}
 
 	Console::~Console()
 	{
+	}
+
+	void Console::PostInitialisation()
+	{
+		EventManager::Get()->Fire("Console.ReadyForBinding");
 	}
 
 	void Console::SetActive(bool active)

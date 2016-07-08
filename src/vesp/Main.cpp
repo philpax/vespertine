@@ -23,13 +23,14 @@ namespace vesp
 		FileSystem::Create();
 		Logger::Create("log.txt");
 
+		EventManager::Create();
 		InputManager::Create();
 
 		Console::Create();
+		Console::Get()->PostInitialisation();
+
 		LogInfo("Vespertine (%s %s)", __DATE__, __TIME__);
-
-		EventManager::Create();
-
+		
 		graphics::Engine::Create(name);
 		graphics::Engine::Get()->Initialize();
 

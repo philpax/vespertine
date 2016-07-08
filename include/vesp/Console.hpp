@@ -22,6 +22,8 @@ namespace vesp {
 		Console();
 		~Console();
 
+		void PostInitialisation();
+
 		void SetActive(bool active);
 		bool GetActive() const;
 
@@ -44,7 +46,7 @@ namespace vesp {
 		Deque<Message> messages_;
 		String output_;
 
-		UniquePtr<script::Module> module_;		
+		UniquePtr<script::Module> module_;
 
 		bool active_ = false;
 		bool inputNeedsFocus_ = false;
