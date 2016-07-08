@@ -12,15 +12,15 @@ namespace vesp
 	void EventManager::Subscribe(RawStringPtr eventName, EventHandler function)
 	{
 		auto hash = util::MurmurHash(eventName);
-		events_[hash].push_back(function);
+		this->events_[hash].push_back(function);
 	}
 
 	bool EventManager::Fire(RawStringPtr eventName, void const* argument)
 	{
 		auto hash = util::MurmurHash(eventName);
-		auto it = events_.find(hash);
+		auto it = this->events_.find(hash);
 
-		if (it == events_.end())
+		if (it == this->events_.end())
 			return true;
 
 		bool ret = true;
