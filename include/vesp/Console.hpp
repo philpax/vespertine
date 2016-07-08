@@ -47,6 +47,7 @@ namespace vesp {
 		UniquePtr<script::Module> module_;		
 
 		bool active_ = false;
+		bool inputNeedsFocus_ = false;
 		bool scrollToBottom_ = false;
 	};
 

@@ -26,6 +26,9 @@ namespace vesp {
 
 	void Console::SetActive(bool active)
 	{
+		if (!this->active_ && active)
+			this->inputNeedsFocus_ = true;
+
 		this->active_ = active;
 		
 		if (this->active_)
@@ -93,11 +96,18 @@ namespace vesp {
 					this->AddMessage(view, graphics::Colour::CornflowerBlue);
 					this->Execute(view);
 				}
+
+				this->inputNeedsFocus_ = true;
 			}
-			ImGui::SetKeyboardFocusHere();
+			
+			if (this->inputNeedsFocus_)
+				ImGui::SetKeyboardFocusHere();
+		
 			ImGui::PopItemWidth();
 		}
 		ImGui::End();
+
+		this->inputNeedsFocus_ = false;
 	}
 
 	script::Module* Console::GetModule()
