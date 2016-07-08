@@ -6,12 +6,20 @@
 #include "vesp/Assert.hpp"
 
 #include <Windowsx.h>
+#include <vesp/Console.hpp>
+#include <vesp/EventManager.hpp>
 
 namespace vesp
 {
 	InputManager::InputManager()
 	{
 		this->state_.assign(0);
+
+		EventManager::Get()->Subscribe("Console.ReadyForBinding", [&](const void*)
+		{
+			this->BindConsole();
+			return true;
+		});
 	}
 
 	InputManager::~InputManager()
@@ -172,6 +180,17 @@ namespace vesp
 		// position will not be at the centre as a result of GUI use)
 		if (this->guiLockCount_ == 0)
 			this->ResetCursorToCentre();
+	}
+
+	void InputManager::BindConsole()
+	{
+		auto& state = Console::Get()->GetModule()->GetState();
+		state["input"] = state.create_table();
+		state["input"]["dump"] = [&]()
+		{
+			for (U32 actionIndex = 0u; actionIndex < U32(Action::EndOfEnum); ++actionIndex)
+				LogInfo("%s: %f", ActionNames[actionIndex], this->GetState(Action(actionIndex)));
+		};
 	}
 
 	void InputManager::ResetCursorToCentre()

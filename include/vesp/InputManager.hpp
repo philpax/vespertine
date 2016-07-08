@@ -8,22 +8,31 @@
 
 struct tagMSG;
 
+#define ACTIONS \
+	ACTION(Forward), \
+	ACTION(Backward), \
+	ACTION(Left), \
+	ACTION(Right), \
+	ACTION(Boost), \
+	ACTION(CameraUp), \
+	ACTION(CameraDown), \
+	ACTION(CameraLeft), \
+	ACTION(CameraRight), \
+	ACTION(Console), \
+	ACTION(EndOfEnum)
+
 namespace vesp
 {
+#define ACTION(x) x
 	enum class Action : U8
 	{
-		Forward,
-		Backward,
-		Left,
-		Right,
-		Boost,
-		CameraUp,
-		CameraDown,
-		CameraLeft,
-		CameraRight,
-		Console,
-		EndOfEnum
+		ACTIONS
 	};
+#undef ACTION
+
+#define ACTION(x) #x
+	static const vesp::RawStringPtr ActionNames[] = { ACTIONS };
+#undef ACTION
 
 	class InputHandler 
 	{
@@ -58,6 +67,8 @@ namespace vesp
 		void SubscribeInternal(Action action, InputHandler* instance, InputHandler::Function handler);
 		void ResetCursorToCentre();
 
+		void BindConsole();
+
 		Array<U16, static_cast<U32>(Action::EndOfEnum)> state_;
 
 		struct Callback
@@ -71,3 +82,5 @@ namespace vesp
 		util::Timer lastFrameTimer_;
 	};
 }
+
+#undef ACTIONS
