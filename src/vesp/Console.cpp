@@ -150,15 +150,18 @@ namespace vesp {
 		auto runResult = this->GetModule()->RunParseResult(parseResult);
 		auto runResultObj = sol::object(runResult);
 
-		if (runResult.valid())
-		{
-			// If it's a function, run it and use its result
-			if (runResultObj.is<sol::protected_function>())
-				runResultObj = runResult.get<sol::protected_function>()();
+		if (!runResult.valid())
+			return;
 
-			auto resultStr = this->GetModule()->ToString(runResultObj);
-			LogInfo("%.*s", resultStr.size(), resultStr.data());
-		}
+		// If it's a function, run it and use its result
+		if (runResultObj.is<sol::protected_function>())
+			runResultObj = runResult.get<sol::protected_function>()();
+
+		if (runResultObj.is<sol::protected_function>() || !runResultObj.valid())
+			return;
+
+		auto resultStr = this->GetModule()->ToString(runResultObj);
+		LogInfo("%.*s", resultStr.size(), resultStr.data());
 	}
 
 	void Console::ConsolePress(float state)
