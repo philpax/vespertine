@@ -1,13 +1,17 @@
 #include "vesp/InputManager.hpp"
+#include "vesp/EventManager.hpp"
+#include "vesp/Console.hpp"
+
 #include "vesp/math/Util.hpp"
+
 #include "vesp/graphics/Engine.hpp"
 #include "vesp/graphics/Window.hpp"
+#include "vesp/graphics/imgui.h"
+
 #include "vesp/Log.hpp"
 #include "vesp/Assert.hpp"
 
 #include <Windowsx.h>
-#include <vesp/Console.hpp>
-#include <vesp/EventManager.hpp>
 
 namespace vesp
 {
@@ -20,6 +24,9 @@ namespace vesp
 			this->BindConsole();
 			return true;
 		});
+
+		EventManager::Get()->Subscribe(
+			"Render.Gui", [&](const void*) { this->Draw(); return true; });
 	}
 
 	InputManager::~InputManager()
@@ -191,6 +198,10 @@ namespace vesp
 			for (U32 actionIndex = 0u; actionIndex < U32(Action::EndOfEnum); ++actionIndex)
 				LogInfo("%s: %f", ActionNames[actionIndex], this->GetState(Action(actionIndex)));
 		};
+		state["input"]["window"] = [&]()
+		{
+			this->windowActive_ = !this->windowActive_;
+		};
 	}
 
 	void InputManager::ResetCursorToCentre()
@@ -208,5 +219,18 @@ namespace vesp
 	void InputManager::SubscribeInternal(Action action, InputHandler* instance, InputHandler::Function handler)
 	{
 		this->callbacks_[static_cast<U32>(action)].push_back({instance, handler});
+	}
+
+	void InputManager::Draw()
+	{
+		if (!this->windowActive_)
+			return;
+
+		ImGui::Begin("Input", &this->windowActive_);
+		{
+			for (U32 actionIndex = 0u; actionIndex < U32(Action::EndOfEnum); ++actionIndex)
+				ImGui::ProgressBar(this->GetState(Action(actionIndex)), ImVec2(-1, 0), ActionNames[actionIndex]);
+		}
+		ImGui::End();
 	}
 }

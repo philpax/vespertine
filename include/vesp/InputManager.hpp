@@ -68,6 +68,7 @@ namespace vesp
 		void ResetCursorToCentre();
 
 		void BindConsole();
+		void Draw();
 
 		Array<U16, static_cast<U32>(Action::EndOfEnum)> state_;
 
@@ -80,6 +81,8 @@ namespace vesp
 
 		U32 guiLockCount_ = 0;
 		util::Timer lastFrameTimer_;
+
+		bool windowActive_ = false;
 	};
 }
 
