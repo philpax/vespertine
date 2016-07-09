@@ -19,7 +19,7 @@ namespace vesp {
 			Action::Console, this, &Console::ConsolePress);
 
 		EventManager::Get()->Subscribe(
-			"Render.Gui", [&](const void* p) { return this->Draw(p); });
+			"Render.Gui", [&](const void*) { this->Draw(); return true; });
 
 		// TODO: Autoexec
 	}
@@ -61,10 +61,10 @@ namespace vesp {
 		this->scrollToBottom_ = true;
 	}
 
-	bool Console::Draw(const void*)
+	void Console::Draw()
 	{
 		if (!this->active_)
-			return true;
+			return;
 
 		Array<StringByte, 256> inputBuffer;	
 		inputBuffer.assign(0);
@@ -117,8 +117,6 @@ namespace vesp {
 		ImGui::End();
 
 		this->inputNeedsFocus_ = false;
-
-		return true;
 	}
 
 	script::Module* Console::GetModule()

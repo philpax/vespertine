@@ -33,7 +33,7 @@ namespace vesp {
 		script::Module* GetModule();
 
 	private:
-		bool Draw(const void*);
+		void Draw();
 		void ConsolePress(float state);
 	
 		struct Message
