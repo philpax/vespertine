@@ -146,6 +146,8 @@ namespace vesp
 
 		if (currentCursor != centre && !this->HasGuiLock())
 		{
+			this->ResetCursorToCentre();
+
 			// Calculate the new mouse inputs based on deltas
 			auto frameTime = this->lastFrameTimer_.GetSeconds();
 			Vec2 deltaCursor = (currentCursor - centre);
@@ -164,9 +166,6 @@ namespace vesp
 				this->SetState(Action::CameraUp, y);
 			else
 				this->SetState(Action::CameraDown, -y);
-
-			// Reset cursor to centre of window
-			SetCursorPos(centre.x, centre.y);
 		}
 
 		this->lastFrameTimer_.Restart();
