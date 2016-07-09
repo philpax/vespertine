@@ -151,21 +151,27 @@ namespace vesp
 			// Calculate the new mouse inputs based on deltas
 			auto frameTime = this->lastFrameTimer_.GetSeconds();
 			Vec2 deltaCursor = (currentCursor - centre);
-			deltaCursor *= frameTime;
-			deltaCursor *= 4.0f;
 
-			auto x = math::Clamp(deltaCursor.x, -1.0f, 1.0f);
-			auto y = -math::Clamp(deltaCursor.y, -1.0f, 1.0f);
+			// If we have more than a pixel's worth of movement in either axis,
+			// apply this
+			if ((std::abs(deltaCursor.x) + std::abs(deltaCursor.y)) > 2)
+			{
+				deltaCursor *= frameTime;
+				deltaCursor *= 4.0f;
 
-			if (x > 0)
-				this->SetState(Action::CameraRight, x);
-			else
-				this->SetState(Action::CameraLeft, -x);
+				auto x = math::Clamp(deltaCursor.x, -1.0f, 1.0f);
+				auto y = -math::Clamp(deltaCursor.y, -1.0f, 1.0f);
 
-			if (y > 0)
-				this->SetState(Action::CameraUp, y);
-			else
-				this->SetState(Action::CameraDown, -y);
+				if (x > 0)
+					this->SetState(Action::CameraRight, x);
+				else
+					this->SetState(Action::CameraLeft, -x);
+
+				if (y > 0)
+					this->SetState(Action::CameraUp, y);
+				else
+					this->SetState(Action::CameraDown, -y);
+			}
 		}
 
 		this->lastFrameTimer_.Restart();
