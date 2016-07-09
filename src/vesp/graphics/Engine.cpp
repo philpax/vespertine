@@ -19,6 +19,7 @@
 #include "vesp/Log.hpp"
 #include "vesp/Assert.hpp"
 #include "vesp/Console.hpp"
+#include "vesp/EventManager.hpp"
 
 #include <glm/gtc/noise.hpp>
 
@@ -199,7 +200,7 @@ namespace vesp { namespace graphics {
 		}
 		ImGui::End();
 
-		Console::Get()->Draw();
+		EventManager::Get()->Fire("Render.Gui");
 
 		ImGui::Render();
 		

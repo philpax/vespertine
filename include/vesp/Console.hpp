@@ -30,11 +30,10 @@ namespace vesp {
 		void AddMessage(StringView text, graphics::Colour colour = graphics::Colour::White);
 		void Execute(StringView code);
 
-		void Draw();
-
 		script::Module* GetModule();
 
 	private:
+		bool Draw(const void*);
 		void ConsolePress(float state);
 	
 		struct Message
