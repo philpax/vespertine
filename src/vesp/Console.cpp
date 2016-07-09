@@ -72,7 +72,7 @@ namespace vesp {
 		auto size = graphics::Engine::Get()->GetWindow()->GetSize() / 2;
 		ImGui::SetNextWindowSize(
 			ImVec2(float(size.x), float(size.y)), ImGuiSetCond_FirstUseEver);
-		ImGui::Begin("Console");
+		ImGui::Begin("Console", &this->active_);
 		{
 			ImGui::BeginChild("ScrollingRegion", ImVec2(0, -ImGui::GetItemsLineHeightWithSpacing()));
 			{
