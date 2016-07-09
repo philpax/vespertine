@@ -229,6 +229,13 @@ namespace vesp
 		{
 			for (U32 actionIndex = 0u; actionIndex < U32(Action::EndOfEnum); ++actionIndex)
 				ImGui::ProgressBar(this->GetState(Action(actionIndex)), ImVec2(-1, 0), ActionNames[actionIndex]);
+
+			POINT currentCursorPoint;
+			GetCursorPos(&currentCursorPoint);
+			ImGui::Text("Cursor position: %i, %i", currentCursorPoint.x, currentCursorPoint.y);
+
+			auto centre = graphics::Engine::Get()->GetWindow()->GetCentre();
+			ImGui::Text("Window centre: %i, %i", centre.x, centre.y);
 		}
 		ImGui::End();
 	}
