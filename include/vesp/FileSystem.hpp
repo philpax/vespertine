@@ -44,6 +44,7 @@ namespace vesp
 			template <typename T>
 			Vector<T> Read()
 			{
+				VESP_ASSERT(this->Exists());
 				VESP_ASSERT(this->Size() % sizeof(T) == 0);
 
 				Vector<T> ret(this->Size() / sizeof(T));
