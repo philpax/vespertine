@@ -73,7 +73,7 @@ Vector<graphics::Vertex> ScalarField::Polygonise(float isolevel)
 		}
 	}
 
-	LogInfo("Polygonised, %d vertices", vertices);
+	LogInfo("Polygonised, %d vertices", vertices.size());
 
 	return vertices;
 }
