@@ -480,6 +480,27 @@ namespace vesp { namespace graphics {
 		screenMesh.SetPixelShader(shaderManager->GetPixelShader("composite"));
 
 		auto scalarField = MakeAlignedUnique<world::ScalarField>();
+		{
+			const size_t CubeSize = 32;
+
+			auto data = std::make_unique<world::ScalarField::Scalar[]>(CubeSize*CubeSize*CubeSize);
+			auto dataPtr = data.get();
+			auto idx = [=](int i, int j, int k) { return i * (CubeSize * CubeSize) + j * (CubeSize)+k; };
+
+			for (auto k = 0u; k < CubeSize; k++)
+			{
+				for (auto j = 0u; j < CubeSize; j++)
+				{
+					for (auto i = 0u; i < CubeSize; i++)
+					{
+						auto p = Vec3(i - CubeSize / 2.0f, j - CubeSize / 2.0f, k - CubeSize / 2.0f);
+						auto f = (glm::length(p) / float(CubeSize)) - 0.25f;
+						dataPtr[idx(i, j, k)] = f;
+					}
+				}
+			}
+			scalarField->Load(data.get(), CubeSize, CubeSize, CubeSize);
+		}
 		auto scalarFieldVerts = scalarField->Polygonise(0.0f);
 
 		graphics::Mesh scalarFieldMesh;

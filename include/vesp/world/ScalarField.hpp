@@ -9,9 +9,12 @@ namespace vesp { namespace world {
 	class ScalarField
 	{
 	public:
+		typedef F32 Scalar;
+
 		ScalarField();
 
-		Vector<graphics::Vertex> Polygonise(float isolevel);
+		void Load(Scalar const* data, U32 xSize, U32 ySize, U32 zSize);
+		Vector<graphics::Vertex> Polygonise(Scalar isolevel);
 
 	private:
 		typedef struct
@@ -22,14 +25,14 @@ namespace vesp { namespace world {
 		typedef struct
 		{
 			Vec3 p[8];
-			float val[8];
+			Scalar val[8];
 		} GRIDCELL;
 
 		U32 xSize_;
 		U32 ySize_;
 		U32 zSize_;
 
-		UniquePtr<float[]> data_;
-		void PolygoniseCell(GRIDCELL grid, float isolevel, Vector<graphics::Vertex>& vertices);
+		UniquePtr<Scalar[]> data_;
+		void PolygoniseCell(GRIDCELL grid, Scalar isolevel, Vector<graphics::Vertex>& vertices);
 	};
 } }

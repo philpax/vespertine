@@ -6,33 +6,21 @@ namespace vesp { namespace world {
 
 ScalarField::ScalarField()
 {
-	const size_t CubeSize = 32;
-	this->xSize_ = this->ySize_ = this->zSize_ = CubeSize;
-
-	auto xSize = this->xSize_;
-	auto ySize = this->ySize_;
-	auto zSize = this->zSize_;
-
-	this->data_ = std::make_unique<float[]>(xSize*ySize*zSize);
-	auto dataPtr = this->data_.get();
-	auto idx = [=](int i, int j, int k) { return i * (ySize * xSize) + j * (xSize) + k; };
-	
-	auto minDim = float(std::min({xSize, ySize, zSize}));
-	for (auto k = 0u; k < zSize; k++)
-	{
-		for (auto j = 0u; j < ySize; j++)
-		{
-			for (auto i = 0u; i < xSize; i++)
-			{
-				auto p = Vec3(i - xSize/2.0f, j - ySize/2.0f, k - zSize/2.0f);
-				auto f = (glm::length(p) / minDim) - 0.25f;
-				dataPtr[idx(i, j, k)] = f;
-			}
-		}
-	}
 }
 
-Vector<graphics::Vertex> ScalarField::Polygonise(float isolevel)
+void ScalarField::Load(Scalar const* data, U32 xSize, U32 ySize, U32 zSize)
+{
+	const U32 count = xSize * ySize * zSize;
+
+	this->xSize_ = xSize;
+	this->ySize_ = ySize;
+	this->zSize_ = zSize;
+
+	this->data_.reset(new Scalar[count]);
+	std::copy(data, data + count, stdext::checked_array_iterator<Scalar*>(this->data_.get(), count));
+}
+
+Vector<graphics::Vertex> ScalarField::Polygonise(Scalar isolevel)
 {
 	auto xSize = this->xSize_;
 	auto ySize = this->ySize_;
@@ -55,7 +43,7 @@ Vector<graphics::Vertex> ScalarField::Polygonise(float isolevel)
 				auto base = Vec3(i, j, k);
 				auto updateGridcell = [&](int index, int x, int y, int z)
 				{
-					grid.p[index] = (base + Vec3(x, y, z)) / static_cast<float>(1.0f);
+					grid.p[index] = (base + Vec3(x, y, z)) / static_cast<F32>(1.0f);
 					grid.val[index] = data[idx(i+x, j+y, k+z)];
 				};
 
@@ -79,7 +67,7 @@ Vector<graphics::Vertex> ScalarField::Polygonise(float isolevel)
 }
 
 // With credits to Paul Bourke: http://paulbourke.net/geometry/polygonise/
-void ScalarField::PolygoniseCell(GRIDCELL grid, float isolevel, Vector<graphics::Vertex>& vertices)
+void ScalarField::PolygoniseCell(GRIDCELL grid, Scalar isolevel, Vector<graphics::Vertex>& vertices)
 {
 	int edgeTable[256] = {
 		0x000, 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c,
@@ -392,7 +380,7 @@ void ScalarField::PolygoniseCell(GRIDCELL grid, float isolevel, Vector<graphics:
 	Return the point between two points in the same ratio as
 	isolevel is between valp1 and valp2
 	*/
-	auto interpolate = [&](Vec3 p1, Vec3 p2, float valp1, float valp2)
+	auto interpolate = [&](Vec3 p1, Vec3 p2, Scalar valp1, Scalar valp2)
 	{
 		auto mu = static_cast<F32>((isolevel - valp1) / (valp2 - valp1));
 		Vec3 p = p1 + mu * (p2 - p1);
