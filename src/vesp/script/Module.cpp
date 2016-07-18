@@ -14,7 +14,9 @@ namespace vesp { namespace script {
 		                            sol::lib::math,
 		                            sol::lib::table,
 		                            sol::lib::bit32,
-		                            sol::lib::io);
+		                            sol::lib::io,
+									sol::lib::ffi,
+									sol::lib::package);
 
 		this->state_.registry()["Module"] = this;
 		this->state_.registry()["ModuleErrorHandler"] = [&](char const* msg)
