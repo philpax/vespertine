@@ -63,6 +63,7 @@ namespace vesp
 	{
 		while (Running)
 		{
+			util::Timer frameTimer;
 			graphics::Engine::Get()->PrePulse();
 			InputManager::Get()->Pulse();
 
@@ -83,6 +84,12 @@ namespace vesp
 			}
 
 			graphics::Engine::Get()->Pulse();
+
+			if (!graphics::Engine::Get()->GetWindow()->HasFocus())
+			{
+				S32 sleepMs = std::max(0, 100 - frameTimer.GetMilliseconds<S32>());
+				Sleep(sleepMs);
+			}
 		}
 	}
 
