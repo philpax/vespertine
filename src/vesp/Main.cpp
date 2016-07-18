@@ -9,6 +9,7 @@
 #include "vesp/graphics/Window.hpp"
 
 #include "vesp/world/HeightMapTerrain.hpp"
+#include "vesp/world/Script.hpp"
 
 #include "vesp/math/Vector.hpp"
 
@@ -35,6 +36,7 @@ namespace vesp
 		graphics::Engine::Get()->Initialize();
 
 		world::HeightMapTerrain::Create();
+		world::Script::Create();
 
 		Console::Get()->GetModule()->GetState().set_function("quit", &vesp::Quit);
 
@@ -43,6 +45,7 @@ namespace vesp
 
 	void Shutdown()
 	{
+		world::Script::Destroy();
 		world::HeightMapTerrain::Destroy();
 
 		graphics::Engine::Destroy();

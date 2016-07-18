@@ -15,6 +15,7 @@
 
 #include "vesp/world/HeightMapTerrain.hpp"
 #include "vesp/world/ScalarField.hpp"
+#include "vesp/world/Script.hpp"
 
 #include "vesp/Log.hpp"
 #include "vesp/Assert.hpp"
@@ -130,10 +131,11 @@ namespace vesp { namespace graphics {
 		freeCamera->Update();
 
 		world::HeightMapTerrain::Get()->Draw();
+		world::Script::Get()->Draw();
 
 		for (auto& mesh : this->meshes_)
 			mesh.Draw();
-
+		
 		// Activate backbuffer
 		ImmediateContext->OMSetRenderTargets(
 			1, &this->renderTargetViews_[0].p, nullptr);
