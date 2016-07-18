@@ -32,7 +32,7 @@ namespace vesp { namespace util {
 
 	#define TIMER_ALIAS(name, ...)\
 		template <typename T = float> \
-		T Get##name() const { return this->GetElapsed<__VA_ARGS__>(); }
+		T Get##name() const { return this->GetElapsed<__VA_ARGS__, T>(); }
 
 		TIMER_ALIAS(Hours, std::ratio<3600, 1>)
 		TIMER_ALIAS(Minutes, std::ratio<60, 1>)
