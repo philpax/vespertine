@@ -32,8 +32,19 @@ void Script::Reload()
 	this->module_.reset(new script::Module("World"));
 
 	auto& state = this->module_->GetState();
+	
+	state["dofile"] = [&](RawStringPtr filename)
+	{
+		auto path = Concat("data/", filename);
+		if (!FileSystem::Get()->Exists(path))
+			return;
 
-	auto file = FileSystem::Get()->Open("data/world.lua", FileSystem::Mode::Enum(FileSystem::Mode::Read | FileSystem::Mode::Binary));
+		auto file = FileSystem::Get()->Open(path, FileSystem::Mode::ReadBinary);
+		auto fileContents = file.Read<StringByte>();
+		this->module_->RunString(fileContents);
+	};
+
+	auto file = FileSystem::Get()->Open("data/world.lua", FileSystem::Mode::ReadBinary);
 	auto fileContents = file.Read<StringByte>();
 	this->module_->RunString(fileContents);
 }
