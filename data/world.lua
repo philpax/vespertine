@@ -30,7 +30,10 @@ typedef struct
     U16 texcoord[2];
     Colour colour;
 } Vertex;
+
+void MeshAdd(Vertex* vertices, unsigned int count);
 ]]
+
 
 Vec3 = ffi.metatype("Vec3", {
     __add = function(a, b)
@@ -130,7 +133,9 @@ function Floor(verts, origin, thickness, height, width, depth, includeFloor, inc
 end
 
 -- Create a building from floors
-function Building(verts, origin, floorCount, width, depth, floorPadding)
+function Building(origin, floorCount, width, depth, floorPadding)
+    local verts = {}
+
     if not floorPadding then
         floorPadding = 0
     end
@@ -142,11 +147,16 @@ function Building(verts, origin, floorCount, width, depth, floorPadding)
         origin = origin + Vec3(0, height, 0)
     end
     Floor(verts, origin, thickness, height, width, depth, true, true, floorPadding)
+
+    -- Pass vertices to C++
+    local vertices = ffi.new("Vertex[?]", #verts)
+    for i,v in ipairs(verts) do
+        vertices[i-1] = v
+    end
+    ffi.C.MeshAdd(vertices, #verts)
 end
 
 -- Create a city from buildings
-local verts = {}
-
 math.randomseed(0)
 
 local width = 18
@@ -172,20 +182,8 @@ for y=1, xCount do
         local height = math.floor(65 - 15 * (distFromCenter))
         height = height + (4 * math.random())
 
-        Building(verts, rowOrigin, height, ourWidth, ourDepth, math.random() * 0.5)
+        Building(rowOrigin, height, ourWidth, ourDepth, math.random() * 0.5)
         rowOrigin = rowOrigin + Vec3(ourWidth + 5, 0, 0)
     end
     origin = origin + Vec3(0, 0, maxDepth + 5)
 end
-
--- Pass vertices to C++
-local vertices = ffi.new("Vertex[?]", #verts)
-for i,v in ipairs(verts) do
-    vertices[i-1] = v
-end
-
-ffi.cdef [[
-void MeshAdd(Vertex* vertices, unsigned int count);
-]]
-
-ffi.C.MeshAdd(vertices, #verts)
