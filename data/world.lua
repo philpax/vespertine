@@ -2,20 +2,20 @@ dofile "interface.lua"
 dofile "primitives.lua"
 
 -- Create a building from floors
-function Building(origin, floorCount, width, depth, floorPadding)
+function Building(origin, floorCount, width, depth)
     local verts = {}
-
-    if not floorPadding then
-        floorPadding = 0
-    end
 
     local thickness = 0.15
     local height = 3
+
+    local size = Vec3(width, height, depth)
+
     for i=1, floorCount-1 do
-        Floor(verts, origin, thickness, height, width, depth, true, false, floorPadding)
+        HollowCuboid(verts, origin, size, thickness, true, false)
         origin = origin + Vec3(0, height, 0)
     end
-    Floor(verts, origin, thickness, height, width, depth, true, true, floorPadding)
+
+    HollowCuboid(verts, origin, size, thickness, true, true)
 
     mesh.add(verts)
 end
@@ -46,7 +46,7 @@ for y=1, xCount do
         local height = math.floor(65 - 15 * (distFromCenter))
         height = height + (4 * math.random())
 
-        Building(rowOrigin, height, ourWidth, ourDepth, math.random() * 0.5)
+        Building(rowOrigin, height, ourWidth, ourDepth)
         rowOrigin = rowOrigin + Vec3(ourWidth + 5, 0, 0)
     end
     origin = origin + Vec3(0, 0, maxDepth + 5)
