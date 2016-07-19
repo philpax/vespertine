@@ -76,7 +76,14 @@ namespace vesp { namespace script {
 			return;
 		}
 
-		this->RunParseResult(parseResult);
+		auto runResult = this->RunParseResult(parseResult);
+
+		if (runResult.status() != sol::call_status::ok)
+		{
+			auto errorStr = runResult.get<std::string>();
+			LogError("Failed to run module %.*s: %s", this->title_.size(), this->title_.data(), errorStr.c_str());
+			return;
+		}
 	}
 
 	String Module::ToString(Object object)
