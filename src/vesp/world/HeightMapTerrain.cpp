@@ -16,7 +16,7 @@ HeightMapTerrain::HeightMapTerrain()
 
 void HeightMapTerrain::Load(StringView const path)
 {
-	auto file = FileSystem::Get()->Open(path, FileSystem::Mode::Enum(FileSystem::Mode::Read | FileSystem::Mode::Binary));
+	auto file = FileSystem::Get()->Open(path, FileSystem::Mode::ReadBinary);
 	auto imageData = file.Read<U8>();
 
 	S32 xSize = 0, ySize = 0, comp = 0;
