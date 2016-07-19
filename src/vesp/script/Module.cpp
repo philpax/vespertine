@@ -76,13 +76,7 @@ namespace vesp { namespace script {
 			return;
 		}
 
-		auto runResult = this->RunParseResult(parseResult);
-
-		if (runResult.valid())
-		{
-			auto resultStr = this->ToString(runResult);
-			LogInfo("%.*s", resultStr.size(), resultStr.data());
-		}
+		this->RunParseResult(parseResult);
 	}
 
 	String Module::ToString(Object object)
