@@ -1,10 +1,10 @@
 -- Vertex helper
-local function Vert(point, colour)
+function Vert(point, colour)
     return Vertex(point, {0, 0}, {0, 0}, colour)
 end
 
 -- Cuboid creation
-local function Cuboid(t, origin, size, colour)
+function Cuboid(t, origin, size, colour)
     -- Front
     table.insert(t, Vert(origin + Vec3(0,       0,       0      ), colour))
     table.insert(t, Vert(origin + Vec3(0,       size.y,  0      ), colour))
