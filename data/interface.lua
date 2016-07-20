@@ -41,8 +41,20 @@ Vec3 = ffi.metatype("Vec3", {
     end
 })
 
-Colour = ffi.metatype("Colour", {})
+Colour = ffi.metatype("Colour", {
+    __add = function(a, b)
+        return Colour(a.r + b.r, a.g + b.g, a.b + b.b, a.a + b.a)
+    end,
+
+    __mul = function(a, b)
+        return Colour(a.r * b, a.g * b, a.b * b, a.a * b)
+    end
+})
 Vertex = ffi.metatype("Vertex", {})
+
+function math.lerp(a, b, t)
+    return (a * (1.0-t)) + (b * t)
+end
 
 -- Define a Lua-friendly interface for mesh creation
 mesh = {
