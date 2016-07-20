@@ -10,12 +10,14 @@ function Building(origin, floorCount, width, depth)
 
     local size = Vec3(width, height, depth)
 
+    local c1 = Colour(60, 60, 60, 255)
+    local c2 = Colour(120, 120, 120, 255)
     for i=1, floorCount-1 do
-        HollowCuboid(verts, origin, size, thickness, true, false)
-        origin = origin + Vec3(0, height, 0)
+        HollowCuboid(verts, origin, size, thickness, math.lerp(c1, c2, (i-1)/floorCount), true, false)
+        origin = origin + Vec3(0, height - thickness, 0)
     end
 
-    HollowCuboid(verts, origin, size, thickness, true, true)
+    HollowCuboid(verts, origin, size, thickness, c2, true, true)
 
     mesh.add(verts)
 end
