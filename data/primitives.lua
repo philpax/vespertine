@@ -61,23 +61,44 @@ function Cuboid(t, origin, size, colour)
 end
 
 -- Hollow cuboid creation
-function HollowCuboid(verts, origin, size, thickness, includeFloor, includeCeiling)
-    if includeFloor then
+function HollowCuboid(verts, origin, size, thickness, colour, includeFloor, includeCeiling)
+    if includeFloor ~= false then
         -- Floor
-        Cuboid(verts, origin + Vec3(0, 0, 0),       Vec3(size.x, thickness, size.z),    Colour(100, 100, 100, 255))
+        Cuboid(verts, 
+            origin + Vec3(0, 0, 0), 
+            Vec3(size.x, thickness, size.z), 
+            colour)
     end
 
-    if includeCeiling then
+    if includeCeiling ~= false then
         -- Ceiling
-        Cuboid(verts, origin + Vec3(0, size.y, 0),    Vec3(size.x, thickness, size.z),    Colour(100, 100, 100, 255))
+        Cuboid(verts, 
+            origin + Vec3(0, size.y - thickness, 0), 
+            Vec3(size.x, thickness, size.z), 
+            colour)
     end
 
     -- Front
-    Cuboid(verts, origin + Vec3(0, thickness, 0),                           Vec3(size.x, size.y - thickness, thickness),                 Colour(80, 80, 80, 255))
+    Cuboid(verts, 
+        origin + Vec3(0, thickness, 0), 
+        Vec3(size.x, size.y - 2*thickness, thickness), 
+        colour)
+
     -- Back
-    Cuboid(verts, origin + Vec3(0, thickness, size.z - thickness),           Vec3(size.x, size.y - thickness, thickness),                 Colour(80, 80, 80, 255))
+    Cuboid(verts, 
+        origin + Vec3(0, thickness, size.z - thickness), 
+        Vec3(size.x, size.y - 2*thickness, thickness), 
+        colour)
+
     -- Left
-    Cuboid(verts, origin + Vec3(0, thickness, thickness),                   Vec3(thickness, size.y - thickness, size.z - 2*thickness),   Colour(80, 80, 80, 255))
+    Cuboid(verts, 
+        origin + Vec3(0, thickness, thickness), 
+        Vec3(thickness, size.y - 2*thickness, size.z - 2*thickness), 
+        colour)
+
     -- Right
-    Cuboid(verts, origin + Vec3(size.x - thickness, thickness, thickness),   Vec3(thickness, size.y - thickness, size.z - 2*thickness),   Colour(80, 80, 80, 255))
+    Cuboid(verts, 
+        origin + Vec3(size.x - thickness, thickness, thickness), 
+        Vec3(thickness, size.y - 2*thickness, size.z - 2*thickness), 
+        colour)
 end
