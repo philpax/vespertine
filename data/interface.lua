@@ -12,6 +12,12 @@ typedef struct
     float z; 
 } Vec3;
 
+typedef struct
+{
+    float x;
+    float y;
+} Vec2;
+
 typedef union {
     struct
     {
@@ -38,6 +44,12 @@ void MeshAdd(Vertex* vertices, unsigned int count);
 Vec3 = ffi.metatype("Vec3", {
     __add = function(a, b)
         return Vec3(a.x + b.x, a.y + b.y, a.z + b.z)
+    end
+})
+
+Vec2 = ffi.metatype("Vec2", {
+    __add = function(a, b)
+        return Vec2(a.x + b.x, a.y + b.y)
     end
 })
 
