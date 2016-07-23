@@ -110,3 +110,22 @@ end
 function math.randommag(mag)
     return math.randomrange(-mag, mag)
 end
+
+function WindowWallCell(verts, origin, size, colour, windowSize, zOriented)
+    local frameWidth = math.max((size.x - windowSize.x)/2, 0)
+    local frameHeight = math.max((size.y - windowSize.y)/2, 0)
+
+    if not zOriented then
+        Cuboid(verts, origin + Vec3(0, 0, 0), Vec3(size.x, frameHeight, size.z), colour)
+        Cuboid(verts, origin + Vec3(0, size.y - frameHeight, 0), Vec3(size.x, frameHeight, size.z), colour)
+
+        Cuboid(verts, origin + Vec3(0, frameHeight, 0), Vec3(frameWidth, size.y - 2*frameHeight, size.z), colour)
+        Cuboid(verts, origin + Vec3(size.x - frameWidth, frameHeight, 0), Vec3(frameWidth, size.y - 2*frameHeight, size.z), colour)
+    else
+        Cuboid(verts, origin + Vec3(0, 0, 0), Vec3(size.z, frameHeight, size.x), colour)
+        Cuboid(verts, origin + Vec3(0, size.y - frameHeight, 0), Vec3(size.z, frameHeight, size.x), colour)
+
+        Cuboid(verts, origin + Vec3(0, frameHeight, 0), Vec3(size.z, size.y - 2*frameHeight, frameWidth), colour)
+        Cuboid(verts, origin + Vec3(0, frameHeight, size.x - frameWidth), Vec3(size.z, size.y - 2*frameHeight, frameWidth), colour)
+    end
+end
