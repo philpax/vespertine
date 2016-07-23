@@ -1,55 +1,23 @@
 dofile "interface.lua"
 dofile "primitives.lua"
 
--- Create a building from floors
-function Building(origin, floorCount, width, depth)
-    local verts = {}
+local verts = {}
+local origin = Vec3(200, 58, 450)
+local windowCount = 5
+local cellWidth = 3
+local thickness = 0.15
 
-    local thickness = 0.15
-    local height = 3
+Cuboid(verts, origin + Vec3(thickness, 0, thickness), Vec3(windowCount*cellWidth - 2*thickness, 0.1, windowCount*cellWidth - 2*thickness), Colour(80, 80, 80, 255))
 
-    local size = Vec3(width, height, depth)
-
-    local c1 = Colour(60, 60, 60, 255)
-    local c2 = Colour(120, 120, 120, 255)
-    for i=1, floorCount-1 do
-        HollowCuboid(verts, origin, size, thickness, math.lerp(c1, c2, (i-1)/floorCount), true, false)
-        origin = origin + Vec3(0, height - thickness, 0)
-    end
-
-    HollowCuboid(verts, origin, size, thickness, c2, true, true)
-
-    mesh.add(verts)
+for i = 0, windowCount-1 do
+    -- Front
+    WindowWallCell(verts, origin + Vec3(cellWidth*i, 0, 0), Vec3(cellWidth, 3, thickness), Colour(120, 120, 120, 255), Vec2(2, 2.8), false)
+    -- Back
+    WindowWallCell(verts, origin + Vec3(cellWidth*i, 0, windowCount*cellWidth - thickness), Vec3(cellWidth, 3, thickness), Colour(120, 120, 120, 255), Vec2(2, 2.8), false)
+    -- Left
+    WindowWallCell(verts, origin + Vec3(0, 0, cellWidth*i), Vec3(cellWidth, 3, thickness), Colour(120, 120, 120, 255), Vec2(2, 2.8), true)
+    -- Right
+    WindowWallCell(verts, origin + Vec3(windowCount*cellWidth - thickness, 0, cellWidth*i), Vec3(cellWidth, 3, thickness), Colour(120, 120, 120, 255), Vec2(2, 2.8), true)
 end
 
--- Create a city from buildings
-math.randomseed(0)
-
-local width = 18
-local depth = 24
-local origin = Vec3(200, 56, 450)
-
-local xCount = 8
-local yCount = 8
-
-for y=1, xCount do
-    local rowOrigin = origin
-    local maxDepth = 0
-
-    for x=1, yCount do
-        local ourWidth = width + ((math.random() - 0.5) * 10)
-        local ourDepth = depth + ((math.random() - 0.5) * 10)
-        maxDepth = math.max(maxDepth, ourDepth)
-
-        local centeredX = x - xCount/2
-        local centeredY = y - yCount/2
-        local distFromCenter = math.sqrt(centeredX * centeredX + centeredY * centeredY)
-
-        local height = math.floor(65 - 15 * (distFromCenter))
-        height = height + (4 * math.random())
-
-        Building(rowOrigin, height, ourWidth, ourDepth)
-        rowOrigin = rowOrigin + Vec3(ourWidth + 5, 0, 0)
-    end
-    origin = origin + Vec3(0, 0, maxDepth + 5)
-end
+mesh.add(verts)
