@@ -102,3 +102,11 @@ function HollowCuboid(verts, origin, size, thickness, colour, includeFloor, incl
         Vec3(thickness, size.y - 2*thickness, size.z - 2*thickness), 
         colour)
 end
+
+function math.randomrange(low, high)
+    return low + math.random() * (high - low)
+end
+
+function math.randommag(mag)
+    return math.randomrange(-mag, mag)
+end
