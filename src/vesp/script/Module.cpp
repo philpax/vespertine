@@ -24,6 +24,11 @@ namespace vesp { namespace script {
 		{
 			LogError("%.*s: %s", this->title_.size(), this->title_.data(), msg);
 		};
+		this->state_["print"] = [&](Object object)
+		{
+			auto msg = this->ToString(object);
+			LogInfo("%.*s: %.*s", this->title_.size(), this->title_.data(), msg.size(), msg.data());
+		};
 		this->state_.set_panic(&Module::PanicHandler);
 	}
 
