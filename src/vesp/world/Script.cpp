@@ -8,7 +8,7 @@
 
 namespace vesp { namespace world {
 
-extern "C" __declspec(dllexport) void MeshAdd(graphics::Vertex* vertices, U32 verticesCount)
+extern "C" __declspec(dllexport) U32 MeshAdd(graphics::Vertex* vertices, U32 verticesCount)
 {
 	auto shaderManager = graphics::ShaderManager::Get();
 
@@ -17,7 +17,12 @@ extern "C" __declspec(dllexport) void MeshAdd(graphics::Vertex* vertices, U32 ve
 	mesh.SetVertexShader(shaderManager->GetVertexShader("default"));
 	mesh.SetPixelShader(shaderManager->GetPixelShader("default"));
 
-	Script::Get()->AddMesh(std::move(mesh));
+	return Script::Get()->AddMesh(std::move(mesh));
+}
+
+extern "C" __declspec(dllexport) void MeshRemove(U32 meshId)
+{
+	Script::Get()->RemoveMesh(meshId);
 }
 
 Script::Script()
@@ -49,15 +54,22 @@ void Script::Reload()
 	this->module_->RunString(fileContents);
 }
 
-void Script::AddMesh(graphics::Mesh&& mesh)
+U32 Script::AddMesh(graphics::Mesh&& mesh)
 {
-	this->meshes_.push_back(std::move(mesh));
+	this->meshes_[this->nextMeshId_] = std::move(mesh);
+	return this->nextMeshId_++;
+}
+
+void Script::RemoveMesh(U32 meshId)
+{
+	VESP_ASSERT(this->meshes_.find(meshId) != this->meshes_.end());
+	this->meshes_.erase(meshId);
 }
 
 void Script::Draw()
 {
-	for (auto& mesh : this->meshes_)
-		mesh.Draw();
+	for (auto& meshPair : this->meshes_)
+		meshPair.second.Draw();
 }
 
 void Script::BindConsole()

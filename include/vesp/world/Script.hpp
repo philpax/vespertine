@@ -15,14 +15,17 @@ public:
 
 	void Reload();
 	
-	void AddMesh(graphics::Mesh&& mesh);
+	U32 AddMesh(graphics::Mesh&& mesh);
+	void RemoveMesh(U32 meshId);
 	void Draw();
 
 private:
 	void BindConsole();
 
-	Vector<graphics::Mesh> meshes_;
 	UniquePtr<script::Module> module_;
+
+	UnorderedMap<U32, graphics::Mesh> meshes_;
+	U32 nextMeshId_ = 0;
 };
 
 } }
