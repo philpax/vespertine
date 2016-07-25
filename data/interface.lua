@@ -4,6 +4,7 @@ local ffi = require "ffi"
 ffi.cdef [[
 typedef unsigned char U8;
 typedef unsigned short U16;
+typedef unsigned int U32;
 
 typedef struct
 { 
@@ -37,7 +38,8 @@ typedef struct
     Colour colour;
 } Vertex;
 
-void MeshAdd(Vertex* vertices, unsigned int count);
+U32 MeshAdd(Vertex* vertices, unsigned int count);
+void MeshRemove(U32 meshId);
 ]]
 
 -- Generate constructors + metatables for types
@@ -76,6 +78,7 @@ mesh = {
         for i,v in ipairs(verts) do
             vertices[i-1] = v
         end
-        ffi.C.MeshAdd(vertices, #verts)
-    end
+        return ffi.C.MeshAdd(vertices, #verts)
+    end,
+    remove = ffi.C.MeshRemove
 }
