@@ -72,6 +72,23 @@ void Script::Draw()
 		meshPair.second.Draw();
 }
 
+void Script::Pulse()
+{
+	auto& state = this->module_->GetState();
+
+	sol::object pulse = state["pulse"];
+	if (!pulse.is<sol::protected_function>())
+		return;
+
+	auto runResult = pulse.as<sol::protected_function>()();
+
+	if (runResult.status() != sol::call_status::ok)
+	{
+		auto errorStr = runResult.get<std::string>();
+		LogError("Failed to run world tick: %s", errorStr.c_str());
+	}
+}
+
 void Script::BindConsole()
 {
 	auto& state = Console::Get()->GetModule()->GetState();

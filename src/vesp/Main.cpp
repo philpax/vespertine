@@ -86,6 +86,7 @@ namespace vesp
 				InputManager::Get()->FeedEvent(&msg);
 			}
 
+			world::Script::Get()->Pulse();
 			graphics::Engine::Get()->Pulse();
 
 			if (!graphics::Engine::Get()->GetWindow()->HasFocus())

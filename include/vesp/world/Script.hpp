@@ -19,6 +19,8 @@ public:
 	void RemoveMesh(U32 meshId);
 	void Draw();
 
+	void Pulse();
+
 private:
 	void BindConsole();
 
