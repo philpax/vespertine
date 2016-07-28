@@ -24,10 +24,22 @@ namespace vesp { namespace script {
 		{
 			LogError("%.*s: %s", this->title_.size(), this->title_.data(), msg);
 		};
-		this->state_["print"] = [&](Object object)
+		this->state_["print"] = [&](sol::variadic_args args)
 		{
-			auto msg = this->ToString(object);
-			LogInfo("%.*s: %.*s", this->title_.size(), this->title_.data(), msg.size(), msg.data());
+			vesp::String output;
+			bool first = true;
+			for (sol::object object : args)
+			{
+				if (!first)
+					output.push_back('\t');
+
+				auto msg = this->ToString(object);
+				output.insert(output.end(), msg.begin(), msg.end());
+
+				first = false;
+			}
+			
+			LogInfo("%.*s: %.*s", this->title_.size(), this->title_.data(), output.size(), output.data());
 		};
 		this->state_.set_panic(&Module::PanicHandler);
 	}
