@@ -27,6 +27,58 @@ namespace vesp
 		return ret;
 	}
 
+	String Replace(StringView str, StringView toReplace, StringView replacement)
+	{
+		String ret;
+
+		auto maxSize = str.size - toReplace.size;
+		for (size_t i = 0; i < str.size;)
+		{
+			if (i < maxSize && memcmp(&str[i], toReplace.data, toReplace.size) == 0)
+			{
+				ret.insert(ret.end(), replacement.begin(), replacement.end());
+				i += toReplace.size;
+			}
+			else
+			{
+				ret.push_back(str[i]);
+				++i;
+			}
+		}
+		return ret;
+	}
+
+	Vector<StringView> Split(StringView str, StringByte sep)
+	{
+		Vector<StringView> ret;
+
+		size_t startIndex = 0;
+		size_t endIndex = 0;
+		size_t index = 0;
+
+		for (auto c : str)
+		{
+			if (c == sep || index == str.size - 1)
+			{
+				if (index == str.size - 1)
+					endIndex = str.size;
+
+				if (startIndex != endIndex)
+					ret.push_back(StringView(str.data + startIndex, endIndex - startIndex));
+
+				startIndex = endIndex = index + 1;
+			}
+			else
+			{
+				++endIndex;
+			}
+
+			++index;
+		}
+
+		return ret;
+	}
+
 	String ToString(size_t value)
 	{
 		String ret;
@@ -48,27 +100,6 @@ namespace vesp
 		String ret;
 		auto s = std::to_string(value);
 		ret.insert(ret.begin(), s.begin(), s.end());
-		return ret;
-	}
-
-	String Replace(StringView str, StringView toReplace, StringView replacement)
-	{
-		String ret;
-
-		auto maxSize = str.size - toReplace.size;
-		for (size_t i = 0; i < str.size;)
-		{
-			if (i < maxSize && memcmp(&str[i], toReplace.data, toReplace.size) == 0)
-			{
-				ret.insert(ret.end(), replacement.begin(), replacement.end());
-				i += toReplace.size;
-			}
-			else
-			{
-				ret.push_back(str[i]);
-				++i;
-			}
-		}
 		return ret;
 	}
 
