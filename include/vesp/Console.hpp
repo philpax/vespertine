@@ -30,7 +30,28 @@ namespace vesp {
 		void AddMessage(StringView text, graphics::Colour colour = graphics::Colour::White);
 		void Execute(StringView code);
 
-		script::Module* GetModule();
+		template <typename Fn>
+		void AddCommand(StringView command, Fn&& fn)
+		{
+			auto& state = this->module_->GetState();
+			auto segments = Split(command, '.');
+
+			size_t index = 0;
+			sol::table table = state.globals();
+
+			for (auto segment : segments)
+			{
+				auto segmentCStrPtr = ToCString(segment);
+				auto segmentCStr = segmentCStrPtr.get();
+
+				if (index != segments.size() - 1)
+					table = table[segmentCStr] ? table[segmentCStr] : table.create_named(segmentCStr);
+				else
+					table[segmentCStr] = fn;
+
+				++index;
+			}
+		}
 
 	private:
 		void Draw();

@@ -38,7 +38,7 @@ namespace vesp
 		world::HeightMapTerrain::Create();
 		world::Script::Create();
 
-		Console::Get()->GetModule()->GetState().set_function("quit", &vesp::Quit);
+		Console::Get()->AddCommand("quit", &vesp::Quit);
 
 		return true;
 	}

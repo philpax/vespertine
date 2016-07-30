@@ -196,17 +196,16 @@ namespace vesp
 
 	void InputManager::BindConsole()
 	{
-		auto& state = Console::Get()->GetModule()->GetState();
-		state["input"] = state.create_table();
-		state["input"]["dump"] = [&]()
+		Console::Get()->AddCommand("input.dump", [&]()
 		{
 			for (U32 actionIndex = 0u; actionIndex < U32(Action::EndOfEnum); ++actionIndex)
 				LogInfo("%s: %f", ActionNames[actionIndex], this->GetState(Action(actionIndex)));
-		};
-		state["input"]["window"] = [&]()
+		});
+
+		Console::Get()->AddCommand("input.window", [&]()
 		{
 			this->windowActive_ = !this->windowActive_;
-		};
+		});
 	}
 
 	void InputManager::ResetCursorToCentre()

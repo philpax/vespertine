@@ -91,9 +91,7 @@ void Script::Pulse()
 
 void Script::BindConsole()
 {
-	auto& state = Console::Get()->GetModule()->GetState();
-	state["world"] = state.create_table();
-	state["world"]["reload"] = [&] { this->Reload(); };
+	Console::Get()->AddCommand("world.reload", [&] { this->Reload(); });
 }
 
 } }

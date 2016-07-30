@@ -124,20 +124,15 @@ namespace vesp {
 			this->SetActive(false);
 	}
 
-	script::Module* Console::GetModule()
-	{
-		return this->module_.get();
-	}
-
 	void Console::Execute(StringView code)
 	{
 		// Try loading with return prefixed
 		auto codeWithReturn = Concat("return ", code);
-		auto parseResult = this->GetModule()->ParseString(codeWithReturn);
+		auto parseResult = this->module_->ParseString(codeWithReturn);
 
 		// If that doesn't work, try loading without return
 		if (!parseResult.valid())
-			parseResult = this->GetModule()->ParseString(code);
+			parseResult = this->module_->ParseString(code);
 
 		// If it still doesn't work, log and error
 		if (!parseResult.valid())
@@ -147,7 +142,7 @@ namespace vesp {
 			return;
 		}
 
-		auto runResult = this->GetModule()->RunParseResult(parseResult);
+		auto runResult = this->module_->RunParseResult(parseResult);
 		auto runResultObj = sol::object(runResult);
 
 		if (!runResult.valid())
@@ -160,7 +155,7 @@ namespace vesp {
 		if (runResultObj.is<sol::protected_function>() || !runResultObj.valid())
 			return;
 
-		auto resultStr = this->GetModule()->ToString(runResultObj);
+		auto resultStr = this->module_->ToString(runResultObj);
 		LogInfo("%.*s", resultStr.size(), resultStr.data());
 	}
 
