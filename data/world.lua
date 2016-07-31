@@ -50,11 +50,9 @@ function MakeBuilding()
     -- print("New building!")
 end
 
-last = os.clock()
 MakeBuilding()
 function pulse()
-    if os.clock() - last > 5 then
-        MakeBuilding()
-        last = os.clock()
-    end
+    imgui.window("World Control", function()
+        imgui.button("Reset Building", MakeBuilding)
+    end)
 end
