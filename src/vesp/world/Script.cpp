@@ -1,6 +1,7 @@
 #include "vesp/world/Script.hpp"
 
 #include "vesp/graphics/ShaderManager.hpp"
+#include "vesp/graphics/imgui.h"
 
 #include "vesp/EventManager.hpp"
 #include "vesp/FileSystem.hpp"
@@ -49,6 +50,19 @@ void Script::Reload()
 		this->module_->RunString(fileContents);
 	};
 
+	auto imgui = state.create_named_table("imgui");
+	imgui["window"] = [](char const* title, sol::protected_function fn)
+	{
+		ImGui::Begin(title);
+		fn();
+		ImGui::End();
+	};
+	imgui["button"] = [](char const* title, sol::protected_function fn)
+	{
+		if (ImGui::Button(title))
+			fn();
+	};
+	
 	auto file = FileSystem::Get()->Open("data/world.lua", FileSystem::Mode::ReadBinary);
 	auto fileContents = file.Read<StringByte>();
 	this->module_->RunString(fileContents);
