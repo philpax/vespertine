@@ -4,18 +4,18 @@ dofile "primitives.lua"
 math.randomseed(os.time())
 
 lastBuilding = nil
-function MakeBuilding()
+function MakeBuilding(levelCount, wallHeight)
     if lastBuilding ~= nil then
         mesh.remove(lastBuilding)
     end
 
+	print("Making building")
+
     local verts = {}
     local origin = Vec3(200, 58, 450)
     local windowCount = math.random(3, 7)
-    local wallHeight = 3
     local cellWidth = math.random(3, 6)
     local thickness = 0.15
-    local levelCount = math.random(5, 15)
     local windowWidth = math.randomrange(1.5, 2.5)
     local windowSize = Vec2(windowWidth, windowWidth + 0.2)
 
@@ -47,14 +47,17 @@ function MakeBuilding()
     Cuboid(verts, origin + Vec3(windowCount*cellWidth - (pillarSize + thickness), 0, windowCount*cellWidth - (pillarSize + thickness)), Vec3(pillarSize, levelCount*wallHeight, pillarSize), Colour(60, 60, 60, 255))
 
     lastBuilding = mesh.add(verts)
-    -- print("New building!")
+    print("New building!")
 end
 
-MakeBuilding()
+levelCount = 10
+wallHeight = 3
 function pulse()
     imgui.window("World Control", function()
-        if imgui.button("Reset Building") then
-			MakeBuilding();
+		levelCount = imgui.sliderInt("Levels", levelCount, 3, 20).value
+		wallHeight = imgui.sliderDec("Wall Height", wallHeight, 2, 4).value
+        if imgui.button("Make Building") then
+			MakeBuilding(levelCount, wallHeight)
 		end
     end)
 end
