@@ -57,10 +57,9 @@ void Script::Reload()
 		fn();
 		ImGui::End();
 	};
-	imgui["button"] = [](char const* title, sol::protected_function fn)
+	imgui["button"] = [](char const* title)
 	{
-		if (ImGui::Button(title))
-			fn();
+		return ImGui::Button(title);
 	};
 	
 	auto file = FileSystem::Get()->Open("data/world.lua", FileSystem::Mode::ReadBinary);

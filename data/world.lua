@@ -53,6 +53,8 @@ end
 MakeBuilding()
 function pulse()
     imgui.window("World Control", function()
-        imgui.button("Reset Building", MakeBuilding)
+        if imgui.button("Reset Building") then
+			MakeBuilding();
+		end
     end)
 end
