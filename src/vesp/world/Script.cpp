@@ -61,6 +61,20 @@ void Script::Reload()
 	{
 		return ImGui::Button(title);
 	};
+	imgui["sliderInt"] = [&](char const* label, int value, int valueMin, int valueMax)
+	{
+		auto ret = state.create_table();
+		ret["changed"] = ImGui::SliderInt(label, &value, valueMin, valueMax);
+		ret["value"] = value;
+		return ret;
+	};
+	imgui["sliderDec"] = [&](char const* label, float value, float valueMin, float valueMax)
+	{
+		auto ret = state.create_table();
+		ret["changed"] = ImGui::SliderFloat(label, &value, valueMin, valueMax);
+		ret["value"] = value;
+		return ret;
+	};
 	
 	auto file = FileSystem::Get()->Open("data/world.lua", FileSystem::Mode::ReadBinary);
 	auto fileContents = file.Read<StringByte>();
