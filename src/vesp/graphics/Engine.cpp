@@ -21,6 +21,7 @@
 #include "vesp/Assert.hpp"
 #include "vesp/Console.hpp"
 #include "vesp/EventManager.hpp"
+#include "vesp/Profiler.hpp"
 
 #include <glm/gtc/noise.hpp>
 
@@ -94,11 +95,13 @@ namespace vesp { namespace graphics {
 
 	void Engine::PrePulse()
 	{
+		VESP_PROFILE_FN();
 		ImGui_ImplDX11_NewFrame();
 	}
 
 	void Engine::Pulse()
 	{
+		VESP_PROFILE_FN();
 		this->window_->Pulse();
 
 		F32 clearColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
@@ -107,11 +110,14 @@ namespace vesp { namespace graphics {
 		ImmediateContext->PSSetShaderResources(
 			0, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT, nullViews);
 
-		for (auto& rt : this->renderTargetViews_)
-			ImmediateContext->ClearRenderTargetView(rt, clearColour);
-
-		ImmediateContext->ClearDepthStencilView(
-			this->depthStencilView_, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
+		{
+			VESP_PROFILE_BLOCK("Clear RT");
+			for (auto& rt : this->renderTargetViews_)
+				ImmediateContext->ClearRenderTargetView(rt, clearColour);
+		
+			ImmediateContext->ClearDepthStencilView(
+				this->depthStencilView_, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
+		}
 
 		ID3D11ShaderResourceView* views[2] = {};
 		ImmediateContext->PSSetSamplers(0, 1, &this->samplerState_.p);
@@ -204,10 +210,16 @@ namespace vesp { namespace graphics {
 
 		EventManager::Get()->Fire("Render.Gui");
 
-		ImGui::Render();
+		{
+			VESP_PROFILE_BLOCK("ImGui render");
+			ImGui::Render();
+		}
 		
 		this->SetDepthEnabled(true);
-		SwapChain->Present(0, 0);
+		{
+			VESP_PROFILE_BLOCK("Present");
+			SwapChain->Present(0, 0);
+		}
 	}
 
 	Window* Engine::GetWindow()

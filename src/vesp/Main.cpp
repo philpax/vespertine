@@ -4,6 +4,7 @@
 #include "vesp/EventManager.hpp"
 #include "vesp/FileSystem.hpp"
 #include "vesp/InputManager.hpp"
+#include "vesp/Profiler.hpp"
 
 #include "vesp/graphics/Engine.hpp"
 #include "vesp/graphics/Window.hpp"
@@ -38,6 +39,8 @@ namespace vesp
 		world::HeightMapTerrain::Create();
 		world::Script::Create();
 
+		Profiler::Create();
+
 		Console::Get()->AddCommand("quit", &vesp::Quit);
 
 		return true;
@@ -45,6 +48,8 @@ namespace vesp
 
 	void Shutdown()
 	{
+		Profiler::Destroy();
+
 		world::Script::Destroy();
 		world::HeightMapTerrain::Destroy();
 
@@ -66,6 +71,8 @@ namespace vesp
 	{
 		while (Running)
 		{
+			Profiler::Get()->BeginFrame();
+
 			util::Timer frameTimer;
 			graphics::Engine::Get()->PrePulse();
 			InputManager::Get()->Pulse();
@@ -94,6 +101,8 @@ namespace vesp
 				S32 sleepMs = std::max(0, 100 - frameTimer.GetMilliseconds<S32>());
 				Sleep(sleepMs);
 			}
+
+			Profiler::Get()->EndFrame();
 		}
 	}
 

@@ -10,6 +10,7 @@
 
 #include "vesp/Log.hpp"
 #include "vesp/Assert.hpp"
+#include "vesp/Profiler.hpp"
 
 #include <Windowsx.h>
 
@@ -127,6 +128,7 @@ namespace vesp
 
 	void InputManager::Pulse()
 	{
+		VESP_PROFILE_FN();
 		// Reset inputs to 0
 		this->SetState(Action::CameraRight, 0.0f);
 		this->SetState(Action::CameraLeft, 0.0f);

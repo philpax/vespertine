@@ -6,6 +6,7 @@
 #include "vesp/EventManager.hpp"
 #include "vesp/FileSystem.hpp"
 #include "vesp/Console.hpp"
+#include "vesp/Profiler.hpp"
 
 namespace vesp { namespace world {
 
@@ -90,12 +91,14 @@ void Script::RemoveMesh(U32 meshId)
 
 void Script::Draw()
 {
+	VESP_PROFILE_FN();
 	for (auto& meshPair : this->meshes_)
 		meshPair.second.Draw();
 }
 
 void Script::Pulse()
 {
+	VESP_PROFILE_FN();
 	auto& state = this->module_->GetState();
 
 	sol::object pulse = state["pulse"];

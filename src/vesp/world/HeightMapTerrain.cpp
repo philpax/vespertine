@@ -6,6 +6,7 @@
 #include "vesp/math/Util.hpp"
 
 #include "vesp/FileSystem.hpp"
+#include "vesp/Profiler.hpp"
 
 namespace vesp { namespace world {
 
@@ -80,6 +81,7 @@ void HeightMapTerrain::Load(StringView const path)
 
 void HeightMapTerrain::Draw()
 {
+	VESP_PROFILE_FN();
 	this->terrainMesh_.Draw();
 }
 
