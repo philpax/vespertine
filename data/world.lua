@@ -54,8 +54,8 @@ levelCount = 10
 wallHeight = 3
 function pulse()
     imgui.window("World Control", function()
-		levelCount = imgui.sliderInt("Levels", levelCount, 3, 20).value
-		wallHeight = imgui.sliderDec("Wall Height", wallHeight, 2, 4).value
+		levelCount = imgui.sliderInt("Levels", levelCount, 3, 20)
+		wallHeight = imgui.sliderDec("Wall Height", wallHeight, 2, 4)
         if imgui.button("Make Building") then
 			MakeBuilding(levelCount, wallHeight)
 		end
