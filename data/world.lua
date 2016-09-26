@@ -4,7 +4,7 @@ dofile "primitives.lua"
 math.randomseed(os.time())
 
 lastBuilding = nil
-function MakeBuilding(levelCount, wallHeight)
+function MakeBuilding(levelCount, wallHeight, windowCount, cellWidth, windowWidth, thickness)
     if lastBuilding ~= nil then
         mesh.remove(lastBuilding)
     end
@@ -13,10 +13,6 @@ function MakeBuilding(levelCount, wallHeight)
 
     local verts = {}
     local origin = Vec3(200, 58, 450)
-    local windowCount = math.random(3, 7)
-    local cellWidth = math.random(3, 6)
-    local thickness = 0.15
-    local windowWidth = math.randomrange(1.5, 2.5)
     local windowSize = Vec2(windowWidth, windowWidth + 0.2)
 
     for level = 0, levelCount-1 do
@@ -52,12 +48,27 @@ end
 
 levelCount = 10
 wallHeight = 3
+windowCount = 4
+cellWidth = 4
+windowWidth = cellWidth - 0.5
+thickness = 0.15
+
 function pulse()
     imgui.window("World Control", function()
 		levelCount = imgui.sliderInt("Levels", levelCount, 3, 20)
+		imgui.separator()
+
+		cellWidth = imgui.sliderDec("Cell Width", cellWidth, 3, 6)
 		wallHeight = imgui.sliderDec("Wall Height", wallHeight, 2, 4)
+		thickness = imgui.sliderDec("Wall Thickness", thickness, 0.05, 0.25)
+		imgui.separator()
+		
+		windowCount = imgui.sliderInt("Window Count", windowCount, 3, 7)
+		windowWidth = imgui.sliderDec("Window Width", windowWidth, 0.25, cellWidth - 0.25)
+		imgui.separator()
+
         if imgui.button("Make Building") then
-			MakeBuilding(levelCount, wallHeight)
+			MakeBuilding(levelCount, wallHeight, windowCount, cellWidth, windowWidth, thickness)
 		end
     end)
 end
