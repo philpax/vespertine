@@ -69,6 +69,7 @@ void Script::Reload()
 	{
 		return std::make_tuple(value, ImGui::SliderFloat(label, &value, valueMin, valueMax));
 	};
+	imgui["separator"] = &ImGui::Separator;
 	
 	auto file = FileSystem::Get()->Open("data/world.lua", FileSystem::Mode::ReadBinary);
 	auto fileContents = file.Read<StringByte>();
