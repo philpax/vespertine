@@ -61,11 +61,11 @@ void Script::Reload()
 	{
 		return ImGui::Button(title);
 	};
-	imgui["sliderInt"] = [&](char const* label, int value, int valueMin, int valueMax)
+	imgui["sliderInt"] = [](char const* label, int value, int valueMin, int valueMax)
 	{
 		return std::make_tuple(value, ImGui::SliderInt(label, &value, valueMin, valueMax));
 	};
-	imgui["sliderDec"] = [&](char const* label, float value, float valueMin, float valueMax)
+	imgui["sliderDec"] = [](char const* label, float value, float valueMin, float valueMax)
 	{
 		return std::make_tuple(value, ImGui::SliderFloat(label, &value, valueMin, valueMax));
 	};
