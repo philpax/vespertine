@@ -118,46 +118,56 @@ namespace vesp { namespace graphics {
 			ImmediateContext->ClearDepthStencilView(
 				this->depthStencilView_, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
 		}
-
-		ID3D11ShaderResourceView* views[2] = {};
-		ImmediateContext->PSSetSamplers(0, 1, &this->samplerState_.p);
-		ImmediateContext->PSSetShaderResources(0, 2, views);
-		ImmediateContext->RSSetState(this->rasterizerState_);
-
-		this->SetBlendingEnabled(false);
-
-		// Activate g-buffer render targets
-		ImmediateContext->OMSetRenderTargets(
-			this->renderTargetViews_.size() - 1, 
-			reinterpret_cast<ID3D11RenderTargetView**>(
-				&this->renderTargetViews_[1].p), 
-			this->depthStencilView_);
-
-		auto freeCamera = static_cast<FreeCamera*>(this->camera_.get());
-		freeCamera->Update();
-
-		world::HeightMapTerrain::Get()->Draw();
-		world::Script::Get()->Draw();
-
-		for (auto& mesh : this->meshes_)
-			mesh.Draw();
 		
-		// Activate backbuffer
-		ImmediateContext->OMSetRenderTargets(
-			1, &this->renderTargetViews_[0].p, nullptr);
-		
-		ImmediateContext->PSSetShaderResources(0, this->renderTargetResourceViews_.size(), 
-			reinterpret_cast<ID3D11ShaderResourceView**>(this->renderTargetResourceViews_.data()));
+		{
+			VESP_PROFILE_BLOCK("G-buffer production");
+			{
+				VESP_PROFILE_BLOCK("State updates");
+				ID3D11ShaderResourceView* views[2] = {};
+				ImmediateContext->PSSetSamplers(0, 1, &this->samplerState_.p);
+				ImmediateContext->PSSetShaderResources(0, 2, views);
+				ImmediateContext->RSSetState(this->rasterizerState_);
 
-		// Draw composite view to backbuffer
-		this->SetDepthEnabled(false);
-		screenMesh.SetScale(1.0f);
-		screenMesh.SetPosition(Vec3(0.0f, 0.0f, 0.0f));
-		screenMesh.Draw();
+				this->SetBlendingEnabled(false);
+
+				// Activate g-buffer render targets
+				ImmediateContext->OMSetRenderTargets(
+					this->renderTargetViews_.size() - 1, 
+					reinterpret_cast<ID3D11RenderTargetView**>(
+						&this->renderTargetViews_[1].p), 
+					this->depthStencilView_);
+			}
+
+			auto freeCamera = static_cast<FreeCamera*>(this->camera_.get());
+			freeCamera->Update();
+
+			world::HeightMapTerrain::Get()->Draw();
+			world::Script::Get()->Draw();
+
+			for (auto& mesh : this->meshes_)
+				mesh.Draw();
+		}
+		
+		{
+			VESP_PROFILE_BLOCK("Composite");
+			// Activate backbuffer
+			ImmediateContext->OMSetRenderTargets(
+				1, &this->renderTargetViews_[0].p, nullptr);
+			
+			ImmediateContext->PSSetShaderResources(0, this->renderTargetResourceViews_.size(), 
+				reinterpret_cast<ID3D11ShaderResourceView**>(this->renderTargetResourceViews_.data()));
+
+			// Draw composite view to backbuffer
+			this->SetDepthEnabled(false);
+			screenMesh.SetScale(1.0f);
+			screenMesh.SetPosition(Vec3(0.0f, 0.0f, 0.0f));
+			screenMesh.Draw();
+		}
 
 		// Render stats
 		ImGui::Begin("Stats", nullptr, ImVec2(), 0.5f, ImGuiWindowFlags_NoTitleBar);
 		{
+			VESP_PROFILE_BLOCK("Stats Window");
 			ImGui::SetWindowPos(ImVec2(0, 0));
 
 			auto frameRate = ImGui::GetIO().Framerate;

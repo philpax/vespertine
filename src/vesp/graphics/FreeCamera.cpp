@@ -5,6 +5,7 @@
 
 #include "vesp/InputManager.hpp"
 #include "vesp/Console.hpp"
+#include "vesp/Profiler.hpp"
 
 namespace vesp { namespace graphics {
 
@@ -23,6 +24,7 @@ namespace vesp { namespace graphics {
 
 	void FreeCamera::Update()
 	{
+		VESP_PROFILE_FN();
 		auto inputManager	= InputManager::Get();
 
 		// Get all relevant input states
