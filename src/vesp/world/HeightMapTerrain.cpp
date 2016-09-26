@@ -48,6 +48,28 @@ void HeightMapTerrain::Load(StringView const path)
 		v.position = Vec3(x, height / 2.0f, y);
 		v.colour = graphics::Colour(height, 0, 255-height);
 
+		// Use Sobel filter to calculate normals
+		F32 s[9];
+		s[0] = data.get()[GetIndex(x-1, y+1)];
+		s[1] = data.get()[GetIndex(x+0, y+1)];
+		s[2] = data.get()[GetIndex(x+1, y+1)];
+
+		s[3] = data.get()[GetIndex(x-1, y+0)];
+		s[4] = data.get()[GetIndex(x+0, y+0)];
+		s[5] = data.get()[GetIndex(x+1, y+0)];
+
+		s[6] = data.get()[GetIndex(x-1, y-1)];
+		s[7] = data.get()[GetIndex(x+0, y-1)];
+		s[8] = data.get()[GetIndex(x+1, y-1)];
+
+		Vec3 normal;
+		normal.x = -(s[2] - s[0] + 2*(s[5] - s[3]) + s[8] - s[6]);
+		normal.y = -(s[6] - s[0] + 2*(s[7] - s[1]) + s[8] - s[2]);
+		normal.z = 1.0f;
+		normal = glm::normalize(normal);
+
+		v.SetNormal(normal);
+
 		return v;
 	};
 
