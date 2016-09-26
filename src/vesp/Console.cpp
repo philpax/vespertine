@@ -1,13 +1,14 @@
 #include "vesp/Console.hpp"
 #include "vesp/Containers.hpp"
 #include "vesp/Log.hpp"
+#include "vesp/EventManager.hpp"
+#include "vesp/Profiler.hpp"
 
 #include "vesp/graphics/imgui.h"
 #include "vesp/graphics/Engine.hpp"
 #include "vesp/graphics/Window.hpp"
 
 #include "vesp/math/Vector.hpp"
-#include <vesp/EventManager.hpp>
 
 namespace vesp {
 
@@ -65,6 +66,8 @@ namespace vesp {
 	{
 		if (!this->active_)
 			return;
+
+		VESP_PROFILE_FN();
 
 		Array<StringByte, 256> inputBuffer;	
 		inputBuffer.assign(0);

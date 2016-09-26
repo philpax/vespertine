@@ -232,6 +232,8 @@ namespace vesp
 		if (!this->windowActive_)
 			return;
 
+		VESP_PROFILE_FN();
+
 		ImGui::Begin("Input", &this->windowActive_);
 		{
 			for (U32 actionIndex = 0u; actionIndex < U32(Action::EndOfEnum); ++actionIndex)

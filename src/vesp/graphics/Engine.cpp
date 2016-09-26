@@ -102,16 +102,21 @@ namespace vesp { namespace graphics {
 	void Engine::Pulse()
 	{
 		VESP_PROFILE_FN();
-		this->window_->Pulse();
+		
+		{
+			VESP_PROFILE_BLOCK("Initial State Update"); 
+			this->window_->Pulse();
 
-		F32 clearColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
-		ID3D11ShaderResourceView* nullViews[
-			D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT] = { 0 };
-		ImmediateContext->PSSetShaderResources(
-			0, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT, nullViews);
+			ID3D11ShaderResourceView* nullViews[
+				D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT] = { 0 };
+			ImmediateContext->PSSetShaderResources(
+				0, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT, nullViews);
+		}
 
 		{
 			VESP_PROFILE_BLOCK("Clear RT");
+			F32 clearColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+
 			for (auto& rt : this->renderTargetViews_)
 				ImmediateContext->ClearRenderTargetView(rt, clearColour);
 		
@@ -144,8 +149,11 @@ namespace vesp { namespace graphics {
 			world::HeightMapTerrain::Get()->Draw();
 			world::Script::Get()->Draw();
 
-			for (auto& mesh : this->meshes_)
-				mesh.Draw();
+			{
+				VESP_PROFILE_BLOCK("Mesh drawing");
+				for (auto& mesh : this->meshes_)
+					mesh.Draw();
+			}
 		}
 		
 		{
@@ -218,16 +226,19 @@ namespace vesp { namespace graphics {
 		}
 		ImGui::End();
 
-		EventManager::Get()->Fire("Render.Gui");
+		{ 
+			VESP_PROFILE_BLOCK("GUI render event");
+			EventManager::Get()->Fire("Render.Gui");
+		}
 
 		{
 			VESP_PROFILE_BLOCK("ImGui render");
 			ImGui::Render();
 		}
 		
-		this->SetDepthEnabled(true);
 		{
 			VESP_PROFILE_BLOCK("Present");
+			this->SetDepthEnabled(true);
 			SwapChain->Present(0, 0);
 		}
 	}
