@@ -63,17 +63,11 @@ void Script::Reload()
 	};
 	imgui["sliderInt"] = [&](char const* label, int value, int valueMin, int valueMax)
 	{
-		auto ret = state.create_table();
-		ret["changed"] = ImGui::SliderInt(label, &value, valueMin, valueMax);
-		ret["value"] = value;
-		return ret;
+		return std::make_tuple(value, ImGui::SliderInt(label, &value, valueMin, valueMax));
 	};
 	imgui["sliderDec"] = [&](char const* label, float value, float valueMin, float valueMax)
 	{
-		auto ret = state.create_table();
-		ret["changed"] = ImGui::SliderFloat(label, &value, valueMin, valueMax);
-		ret["value"] = value;
-		return ret;
+		return std::make_tuple(value, ImGui::SliderFloat(label, &value, valueMin, valueMax));
 	};
 	
 	auto file = FileSystem::Get()->Open("data/world.lua", FileSystem::Mode::ReadBinary);
