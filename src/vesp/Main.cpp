@@ -67,6 +67,26 @@ namespace vesp
 
 	bool Running = true;
 
+	void HandleWindowsMessages()
+	{
+		VESP_PROFILE_FN();
+		MSG msg{};
+		while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE) > 0)
+		{
+			switch (msg.message)
+			{
+			case WM_QUIT:
+				Quit();
+				break;
+			}
+			
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+
+			InputManager::Get()->FeedEvent(&msg);
+		}
+	}
+
 	void Loop()
 	{
 		while (Running)
@@ -77,21 +97,7 @@ namespace vesp
 			graphics::Engine::Get()->PrePulse();
 			InputManager::Get()->Pulse();
 
-			MSG msg{};
-			if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE) > 0)
-			{
-				switch (msg.message)
-				{
-				case WM_QUIT:
-					Quit();
-					break;
-				}
-				
-				TranslateMessage(&msg);
-				DispatchMessage(&msg);
-
-				InputManager::Get()->FeedEvent(&msg);
-			}
+			HandleWindowsMessages();
 
 			world::Script::Get()->Pulse();
 			graphics::Engine::Get()->Pulse();
