@@ -15,11 +15,8 @@ namespace vesp { namespace graphics {
 
 	LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	{
-		if (InputManager::Get()->HasGuiLock())
-		{
-			if (ImGui_ImplDX11_WndProcHandler(hwnd, msg, wparam, lparam))
-				return true;
-		}
+		static bool resizing = false;
+		static util::Timer timeSinceSizeEvent;
 
 		Window* self = nullptr;
 
@@ -32,6 +29,21 @@ namespace vesp { namespace graphics {
 		else
 		{
 			self = reinterpret_cast<Window*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+		}
+
+		if (resizing && timeSinceSizeEvent.GetSeconds() > 0.1f)
+		{
+			resizing = false;
+			auto engine = Engine::Get();
+
+			if (engine && self)
+				engine->HandleResize(self->GetSize());
+		}
+
+		if (InputManager::Get()->HasGuiLock())
+		{
+			if (ImGui_ImplDX11_WndProcHandler(hwnd, msg, wparam, lparam))
+				return true;
 		}
 
 		switch (msg)
@@ -52,14 +64,11 @@ namespace vesp { namespace graphics {
 			EventManager::Get()->Fire("Window.Unfocus");
 			break;
 
-		case WM_EXITSIZEMOVE:
-		{
-			auto engine = Engine::Get();
-
-			if (engine && self)
-				engine->HandleResize(self->GetSize());
+		case WM_SIZE:
+			resizing = true;
+			timeSinceSizeEvent.Restart();
 			break;
-		}
+			
 		default:
 			return DefWindowProcW(hwnd, msg, wparam, lparam);
 		}
