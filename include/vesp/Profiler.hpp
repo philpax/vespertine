@@ -33,12 +33,10 @@ namespace vesp
 		};
 
 		void DrawSection(Section* section);
-		void PrintSection(Section* section, size_t level);
 
 		UniquePtr<Section> savedRoot_;
 		UniquePtr<Section> root_;
 		Section* currentSection_ = nullptr;
-		bool printNextFrame_ = false;
 		bool drawGui_ = false;
 		bool frozen_ = false;
 	};

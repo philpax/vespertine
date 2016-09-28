@@ -9,10 +9,6 @@ namespace vesp
 {
 	Profiler::Profiler()
 	{
-		Console::Get()->AddCommand("profiler.nextFrame", [&] {
-			this->printNextFrame_ = true;
-		});
-
 		Console::Get()->AddCommand("profiler.window", [&] {
 			this->drawGui_ = true;
 		});
@@ -53,12 +49,6 @@ namespace vesp
 	void Profiler::EndFrame()
 	{
 		this->EndSection();
-
-		if (this->printNextFrame_)
-		{
-			this->PrintSection(this->root_.get(), 0);
-			this->printNextFrame_ = false;
-		}
 	}
 
 	void Profiler::Draw()
@@ -129,43 +119,5 @@ namespace vesp
 
 			ImGui::TreePop();
 		}
-	}
-
-	void Profiler::PrintSection(Section* section, size_t level)
-	{
-		auto printLine = 
-		[](size_t level, RawStringPtr title, F32 duration, F32 parentDuration, LogType type = LogType::Info)
-		{
-			String line;
-			for (size_t i = 0; i < level * 2; i++)
-				line.push_back(' ');
-
-			line.insert(
-				line.end(),
-				title,
-				title + strlen(title));
-
-			F32 percentage = duration / parentDuration * 100.0f;
-
-			Log(type, "%.*s (%f ms, %.01f%%)", line.size(), line.data(), 
-				duration * 1000.0f, percentage);
-		};
-
-		printLine(
-			level, 
-			section->title, 
-			section->duration, 
-			section->parent ? section->parent->duration : section->duration);
-		
-		auto accountedFor = 0.0f;
-		for (auto& child : section->children)
-		{
-			this->PrintSection(child.get(), level + 1);
-			accountedFor += child->duration;
-		}
-
-		auto unaccountedFor = section->duration - accountedFor;
-		if (unaccountedFor > 0.0f && section->children.size())
-			printLine(level + 1, "Unaccounted", unaccountedFor, section->duration, LogType::Warn);
 	}
 }
