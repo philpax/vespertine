@@ -84,15 +84,10 @@ namespace vesp
 			if (!id)
 				id = title;
 
-			ImVec4 col;
-			if (fraction < 0.25f)
-				col = ImVec4(fraction / 0.25f, 1.0f, 0.0f, 1.0f);
-			else if (fraction > 0.25f && fraction < 0.75f)
-				col = ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
-			else
-				col = ImVec4(1.0f, (1.0f - fraction) / 0.25f, 0.0f, 1.0f);
+			float r, g, b;
+			ImGui::ColorConvertHSVtoRGB((1.0f - fraction) * 0.3f, 0.9f, 0.9f, r, g, b);
 
-			ImGui::PushStyleColor(ImGuiCol_Text, col);
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(r, g, b, 1.0f));
 			auto ret = ImGui::TreeNodeEx(
 				id, isLeafNode ? ImGuiTreeNodeFlags_Leaf : 0,
 				"%s (%f ms, %.01f%%)", title, duration * 1000.0f, percentage);
