@@ -19,7 +19,7 @@ project "Vespertine"
 	rtti "Off"
 
 	filter "configurations:Debug"
-		defines { "DEBUG", "VESP_ASSERT_ENABLED" }
+		defines { "DEBUG", "VESP_ASSERT_ENABLED", "_ITERATOR_DEBUG_LEVEL=0" }
 		flags { "Symbols" }
 
 	filter "configurations:Release"
