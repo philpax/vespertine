@@ -1,5 +1,9 @@
 VENDOR_INCLUDES = { "vendor/glm", "vendor/LuaJIT/src" }
-VENDOR_LINKS = { "vendor/LuaJIT/src/lua51.lib" }
+VENDOR_LINKS = {
+	all = {},
+	debug = {"vendor/LuaJIT/src/lua51d.lib"},
+	release = {"vendor/LuaJIT/src/lua51r.lib"}
+}
 
 project "Vespertine"
 	kind "StaticLib"
@@ -26,7 +30,11 @@ project "Vespertine"
 		editandcontinue "off"
 		buildoptions { "/EHsc", "/Ob2" }
 
-		prebuildcommands { "cd \"vespertine/vendor/LuaJIT/src\"", "If Not Exist \"lua51.lib\" (msvcbuild.bat %{cfg.buildcfg:lower()} static)" }
+		prebuildcommands {
+			[[pushd "vespertine/vendor/LuaJIT/src"]],
+			[[If Not Exist "lua51d.lib" (call msvcbuild.bat debug   static && copy lua51.lib lua51d.lib)]],
+			[[If Not Exist "lua51r.lib" (call msvcbuild.bat release static && copy lua51.lib lua51r.lib)]]
+		}
 
 	configuration { "gmake" }
 		buildoptions { "-std=c++11" }
