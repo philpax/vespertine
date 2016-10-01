@@ -22,10 +22,7 @@ namespace vesp {
 			"Render.Gui", [&](const void*) { this->Draw(); return true; });
 
 		this->AddCommand("console.history", [&] {
-			Vector<std::string> history;
-			for (auto& str : this->history_)
-				history.push_back(std::string(str.begin(), str.end()));
-			return history;
+			return this->history_;
 		});
 
 		// TODO: Autoexec
