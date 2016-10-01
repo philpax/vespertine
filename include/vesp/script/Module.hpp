@@ -33,3 +33,30 @@ namespace vesp { namespace script {
 	};
 
 } }
+
+// Add overload for vesp::String
+namespace sol { namespace stack {
+	template <>
+	struct pusher<vesp::String>
+	{
+		static int push(lua_State* L, vesp::String const& s)
+		{
+			lua_pushlstring(L, s.data(), s.size());
+			return 1;
+		}
+	};
+
+	template <>
+	struct getter<vesp::String>
+	{
+		static vesp::String get(lua_State* L, int index)
+		{
+			auto str = stack::get<vesp::RawStringPtr>(L, index);
+			return vesp::StringView(str).CopyToVector();
+		}
+	};
+}
+
+template <>
+struct lua_type_of<::vesp::String> : std::integral_constant<type, type::string> {};
+}
