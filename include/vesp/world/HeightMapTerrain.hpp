@@ -3,6 +3,7 @@
 #include "vesp/util/GlobalSystem.hpp"
 
 #include "vesp/graphics/Mesh.hpp"
+#include "vesp/graphics/Image.hpp"
 
 #include "vesp/String.hpp"
 
@@ -13,10 +14,11 @@ namespace vesp { namespace world {
 	public:
 		HeightMapTerrain();
 
-		void Load(StringView const path);
+		void Load();
 		void Draw();
 
 	private:
+		graphics::Image heightMap_;
 		graphics::Mesh terrainMesh_;
 	};
 
