@@ -132,4 +132,9 @@ namespace vesp
 	{
 		return memcmp(lhs.data, rhs.data, lhs.size) == 0;
 	}
+
+	bool operator!=(StringView const lhs, StringView const rhs)
+	{
+		return !(lhs == rhs);
+	}
 }
