@@ -4,7 +4,6 @@
 #include "vesp/EventManager.hpp"
 #include "vesp/Profiler.hpp"
 
-#include "vesp/graphics/imgui.h"
 #include "vesp/graphics/Engine.hpp"
 #include "vesp/graphics/Window.hpp"
 
@@ -21,6 +20,13 @@ namespace vesp {
 
 		EventManager::Get()->Subscribe(
 			"Render.Gui", [&](const void*) { this->Draw(); return true; });
+
+		this->AddCommand("console.history", [&] {
+			Vector<std::string> history;
+			for (auto& str : this->history_)
+				history.push_back(std::string(str.begin(), str.end()));
+			return history;
+		});
 
 		// TODO: Autoexec
 	}
@@ -101,7 +107,9 @@ namespace vesp {
 
 			ImGui::PushItemWidth(-1.0f);
 			if (ImGui::InputText("Input", inputBuffer.data(),
-				inputBuffer.size(), ImGuiInputTextFlags_EnterReturnsTrue))
+				inputBuffer.size(), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackHistory,
+				[](ImGuiTextEditCallbackData *data) { return ((Console*)data->UserData)->TextboxCallback(data); },
+				this))
 			{
 				StringView view = inputBuffer.data();
 
@@ -129,6 +137,16 @@ namespace vesp {
 
 	void Console::Execute(StringView code)
 	{
+		// Store in history
+		if (this->history_.empty() || code != this->history_.back())
+		{
+			this->history_.push_back(code.CopyToVector());
+			if (this->history_.size() > MaxHistoryLength)
+				this->history_.pop_front();
+			this->historyIndex_ = this->history_.size();
+		}
+				
+
 		// Try loading with return prefixed
 		auto codeWithReturn = Concat("return ", code);
 		auto parseResult = this->module_->ParseString(codeWithReturn);
@@ -166,5 +184,42 @@ namespace vesp {
 	{
 		if (state == 1.0f)
 			this->SetActive(!this->GetActive());
+	}
+
+	int Console::TextboxCallback(ImGuiTextEditCallbackData* data)
+	{
+		switch (data->EventFlag)
+		{
+		case ImGuiInputTextFlags_CallbackHistory:
+		{
+			if (this->history_.empty())
+				break;
+
+			switch (data->EventKey)
+			{
+			case ImGuiKey_UpArrow:
+				this->historyIndex_--;
+				break;
+			case ImGuiKey_DownArrow:
+				this->historyIndex_++;
+				break;
+			}
+
+			// Handle wraparound
+			S32 historySize = this->history_.size();
+			if (this->historyIndex_ >= historySize)
+				this->historyIndex_ -= historySize;
+			else if (this->historyIndex_ < 0)
+				this->historyIndex_ += historySize;
+
+			auto& currentItem = this->history_[this->historyIndex_];
+			strncpy_s(data->Buf, data->BufSize, currentItem.data(), currentItem.size());
+			data->BufTextLen = std::min(data->BufSize, int(currentItem.size()));
+			data->BufDirty = true;
+			data->CursorPos = data->SelectionStart = data->SelectionEnd = data->BufTextLen;
+			break;
+		}
+		}
+		return 0;
 	}
 }

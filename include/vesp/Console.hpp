@@ -3,6 +3,7 @@
 #include "vesp/util/GlobalSystem.hpp"
 
 #include "vesp/graphics/Colour.hpp"
+#include "vesp/graphics/imgui.h"
 
 #include "vesp/script/Module.hpp"
 
@@ -19,6 +20,8 @@ namespace vesp {
 		public util::GlobalSystem<Console>
 	{
 	public:
+		static const size_t MaxHistoryLength = 100;
+
 		Console();
 		~Console();
 
@@ -56,6 +59,7 @@ namespace vesp {
 	private:
 		void Draw();
 		void ConsolePress(float state);
+		int TextboxCallback(ImGuiTextEditCallbackData* data);
 	
 		struct Message
 		{
@@ -64,7 +68,9 @@ namespace vesp {
 		};
 
 		Deque<Message> messages_;
-		String output_;
+
+		Deque<String> history_;
+		S32 historyIndex_;
 
 		UniquePtr<script::Module> module_;
 
