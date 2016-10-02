@@ -111,10 +111,7 @@ namespace vesp {
 				StringView view = inputBuffer.data();
 
 				if (view.size)
-				{
-					this->AddMessage(view, graphics::Colour::CornflowerBlue);
 					this->Execute(view);
-				}
 
 				this->inputNeedsFocus_ = true;
 			}
@@ -134,6 +131,10 @@ namespace vesp {
 
 	void Console::Execute(StringView code)
 	{
+		// Present command in console
+		auto presentStr = Concat("> ", code);
+		this->AddMessage(presentStr, graphics::Colour::CornflowerBlue);
+
 		// Store in history
 		if (this->history_.empty() || code != this->history_.back())
 		{
