@@ -178,8 +178,46 @@ namespace vesp {
 			return;
 
 		// Display the result
-		auto resultStr = this->module_->ToString(runResultObj);
-		LogInfo("%.*s", resultStr.size(), resultStr.data());
+		this->PrettyPrint(runResultObj, 0);
+	}
+
+	void Console::PrettyPrint(sol::object obj, size_t level)
+	{
+		// Generate pad
+		auto pad = Repeat(' ', level * 2);
+
+		// If it's a table, pretty-print it
+		if (obj.is<sol::table>())
+		{
+			auto table = obj.as<sol::table>();
+			auto nextPad = Repeat(' ', (level + 1) * 2);
+
+			size_t index = 0;
+			LogInfo("%.*s{", pad.size(), pad.data());
+			table.for_each([&](sol::object const& key, sol::object const& value)
+			{
+				if (index >= table.size())
+					return;
+				
+				// Print key
+				auto keyStr = this->module_->ToString(key);
+				LogInfo("%.*s[%.*s] =", nextPad.size(), nextPad.data(), keyStr.size(), keyStr.data());
+
+				// Print value
+				this->PrettyPrint(value, level + 2);
+				++index;
+			});
+			LogInfo("%.*s}", pad.size(), pad.data());
+		}
+		else
+		{
+			// Otherwise, just print the value out
+			auto objStr = this->module_->ToString(obj);
+			if (obj.is<RawStringPtr>())
+				LogInfo("%.*s\"%.*s\"", pad.size(), pad.data(), objStr.size(), objStr.data());
+			else
+				LogInfo("%.*s%.*s", pad.size(), pad.data(), objStr.size(), objStr.data());
+		}
 	}
 
 	void Console::ConsolePress(float state)

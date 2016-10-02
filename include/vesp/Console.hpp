@@ -59,6 +59,7 @@ namespace vesp {
 	private:
 		void Draw();
 		void ConsolePress(float state);
+		void PrettyPrint(sol::object obj, size_t level);
 		int TextboxCallback(ImGuiTextEditCallbackData* data);
 	
 		struct Message
