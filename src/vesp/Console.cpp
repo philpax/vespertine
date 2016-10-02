@@ -22,7 +22,7 @@ namespace vesp {
 			"Render.Gui", [&](const void*) { this->Draw(); return true; });
 
 		this->AddCommand("console.history", [&] {
-			return this->history_;
+			return sol::as_table(this->history_);
 		});
 
 		// TODO: Autoexec
@@ -160,19 +160,24 @@ namespace vesp {
 			return;
 		}
 
+		// Run the parse
 		auto runResult = this->module_->RunParseResult(parseResult);
-		auto runResultObj = sol::object(runResult);
 
+		// If it's non-existent/nil, don't bother displaying it
 		if (!runResult.valid())
 			return;
 
-		// If it's a function, run it and use its result
-		if (runResultObj.is<sol::protected_function>())
-			runResultObj = runResult.get<sol::protected_function>()();
+		// Convert it to an object
+		sol::object runResultObj = runResult;
 
-		if (runResultObj.is<sol::protected_function>() || !runResultObj.valid())
+		// TODO: Magic conversion magic (automatically calling functions, etc)
+		// Removed while waiting on sol2 fix
+
+		// If the resulting object is invalid, don't bother displaying it
+		if (!runResultObj.valid())
 			return;
 
+		// Display the result
 		auto resultStr = this->module_->ToString(runResultObj);
 		LogInfo("%.*s", resultStr.size(), resultStr.data());
 	}
