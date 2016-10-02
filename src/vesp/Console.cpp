@@ -4,7 +4,6 @@
 #include "vesp/EventManager.hpp"
 #include "vesp/Profiler.hpp"
 
-#include "vesp/graphics/imgui.h"
 #include "vesp/graphics/Engine.hpp"
 #include "vesp/graphics/Window.hpp"
 
@@ -21,6 +20,10 @@ namespace vesp {
 
 		EventManager::Get()->Subscribe(
 			"Render.Gui", [&](const void*) { this->Draw(); return true; });
+
+		this->AddCommand("console.history", [&] {
+			return sol::as_table(this->history_);
+		});
 
 		// TODO: Autoexec
 	}
@@ -101,15 +104,14 @@ namespace vesp {
 
 			ImGui::PushItemWidth(-1.0f);
 			if (ImGui::InputText("Input", inputBuffer.data(),
-				inputBuffer.size(), ImGuiInputTextFlags_EnterReturnsTrue))
+				inputBuffer.size(), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackHistory,
+				[](ImGuiTextEditCallbackData *data) { return ((Console*)data->UserData)->TextboxCallback(data); },
+				this))
 			{
 				StringView view = inputBuffer.data();
 
 				if (view.size)
-				{
-					this->AddMessage(view, graphics::Colour::CornflowerBlue);
 					this->Execute(view);
-				}
 
 				this->inputNeedsFocus_ = true;
 			}
@@ -129,6 +131,20 @@ namespace vesp {
 
 	void Console::Execute(StringView code)
 	{
+		// Present command in console
+		auto presentStr = Concat("> ", code);
+		this->AddMessage(presentStr, graphics::Colour::CornflowerBlue);
+
+		// Store in history
+		if (this->history_.empty() || code != this->history_.back())
+		{
+			this->history_.push_back(code.CopyToVector());
+			if (this->history_.size() > MaxHistoryLength)
+				this->history_.pop_front();
+			this->historyIndex_ = this->history_.size();
+		}
+				
+
 		// Try loading with return prefixed
 		auto codeWithReturn = Concat("return ", code);
 		auto parseResult = this->module_->ParseString(codeWithReturn);
@@ -145,26 +161,106 @@ namespace vesp {
 			return;
 		}
 
+		// Run the parse
 		auto runResult = this->module_->RunParseResult(parseResult);
-		auto runResultObj = sol::object(runResult);
 
+		// If it's non-existent/nil, don't bother displaying it
 		if (!runResult.valid())
 			return;
 
-		// If it's a function, run it and use its result
-		if (runResultObj.is<sol::protected_function>())
-			runResultObj = runResult.get<sol::protected_function>()();
+		// Convert it to an object
+		sol::object runResultObj = runResult;
 
-		if (runResultObj.is<sol::protected_function>() || !runResultObj.valid())
+		// TODO: Magic conversion magic (automatically calling functions, etc)
+		// Removed while waiting on sol2 fix
+
+		// If the resulting object is invalid, don't bother displaying it
+		if (!runResultObj.valid())
 			return;
 
-		auto resultStr = this->module_->ToString(runResultObj);
-		LogInfo("%.*s", resultStr.size(), resultStr.data());
+		// Display the result
+		this->PrettyPrint(runResultObj, 0);
+	}
+
+	void Console::PrettyPrint(sol::object obj, size_t level)
+	{
+		// Generate pad
+		auto pad = Repeat(' ', level * 2);
+
+		// If it's a table, pretty-print it
+		if (obj.is<sol::table>())
+		{
+			auto table = obj.as<sol::table>();
+			auto nextPad = Repeat(' ', (level + 1) * 2);
+
+			size_t index = 0;
+			LogInfo("%.*s{", pad.size(), pad.data());
+			table.for_each([&](sol::object const& key, sol::object const& value)
+			{
+				if (index >= table.size())
+					return;
+				
+				// Print key
+				auto keyStr = this->module_->ToString(key);
+				LogInfo("%.*s[%.*s] =", nextPad.size(), nextPad.data(), keyStr.size(), keyStr.data());
+
+				// Print value
+				this->PrettyPrint(value, level + 2);
+				++index;
+			});
+			LogInfo("%.*s}", pad.size(), pad.data());
+		}
+		else
+		{
+			// Otherwise, just print the value out
+			auto objStr = this->module_->ToString(obj);
+			if (obj.is<RawStringPtr>())
+				LogInfo("%.*s\"%.*s\"", pad.size(), pad.data(), objStr.size(), objStr.data());
+			else
+				LogInfo("%.*s%.*s", pad.size(), pad.data(), objStr.size(), objStr.data());
+		}
 	}
 
 	void Console::ConsolePress(float state)
 	{
 		if (state == 1.0f)
 			this->SetActive(!this->GetActive());
+	}
+
+	int Console::TextboxCallback(ImGuiTextEditCallbackData* data)
+	{
+		switch (data->EventFlag)
+		{
+		case ImGuiInputTextFlags_CallbackHistory:
+		{
+			if (this->history_.empty())
+				break;
+
+			switch (data->EventKey)
+			{
+			case ImGuiKey_UpArrow:
+				this->historyIndex_--;
+				break;
+			case ImGuiKey_DownArrow:
+				this->historyIndex_++;
+				break;
+			}
+
+			// Handle wraparound
+			S32 historySize = this->history_.size();
+			if (this->historyIndex_ >= historySize)
+				this->historyIndex_ -= historySize;
+			else if (this->historyIndex_ < 0)
+				this->historyIndex_ += historySize;
+
+			auto& currentItem = this->history_[this->historyIndex_];
+			strncpy_s(data->Buf, data->BufSize, currentItem.data(), currentItem.size());
+			data->BufTextLen = std::min(data->BufSize, int(currentItem.size()));
+			data->BufDirty = true;
+			data->CursorPos = data->SelectionStart = data->SelectionEnd = data->BufTextLen;
+			break;
+		}
+		}
+		return 0;
 	}
 }

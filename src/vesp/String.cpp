@@ -48,6 +48,16 @@ namespace vesp
 		return ret;
 	}
 
+	String Repeat(StringByte ch, size_t count)
+	{
+		String line;
+
+		for (size_t i = 0; i < count * 2; i++)
+			line.push_back(ch);
+
+		return line;
+	}
+
 	Vector<StringView> Split(StringView str, StringByte sep)
 	{
 		Vector<StringView> ret;
@@ -131,5 +141,10 @@ namespace vesp
 	bool operator==(StringView const lhs, StringView const rhs)
 	{
 		return memcmp(lhs.data, rhs.data, lhs.size) == 0;
+	}
+
+	bool operator!=(StringView const lhs, StringView const rhs)
+	{
+		return !(lhs == rhs);
 	}
 }

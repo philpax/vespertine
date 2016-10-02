@@ -27,10 +27,12 @@ namespace vesp
 	};
 
 	bool operator==(StringView const lhs, StringView const rhs);
+	bool operator!=(StringView const lhs, StringView const rhs);
 	
 	String Concat(StringView lhs, StringView rhs);
 	String Join(ArrayView<String> strings, StringByte sep = ' ');
 	String Replace(StringView str, StringView toReplace, StringView replacement);
+	String Repeat(StringByte ch, size_t count);
 	Vector<StringView> Split(StringView str, StringByte sep = ' ');
 
 	String ToString(size_t value);
