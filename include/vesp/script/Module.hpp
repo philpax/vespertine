@@ -49,14 +49,26 @@ namespace sol { namespace stack {
 	template <>
 	struct getter<vesp::String>
 	{
-		static vesp::String get(lua_State* L, int index)
+		static vesp::String get(lua_State* L, int index, record& tracking)
 		{
 			auto str = stack::get<vesp::RawStringPtr>(L, index);
+			tracking.use(1);
 			return vesp::StringView(str).CopyToVector();
+		}
+	};
+
+	template <>
+	struct checker<vesp::String>
+	{
+		template <typename Handler>
+		static bool check(lua_State* L, int index, Handler&& handler, record& tracking)
+		{
+			int absIndex = lua_absindex(L, index);
+			auto success = stack::check<bool>(L, absIndex, handler);
+			tracking.use(1);
+			return success;
 		}
 	};
 }
 
-template <>
-struct lua_type_of<::vesp::String> : std::integral_constant<type, type::string> {};
 }
