@@ -171,8 +171,13 @@ namespace vesp {
 		// Convert it to an object
 		sol::object runResultObj = runResult;
 
-		// TODO: Magic conversion magic (automatically calling functions, etc)
-		// Removed while waiting on sol2 fix
+		// If the resulting object is invalid, don't bother displaying it
+		if (!runResultObj.valid())
+			return;
+
+		// If it's a function, call it again (this facilitates `quit()` -> `quit` magic)
+		if (runResultObj.is<sol::protected_function>())
+			runResultObj = runResultObj.as<sol::protected_function>()();
 
 		// If the resulting object is invalid, don't bother displaying it
 		if (!runResultObj.valid())
