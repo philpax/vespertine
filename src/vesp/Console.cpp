@@ -198,20 +198,15 @@ namespace vesp {
 			auto table = obj.as<sol::table>();
 			auto nextPad = Repeat(' ', (level + 1) * 2);
 
-			size_t index = 0;
 			LogInfo("%.*s{", pad.size(), pad.data());
 			table.for_each([&](sol::object const& key, sol::object const& value)
 			{
-				if (index >= table.size())
-					return;
-				
 				// Print key
 				auto keyStr = this->module_->ToString(key);
 				LogInfo("%.*s[%.*s] =", nextPad.size(), nextPad.data(), keyStr.size(), keyStr.data());
 
 				// Print value
 				this->PrettyPrint(value, level + 2);
-				++index;
 			});
 			LogInfo("%.*s}", pad.size(), pad.data());
 		}
