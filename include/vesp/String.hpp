@@ -35,6 +35,8 @@ namespace vesp
 	String Repeat(StringByte ch, size_t count);
 	Vector<StringView> Split(StringView str, StringByte sep = ' ');
 
+	bool StartsWith(StringView str, StringView prefix);
+
 	String ToString(size_t value);
 	String ToString(S32 value);
 	String ToString(F32 value);

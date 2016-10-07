@@ -89,6 +89,14 @@ namespace vesp
 		return ret;
 	}
 
+	bool StartsWith(StringView str, StringView prefix)
+	{
+		if (prefix.size > str.size)
+			return false;
+
+		return memcmp(str.data, prefix.data, prefix.size) == 0;
+	}
+
 	String ToString(size_t value)
 	{
 		String ret;
