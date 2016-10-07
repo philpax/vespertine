@@ -10,7 +10,7 @@ namespace vesp { namespace graphics {
 
 	void ShaderManager::LoadShader(StringView const name, ShaderType type)
 	{
-		auto basePath = Concat("data/shaders/", name);
+		auto filePath = Concat("data/shaders/", name);
 		RawStringPtr extension;
 		switch (type)
 		{
@@ -22,7 +22,7 @@ namespace vesp { namespace graphics {
 			break;
 		}
 		
-		auto filePath = Concat(basePath, extension);
+		Concat(filePath, extension);
 		auto file = FileSystem::Get()->Open(filePath, FileSystem::Mode::Read);
 		VESP_ASSERT(file.Exists());
 

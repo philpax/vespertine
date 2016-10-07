@@ -29,6 +29,7 @@ namespace vesp
 	bool operator==(StringView const lhs, StringView const rhs);
 	bool operator!=(StringView const lhs, StringView const rhs);
 	
+	void Concat(String& destSrc, StringView rhs);
 	String Concat(StringView lhs, StringView rhs);
 	String Join(ArrayView<String> strings, StringByte sep = ' ');
 	String Replace(StringView str, StringView toReplace, StringView replacement);

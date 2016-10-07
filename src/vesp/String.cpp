@@ -4,10 +4,15 @@
 
 namespace vesp
 {
+	void Concat(String& destSrc, StringView rhs)
+	{
+		destSrc.insert(destSrc.end(), rhs.begin(), rhs.end());
+	}
+
 	String Concat(StringView lhs, StringView rhs)
 	{
 		String ret = lhs.CopyToVector();
-		ret.insert(ret.end(), rhs.begin(), rhs.end());
+		Concat(ret, rhs);
 		return ret;
 	}
 
