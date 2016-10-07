@@ -112,6 +112,16 @@ namespace vesp
 			return this->data[index];
 		}
 
+		T& front()
+		{
+			return this->data[0];
+		}
+
+		T& back()
+		{
+			return this->data[this->size - 1];
+		}
+
 		Vector<T> CopyToVector()
 		{
 			return Vector<T>(this->begin(), this->end());
