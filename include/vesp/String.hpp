@@ -31,10 +31,27 @@ namespace vesp
 	
 	void Concat(String& destSrc, StringView rhs);
 	String Concat(StringView lhs, StringView rhs);
-	String Join(ArrayView<String> strings, StringByte sep = ' ');
+
 	String Replace(StringView str, StringView toReplace, StringView replacement);
 	String Repeat(StringByte ch, size_t count);
 	Vector<StringView> Split(StringView str, StringByte sep = ' ');
+
+	template <typename StringTy>
+	String Join(ArrayView<StringTy> strings, StringByte sep = ' ')
+	{
+		String ret;
+
+		bool first = true;
+		for (auto string : strings)
+		{
+			if (!first)
+				ret.push_back(sep);
+			ret.insert(ret.end(), string.begin(), string.end());
+			first = false;
+		}
+
+		return ret;
+	}
 
 	bool StartsWith(StringView str, StringView prefix);
 

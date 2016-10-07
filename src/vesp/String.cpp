@@ -16,22 +16,6 @@ namespace vesp
 		return ret;
 	}
 
-	String Join(ArrayView<String> strings, StringByte sep)
-	{
-		String ret;
-
-		bool first = true;
-		for (auto string : strings)
-		{
-			if (!first)
-				ret.push_back(sep);
-			ret.insert(ret.end(), string.begin(), string.end());
-			first = false;
-		}
-
-		return ret;
-	}
-
 	String Replace(StringView str, StringView toReplace, StringView replacement)
 	{
 		String ret;
