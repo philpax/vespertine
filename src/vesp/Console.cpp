@@ -104,7 +104,8 @@ namespace vesp {
 
 			ImGui::PushItemWidth(-1.0f);
 			if (ImGui::InputText("Input", inputBuffer.data(),
-				inputBuffer.size(), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackHistory,
+				inputBuffer.size(), 
+				ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackHistory | ImGuiInputTextFlags_CallbackCompletion,
 				[](ImGuiTextEditCallbackData *data) { return ((Console*)data->UserData)->TextboxCallback(data); },
 				this))
 			{
@@ -143,7 +144,6 @@ namespace vesp {
 				this->history_.pop_front();
 			this->historyIndex_ = this->history_.size();
 		}
-				
 
 		// Try loading with return prefixed
 		auto codeWithReturn = Concat("return ", code);
@@ -231,6 +231,124 @@ namespace vesp {
 	{
 		switch (data->EventFlag)
 		{
+		case ImGuiInputTextFlags_CallbackCompletion:
+		{
+			auto components = Split(StringView(data->Buf, data->CursorPos), '.');
+			if (components.empty())
+				break;
+
+			// If we have a dot at the end of our last component, replace it
+			// with an empty component so that we can list everything in a given
+			// table
+			if (components.back().back() == '.')
+			{
+				components.back().size--;
+				components.push_back(StringView("", 0));
+			}
+
+			// TODO: Report that sol::table = state doesn't work
+			// Iterate through each component (excluding the last one) to
+			// appropriately scope through
+			sol::table parent = this->module_->GetState().globals();
+			for (auto i = 0u; i < components.size() - 1; ++i)
+			{
+				parent = parent[components[i]];
+				if (!parent.valid())
+				{
+					this->AddMessage("No matches found!");
+					break;
+				}
+			}
+
+			// Go through every entry in the parent table until we find one that matches
+			struct Match
+			{
+				String text;
+				sol::type type;
+			};
+
+			Vector<Match> matches;
+			parent.for_each([&](sol::object const& key, sol::object const& value) {
+				auto keyStr = key.as<String>();
+				if (!StartsWith(keyStr, components.back()))
+					return;
+
+				matches.push_back({keyStr, value.get_type()});
+			});
+
+			if (matches.size() > 1)
+			{
+				// If we have more than one match, print them out
+				this->AddMessage("Matches found:");
+				for (auto& match : matches)
+				{
+					auto fullMatch = components;
+					components.pop_back();
+					components.push_back(match.text);
+
+					auto command = Join(ArrayView<StringView>(components), '.');
+					command.insert(command.begin(), ' ');
+					command.push_back(' ');
+
+					RawStringPtr typeStr = nullptr;
+					switch (match.type)
+					{
+					case sol::type::boolean:
+						typeStr = "(Boolean)";
+						break;
+					case sol::type::function:
+						typeStr = "(Function)";
+						break;
+					case sol::type::number:
+						typeStr = "(Number)";
+						break;
+					case sol::type::string:
+						typeStr = "(String)";
+						break;
+					case sol::type::table:
+						typeStr = "(Table)";
+						break;
+					default:
+						typeStr = "(Other)";
+						break;
+					}
+					Concat(command, typeStr);
+
+					this->AddMessage(command);
+				}
+			}
+			else if (matches.size() == 1)
+			{
+				// If we have one match, replace it all
+				auto& match = matches.back();
+			
+				auto fullMatch = components;
+				components.pop_back();
+				components.push_back(match.text);
+
+				auto command = Join(ArrayView<StringView>(components), '.');
+
+				data->DeleteChars(0, data->CursorPos);
+				data->InsertChars(data->CursorPos, &*command.begin(), &*command.end());
+				
+				if (match.type == sol::type::table)
+				{
+					data->InsertChars(data->CursorPos, ".");
+				}
+				else if (match.type == sol::type::function)
+				{
+					data->InsertChars(data->CursorPos, "()");
+					--data->CursorPos;
+				}
+			}
+			else
+			{
+				// Otherwise, no matches
+				this->AddMessage("No matches found!");
+			}
+
+			break;
+		}
 		case ImGuiInputTextFlags_CallbackHistory:
 		{
 			if (this->history_.empty())
