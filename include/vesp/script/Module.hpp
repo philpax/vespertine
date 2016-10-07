@@ -36,6 +36,7 @@ namespace vesp { namespace script {
 
 // Add overload for vesp::String
 namespace sol { namespace stack {
+	// vesp::String
 	template <>
 	struct pusher<vesp::String>
 	{
@@ -69,6 +70,15 @@ namespace sol { namespace stack {
 			return success;
 		}
 	};
-}
 
-}
+	// vesp::StringView
+	template <>
+	struct pusher<vesp::StringView>
+	{
+		static int push(lua_State* L, vesp::StringView const& s)
+		{
+			lua_pushlstring(L, s.data, s.size);
+			return 1;
+		}
+	};
+} }
