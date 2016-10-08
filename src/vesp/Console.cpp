@@ -294,22 +294,28 @@ namespace vesp {
 					command.push_back(' ');
 
 					RawStringPtr typeStr = nullptr;
+					graphics::Colour colour = graphics::Colour::White;
 					switch (match.type)
 					{
 					case sol::type::boolean:
 						typeStr = "(Boolean)";
+						colour = graphics::Colour::CadetBlue;
 						break;
 					case sol::type::function:
 						typeStr = "(Function)";
+						colour = graphics::Colour::Chartreuse;
 						break;
 					case sol::type::number:
 						typeStr = "(Number)";
+						colour = graphics::Colour::Tomato;
 						break;
 					case sol::type::string:
 						typeStr = "(String)";
+						colour = graphics::Colour::Gold;
 						break;
 					case sol::type::table:
 						typeStr = "(Table)";
+						colour = graphics::Colour::Crimson;
 						break;
 					default:
 						typeStr = "(Other)";
@@ -317,7 +323,7 @@ namespace vesp {
 					}
 					Concat(command, typeStr);
 
-					this->AddMessage(command);
+					this->AddMessage(command, colour);
 				}
 			}
 			else if (matches.size() == 1)
