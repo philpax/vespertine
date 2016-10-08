@@ -269,6 +269,9 @@ namespace vesp {
 
 			Vector<Match> matches;
 			parent.for_each([&](sol::object const& key, sol::object const& value) {
+				if (key.get_type() == sol::type::number)
+					return;
+
 				auto keyStr = key.as<String>();
 				if (!StartsWith(keyStr, components.back()))
 					return;
