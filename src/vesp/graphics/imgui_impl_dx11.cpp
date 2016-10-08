@@ -9,6 +9,8 @@
 #include "vesp/graphics/imgui.h"
 #include "vesp/graphics/imgui_impl_dx11.h"
 
+#include "vesp/FileSystem.hpp"
+
 // DirectX
 #include <d3d11.h>
 #include <d3dcompiler.h>
@@ -283,6 +285,14 @@ static void ImGui_ImplDX11_CreateFontsTexture()
 {
     // Build texture atlas
     ImGuiIO& io = ImGui::GetIO();
+
+    auto font = vesp::FileSystem::Get()->Open("data/fonts/OpenSans-Regular.ttf", vesp::FileSystem::Mode::ReadBinary);
+    auto fontData = font.Read<vesp::U8>();
+
+    ImFontConfig config;
+    config.FontDataOwnedByAtlas = false;
+    auto imFont = io.Fonts->AddFontFromMemoryTTF(fontData.data(), fontData.size(), 18.0f, &config);
+
     unsigned char* pixels;
     int width, height;
     io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
