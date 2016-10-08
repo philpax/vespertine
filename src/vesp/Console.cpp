@@ -279,6 +279,11 @@ namespace vesp {
 				matches.push_back({keyStr, value.get_type()});
 			});
 
+			std::sort(matches.begin(), matches.end(), [](Match const& a, Match const& b)
+			{
+				return a.text < b.text;
+			});
+
 			if (matches.size() > 1)
 			{
 				// If we have more than one match, print them out
