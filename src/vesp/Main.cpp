@@ -79,11 +79,11 @@ namespace vesp
 				Quit();
 				break;
 			}
+
+			InputManager::Get()->FeedEvent(&msg);
 			
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
-
-			InputManager::Get()->FeedEvent(&msg);
 		}
 	}
 
