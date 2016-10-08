@@ -71,7 +71,7 @@ namespace vesp { namespace script {
 	Module::ParseResult Module::ParseString(StringView code)
 	{
 		auto nameCString = ToCString(this->title_);
-		return this->state_.load_buffer(code.data, code.size, nameCString.get());
+		return this->state_.load_buffer(code.data(), code.size(), nameCString.get());
 	}
 
 	Module::FnResult Module::RunParseResult(ParseResult& result)

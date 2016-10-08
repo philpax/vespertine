@@ -78,6 +78,9 @@ namespace vesp { namespace graphics {
 
 	void Engine::HandleResize(IVec2 size)
 	{
+		if (size.x == 0 && size.y == 0)
+			return;
+
 		ImGui_ImplDX11_InvalidateDeviceObjects();
 
 		this->DestroyRenderTargets();

@@ -25,26 +25,26 @@ namespace vesp { namespace graphics {
 			D3D11_BUFFER_DESC desc;
 			ZeroMemory(&desc, sizeof(desc));
 			desc.Usage = usage;
-			desc.ByteWidth = sizeof(T) * array.size;
+			desc.ByteWidth = sizeof(T) * array.size();
 			desc.BindFlags = bindFlags;
 			desc.CPUAccessFlags = 
 				bindFlags == D3D11_BIND_CONSTANT_BUFFER ? D3D11_CPU_ACCESS_WRITE : 0;
 
 			D3D11_SUBRESOURCE_DATA initData;
 			ZeroMemory(&initData, sizeof(initData));
-			initData.pSysMem = array.data;
+			initData.pSysMem = array.data();
 			
 			HRESULT hr = Engine::Device->CreateBuffer(&desc, &initData, &this->buffer_);
 			if (FAILED(hr))
 			{
 				LogError( 
 					"Failed to create buffer (count: %d, flags: %d, usage: %d, error: %X)", 
-					array.size, bindFlags, usage, hr);
+					array.size(), bindFlags, usage, hr);
 
 				return false;
 			}
 
-			this->count_ = array.size;
+			this->count_ = array.size();
 
 			return true;
 		}
@@ -124,7 +124,7 @@ namespace vesp { namespace graphics {
 		void Load(ArrayView<T> const array)
 		{
 			auto p = this->Map();
-			memcpy(p, array.data, sizeof(T) * array.size);
+			memcpy(p, array.data(), sizeof(T) * array.size());
 			this->Unmap();
 		}
 	};

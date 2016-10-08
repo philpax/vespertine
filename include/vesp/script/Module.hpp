@@ -77,7 +77,7 @@ namespace sol { namespace stack {
 	{
 		static int push(lua_State* L, vesp::StringView const& s)
 		{
-			lua_pushlstring(L, s.data, s.size);
+			lua_pushlstring(L, s.data(), s.size());
 			return 1;
 		}
 	};

@@ -151,7 +151,7 @@ namespace vesp { namespace util {
 
 	U32 MurmurHash(StringView const key, U32 seed)
 	{
-		return MurmurHash(key.data, key.size, seed);
+		return MurmurHash(key.data(), key.size(), seed);
 	}
 
 } }

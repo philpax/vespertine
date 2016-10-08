@@ -20,13 +20,13 @@ namespace vesp
 	{
 		String ret;
 
-		auto maxSize = str.size - toReplace.size;
-		for (size_t i = 0; i < str.size;)
+		auto maxSize = str.size() - toReplace.size();
+		for (size_t i = 0; i < str.size();)
 		{
-			if (i < maxSize && memcmp(&str[i], toReplace.data, toReplace.size) == 0)
+			if (i < maxSize && memcmp(&str[i], toReplace.data(), toReplace.size()) == 0)
 			{
 				ret.insert(ret.end(), replacement.begin(), replacement.end());
-				i += toReplace.size;
+				i += toReplace.size();
 			}
 			else
 			{
@@ -57,13 +57,13 @@ namespace vesp
 
 		for (auto c : str)
 		{
-			if (c == sep || index == str.size - 1)
+			if (c == sep || index == str.size() - 1)
 			{
-				if (index == str.size - 1)
-					endIndex = str.size;
+				if (index == str.size() - 1)
+					endIndex = str.size();
 
 				if (startIndex != endIndex)
-					ret.push_back(StringView(str.data + startIndex, endIndex - startIndex));
+					ret.push_back(StringView(str.data() + startIndex, endIndex - startIndex));
 
 				startIndex = endIndex = index + 1;
 			}
@@ -80,10 +80,10 @@ namespace vesp
 
 	bool StartsWith(StringView str, StringView prefix)
 	{
-		if (prefix.size > str.size)
+		if (prefix.size() > str.size())
 			return false;
 
-		return memcmp(str.data, prefix.data, prefix.size) == 0;
+		return memcmp(str.data(), prefix.data(), prefix.size()) == 0;
 	}
 
 	String ToString(size_t value)
@@ -129,15 +129,15 @@ namespace vesp
 
 	std::unique_ptr<StringByte[]> ToCString(StringView string)
 	{
-		std::unique_ptr<StringByte[]> ret(new StringByte[string.size + 1]);
-		memcpy(ret.get(), string.data, string.size);
-		ret[string.size] = '\0';
+		std::unique_ptr<StringByte[]> ret(new StringByte[string.size() + 1]);
+		memcpy(ret.get(), string.data(), string.size());
+		ret[string.size()] = '\0';
 		return ret;
 	}
 
 	bool operator==(StringView const lhs, StringView const rhs)
 	{
-		return memcmp(lhs.data, rhs.data, lhs.size) == 0;
+		return memcmp(lhs.data(), rhs.data(), lhs.size()) == 0;
 	}
 
 	bool operator!=(StringView const lhs, StringView const rhs)

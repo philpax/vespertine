@@ -111,7 +111,7 @@ namespace vesp {
 			{
 				StringView view = inputBuffer.data();
 
-				if (view.size)
+				if (view.size())
 					this->Execute(view);
 
 				this->inputNeedsFocus_ = true;
@@ -242,7 +242,7 @@ namespace vesp {
 			// table
 			if (components.back().back() == '.')
 			{
-				components.back().size--;
+				components.back().size()--;
 				components.push_back(StringView("", 0));
 			}
 

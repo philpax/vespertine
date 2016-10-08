@@ -45,7 +45,7 @@ namespace vesp { namespace graphics {
 		ID3DBlob* output = nullptr;
 
 		hr = D3DCompile(
-			shaderSource.data, shaderSource.size, 
+			shaderSource.data(), shaderSource.size(),
 			this->name_, nullptr, nullptr, "main", target, 
 			shaderFlags, 0, &output, &errorBlob);
 
@@ -90,7 +90,7 @@ namespace vesp { namespace graphics {
 		}
 
 		hr = device->CreateInputLayout(
-			inputLayoutElements.data, inputLayoutElements.size,
+			inputLayoutElements.data(), inputLayoutElements.size(),
 			blob->GetBufferPointer(), blob->GetBufferSize(),
 			&this->inputLayout_);
 

@@ -35,12 +35,12 @@ namespace vesp
 
 	void FileSystem::File::Write(ArrayView<U8> const array)
 	{
-		fwrite(array.data, 1, array.size, this->file_);
+		fwrite(array.data(), 1, array.size(), this->file_);
 	}
 
 	U32 FileSystem::File::Read(ArrayView<U8> array)
 	{
-		return fread(array.data, 1, array.size, this->file_);
+		return fread(array.data(), 1, array.size(), this->file_);
 	}
 
 	U32 FileSystem::File::Size() const

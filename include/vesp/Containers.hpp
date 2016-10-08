@@ -28,50 +28,48 @@ namespace vesp
 
 	template <typename T>
 	struct ArrayView
-	{
-		T* data = nullptr;
-		size_t size = 0;
-
+	{ 
+	public:
 		ArrayView()
 		{
 		}
 
 		ArrayView(T& data)
 		{
-			this->data = &data;
-			this->size = 1;
+			this->data_ = &data;
+			this->size_ = 1;
 		}
 
 		ArrayView(T* data, size_t size)
 		{
-			this->data = data;
-			this->size = size;
+			this->data_ = data;
+			this->size_ = size;
 		}
 
 		ArrayView(Vector<T>& v)
 		{
-			this->data = v.data();
-			this->size = v.size();
+			this->data_ = v.data();
+			this->size_ = v.size();
 		}
 
 		template <int N>
 		ArrayView(Array<T, N>& a)
 		{
-			this->data = a.data();
-			this->size = N;
+			this->data_ = a.data();
+			this->size_ = N;
 		}
 
 		template <int N>
 		ArrayView(T (&a)[N])
 		{
-			this->data = a;
-			this->size = N;
+			this->data_ = a;
+			this->size_ = N;
 		}
 
 		template <typename Y>
 		ArrayView(ArrayView<Y> array)
 		{
-			this->data = reinterpret_cast<T*>(array.data);
+			this->data_ = reinterpret_cast<T*>(array.data());
 
 			size_t scaleFactor = 0;
 			if (sizeof(T) > sizeof(Y))
@@ -79,52 +77,76 @@ namespace vesp
 			else
 				scaleFactor = sizeof(Y) / sizeof(T);
 
-			this->size = array.size * scaleFactor;
+			this->size_ = array.size() * scaleFactor;
+		}
+
+		T* data()
+		{
+			return this->data_;
+		}
+
+		const T* data() const
+		{
+			return this->data_;
+		}
+
+		size_t& size()
+		{
+			return this->size_;
+		}
+
+		size_t const& size() const
+		{
+			return this->size_;
 		}
 
 		T* begin()
 		{
-			return this->data;
+			return this->data_;
 		}
 
 		T* end()
 		{
-			return this->begin() + this->size;
+			return this->begin() + this->size_;
 		}
 
 		T const* cbegin() const
 		{
-			return this->data;
+			return this->data_;
 		}
 
 		T const* cend() const
 		{
-			return this->cbegin() + this->size;
+			return this->cbegin() + this->size_;
 		}
 
 		T& operator[](size_t index)
 		{
-			return this->data[index];
+			return this->data_[index];
 		}
 
 		T const& operator[](size_t index) const
 		{
-			return this->data[index];
+			return this->data_[index];
 		}
 
 		T& front()
 		{
-			return this->data[0];
+			return this->data_[0];
 		}
 
 		T& back()
 		{
-			return this->data[this->size - 1];
+			return this->data_[this->size_ - 1];
 		}
 
 		Vector<T> CopyToVector()
 		{
 			return Vector<T>(this->begin(), this->end());
 		}
+	
+	private:
+		T* data_ = nullptr;
+		size_t size_ = 0;
 	};
 }
