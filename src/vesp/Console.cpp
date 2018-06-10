@@ -208,7 +208,12 @@ namespace vesp {
 			{
 				// Print key
 				auto keyStr = this->module_->ToString(key);
-				LogInfo("%.*s[%.*s] =", nextPad.size(), nextPad.data(), keyStr.size(), keyStr.data());
+				LogInfo(
+					key.get_type() == sol::type::string ? 
+					"%.*s%.*s =" : 
+					"%.*s[%.*s] =", 
+					nextPad.size(), nextPad.data(), keyStr.size(), keyStr.data()
+				);
 
 				// Print value
 				this->PrettyPrint(value, level + 2);
