@@ -140,9 +140,9 @@ namespace vesp
 			return this->data_[this->size_ - 1];
 		}
 
-		Vector<T> CopyToVector()
+		Vector<T> CopyToVector() const
 		{
-			return Vector<T>(this->begin(), this->end());
+			return Vector<T>(this->cbegin(), this->cend());
 		}
 	
 	private:
