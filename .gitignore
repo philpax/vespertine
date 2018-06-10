@@ -32,3 +32,4 @@ obj/
 *.bsc
 *.DS_Store
 /log.txt
+/*.vcxproj

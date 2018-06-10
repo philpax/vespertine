@@ -9,6 +9,7 @@ project "Vespertine"
 	kind "StaticLib"
 	language "C++"
 	targetdir "lib/%{cfg.buildcfg}"
+	location "."
 
 	includedirs(VENDOR_INCLUDES)
 	includedirs { "include/" }
@@ -31,7 +32,7 @@ project "Vespertine"
 		buildoptions { "/EHsc", "/Ob2" }
 
 		prebuildcommands {
-			[[pushd "vespertine/vendor/LuaJIT/src"]],
+			[[pushd "vendor/LuaJIT/src"]],
 			[[If Not Exist "lua51d.lib" (call msvcbuild.bat debug   static && copy lua51.lib lua51d.lib)]],
 			[[If Not Exist "lua51r.lib" (call msvcbuild.bat release static && copy lua51.lib lua51r.lib)]]
 		}
