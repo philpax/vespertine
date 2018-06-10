@@ -2,11 +2,19 @@
 
 #include "vesp/FileSystem.hpp"
 #include "vesp/Assert.hpp"
+#include "vesp/Console.hpp"
+#include "vesp/Log.hpp"
 
 #pragma warning(disable: 4005)
 #include <D3D11.h>
 
 namespace vesp { namespace graphics {
+
+	ShaderManager::ShaderManager() {
+		Console::Get()->AddCommand("shader.reloadall", [&]() {
+			this->ReloadAll();
+		});
+	}
 
 	void ShaderManager::LoadShader(StringView const name, ShaderType type)
 	{
@@ -62,26 +70,54 @@ namespace vesp { namespace graphics {
 		this->shaders_[this->GetKey(name, type)] = std::move(shader);
 	}
 
-	Shader* ShaderManager::GetShader(StringView const name, ShaderType type)
+	Shader* ShaderManager::GetShader(StringView const name, ShaderType type) const
 	{
 		auto it = this->shaders_.find(this->GetKey(name, type));
 		VESP_ASSERT(it != this->shaders_.end());
 		return it->second.get();
 	}
 
-	VertexShader* ShaderManager::GetVertexShader(StringView const name)
+	VertexShader* ShaderManager::GetVertexShader(StringView const name) const
 	{
 		return static_cast<VertexShader*>(
 			this->GetShader(name, ShaderType::Vertex));
 	}
 
-	PixelShader* ShaderManager::GetPixelShader(StringView const name)
+	PixelShader* ShaderManager::GetPixelShader(StringView const name) const
 	{
 		return static_cast<PixelShader*>(
 			this->GetShader(name, ShaderType::Pixel));
 	}
 
-	U32 ShaderManager::GetKey(StringView const name, ShaderType type)
+	void ShaderManager::ReloadAll() {
+		struct ShaderInfo {
+			String name;
+			ShaderType type;
+		};
+
+		Vector<ShaderInfo> shaders;
+
+		for (auto& shaderPair : this->shaders_) {
+			const auto shader = shaderPair.second.get();
+
+			shaders.push_back({
+				std::move(shader->GetName().CopyToVector()),
+				shader->GetType()
+			});
+		}
+
+		for (auto& shader : shaders) {
+			this->LoadShader(shader.name, shader.type);
+			LogInfo("Reloaded %s shader %.*s", 
+				shader.type == ShaderType::Pixel ? "pixel" : 
+				shader.type == ShaderType::Vertex ? "vertex" : 
+				"unknown",
+				shader.name.size(), shader.name.data() 
+			);
+		}
+	}
+
+	U32 ShaderManager::GetKey(StringView const name, ShaderType type) const
 	{
 		// Arbitrary, may change
 		return (util::MurmurHash(name) & 0xFFFFFF00) | U32(type);

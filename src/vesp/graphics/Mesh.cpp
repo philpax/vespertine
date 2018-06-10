@@ -3,6 +3,7 @@
 #include "vesp/graphics/Engine.hpp"
 #include "vesp/graphics/Camera.hpp"
 #include "vesp/graphics/Shader.hpp"
+#include "vesp/graphics/ShaderManager.hpp"
 
 #include "vesp/Assert.hpp"
 
@@ -102,14 +103,14 @@ namespace vesp { namespace graphics {
 		return this->topology_;
 	}
 
-	void Mesh::SetVertexShader(VertexShader* shader)
+	void Mesh::SetVertexShader(StringView const shaderId)
 	{
-		this->vertexShader_ = shader;
+		this->vertexShader_ = shaderId.CopyToVector();
 	}
 
-	void Mesh::SetPixelShader(PixelShader* shader)
+	void Mesh::SetPixelShader(StringView const shaderId)
 	{
-		this->pixelShader_ = shader;
+		this->pixelShader_ = shaderId.CopyToVector();
 	}
 
 	bool Mesh::Exists() const
@@ -120,11 +121,11 @@ namespace vesp { namespace graphics {
 	void Mesh::Draw()
 	{
 		VESP_ASSERT(this->Exists());
-		VESP_ASSERT(this->vertexShader_);
-		VESP_ASSERT(this->pixelShader_);
+		VESP_ASSERT(this->vertexShader_.size() != 0);
+		VESP_ASSERT(this->pixelShader_.size() != 0);
 
-		this->vertexShader_->Activate();
-		this->pixelShader_->Activate();
+		ShaderManager::Get()->GetVertexShader(this->vertexShader_)->Activate();
+		ShaderManager::Get()->GetPixelShader(this->pixelShader_)->Activate();
 
 		this->UpdateMatrix();
 		this->vertexBuffer_.Use(0);

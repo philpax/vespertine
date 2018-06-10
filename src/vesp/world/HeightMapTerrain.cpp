@@ -90,8 +90,8 @@ void HeightMapTerrain::Load()
 
 	auto shaderManager = graphics::ShaderManager::Get();
 	VESP_ENFORCE(this->terrainMesh_.Create(vertices, indices));
-	this->terrainMesh_.SetVertexShader(shaderManager->GetVertexShader("default"));
-	this->terrainMesh_.SetPixelShader(shaderManager->GetPixelShader("grid"));
+	this->terrainMesh_.SetVertexShader("default");
+	this->terrainMesh_.SetPixelShader("grid");
 }
 
 void HeightMapTerrain::Draw()

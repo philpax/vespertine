@@ -16,8 +16,8 @@ extern "C" __declspec(dllexport) U32 MeshAdd(graphics::Vertex* vertices, U32 ver
 
 	graphics::Mesh mesh;
 	mesh.Create(ArrayView<graphics::Vertex>(vertices, verticesCount));
-	mesh.SetVertexShader(shaderManager->GetVertexShader("default"));
-	mesh.SetPixelShader(shaderManager->GetPixelShader("default"));
+	mesh.SetVertexShader("default");
+	mesh.SetPixelShader("default");
 
 	return Script::Get()->AddMesh(std::move(mesh));
 }

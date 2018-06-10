@@ -39,8 +39,8 @@ namespace vesp { namespace graphics {
 		void SetTopology(D3D11_PRIMITIVE_TOPOLOGY topology);
 		D3D11_PRIMITIVE_TOPOLOGY GetTopology();
 
-		void SetVertexShader(VertexShader* shader);
-		void SetPixelShader(PixelShader* shader);
+		void SetVertexShader(StringView const shaderId);
+		void SetPixelShader(StringView const shaderId);
 
 		bool Exists() const;
 
@@ -57,8 +57,8 @@ namespace vesp { namespace graphics {
 			Vec4 colour;
 		};
 		
-		VertexShader* vertexShader_ = nullptr;
-		PixelShader* pixelShader_ = nullptr;
+		String vertexShader_;
+		String pixelShader_;
 
 		VertexBuffer vertexBuffer_;
 		IndexBuffer indexBuffer_;

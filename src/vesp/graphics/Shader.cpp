@@ -13,7 +13,7 @@ namespace vesp { namespace graphics {
 	// Shader
 	Shader::Shader(StringView const name)
 	{
-		std::copy(name.cbegin(), name.cend(), this->name_);
+		this->name_ = std::move(name.CopyToVector());
 	}
 
 	void* Shader::Compile(StringView const shaderSource)
@@ -44,21 +44,31 @@ namespace vesp { namespace graphics {
 		CComPtr<ID3DBlob> errorBlob = nullptr;
 		ID3DBlob* output = nullptr;
 
+		const auto name = ToCString(this->name_);
+
 		hr = D3DCompile(
 			shaderSource.data(), shaderSource.size(),
-			this->name_, nullptr, nullptr, "main", target, 
+			name.get(), nullptr, nullptr, "main", target, 
 			shaderFlags, 0, &output, &errorBlob);
 
 		if (FAILED(hr))
 		{
 			auto error = static_cast<RawStringPtr>(errorBlob->GetBufferPointer());
 			LogError("Failed to compile shader %s! Error: %s",
-				this->name_, error);
+				name, error);
 
 			if (output) output->Release();
 		}
 
 		return output;
+	}
+
+	ShaderType Shader::GetType() const {
+		return this->type_;
+	}
+
+	StringView Shader::GetName() {
+		return StringView(this->name_);
 	}
 
 	// Vertex Shader

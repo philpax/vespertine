@@ -12,14 +12,17 @@ namespace vesp { namespace graphics {
 	class ShaderManager : public util::GlobalSystem<ShaderManager>
 	{
 	public:
-		void LoadShader(StringView const name, ShaderType type);
-		Shader* GetShader(StringView const name, ShaderType type);
+		ShaderManager();
 
-		VertexShader* GetVertexShader(StringView const name);
-		PixelShader* GetPixelShader(StringView const name);
+		void LoadShader(StringView const name, ShaderType type);
+		Shader* GetShader(StringView const name, ShaderType type) const;
+
+		VertexShader* GetVertexShader(StringView const name) const;
+		PixelShader* GetPixelShader(StringView const name) const;
 
 	private:
-		U32 GetKey(StringView const name, ShaderType type);
+		void ReloadAll();
+		U32 GetKey(StringView const name, ShaderType type) const;
 
 		UnorderedMap<U32, UniquePtr<Shader>> shaders_;
 	};

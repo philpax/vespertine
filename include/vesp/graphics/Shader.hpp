@@ -24,10 +24,13 @@ namespace vesp { namespace graphics {
 	public:
 		Shader(StringView const name);
 
+		ShaderType GetType() const;
+		StringView GetName();
+
 	protected:
 		void* Compile(StringView const shaderSource);
 		ShaderType type_;
-		StringByte name_[32] = {0};
+		String name_;
 	};
 
 	class VertexShader : public Shader

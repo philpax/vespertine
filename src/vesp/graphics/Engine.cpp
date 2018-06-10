@@ -602,8 +602,8 @@ namespace vesp { namespace graphics {
 		};
 
 		screenMesh.Create(screenVertices);
-		screenMesh.SetVertexShader(shaderManager->GetVertexShader("identity"));
-		screenMesh.SetPixelShader(shaderManager->GetPixelShader("composite"));
+		screenMesh.SetVertexShader("identity");
+		screenMesh.SetPixelShader("composite");
 
 		auto scalarField = MakeAlignedUnique<world::ScalarField>();
 		scalarField->LoadFromFunction(32, 32, 32, [](Vec3 const& p) {
@@ -613,8 +613,8 @@ namespace vesp { namespace graphics {
 
 		graphics::Mesh scalarFieldMesh;
 		scalarFieldMesh.Create(scalarFieldVerts);
-		scalarFieldMesh.SetVertexShader(shaderManager->GetVertexShader("default"));
-		scalarFieldMesh.SetPixelShader(shaderManager->GetPixelShader("default"));
+		scalarFieldMesh.SetVertexShader("default");
+		scalarFieldMesh.SetPixelShader("default");
 
 		this->meshes_.push_back(scalarFieldMesh);
 	}
