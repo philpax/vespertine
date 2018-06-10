@@ -1,0 +1,24 @@
+struct PixelIn
+{
+	float4 position : SV_POSITION;
+	float4 colour : COLOR;
+	float3 normal : NORMAL;
+	float2 texcoord : TEXCOORD0;
+};
+
+struct PixelOut
+{
+	float4 colour : COLOR0;
+	float3 normal : COLOR1;
+};
+
+PixelOut main(PixelIn input) : SV_Target
+{
+	PixelOut output;
+	float4 top = float4(138,179,207,255)/255;
+	float4 bot = float4(65,128,171,255)/255;
+	output.colour = lerp(top, bot, input.texcoord.y);
+	output.normal = input.normal;
+
+	return output;
+}

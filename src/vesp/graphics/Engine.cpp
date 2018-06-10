@@ -30,7 +30,8 @@
 
 namespace vesp { namespace graphics {
 
-	Mesh screenMesh;	
+	Mesh screenMesh;
+	Mesh skyMesh;
 
 	IDXGISwapChain* Engine::SwapChain;
 	ID3D11Device* Engine::Device;
@@ -236,6 +237,10 @@ namespace vesp { namespace graphics {
 
 			auto freeCamera = static_cast<FreeCamera*>(this->camera_.get());
 			freeCamera->Update();
+
+			this->SetDepthEnabled(false);
+			skyMesh.Draw();
+			this->SetDepthEnabled(true);
 
 			world::HeightMapTerrain::Get()->Draw();
 			world::Script::Get()->Draw();
@@ -589,6 +594,7 @@ namespace vesp { namespace graphics {
 		shaderManager->LoadShader("identity", ShaderType::Vertex);
 		shaderManager->LoadShader("composite", ShaderType::Pixel);
 		shaderManager->LoadShader("texture", ShaderType::Pixel);
+		shaderManager->LoadShader("sky", ShaderType::Pixel);
 
 		Vertex screenVertices[] =
 		{
@@ -604,6 +610,10 @@ namespace vesp { namespace graphics {
 		screenMesh.Create(screenVertices);
 		screenMesh.SetVertexShader("identity");
 		screenMesh.SetPixelShader("composite");
+
+		skyMesh.Create(screenVertices);
+		skyMesh.SetVertexShader("identity");
+		skyMesh.SetPixelShader("sky");
 
 		auto scalarField = MakeAlignedUnique<world::ScalarField>();
 		scalarField->LoadFromFunction(32, 32, 32, [](Vec3 const& p) {
