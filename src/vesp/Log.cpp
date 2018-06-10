@@ -40,7 +40,7 @@ namespace vesp
 		std::strftime(timeBuffer, util::SizeOfArray(timeBuffer), 
 			"%H:%M:%S", &timeInfo);
 
-		vsnprintf_s(tempBuffer, util::SizeOfArray(tempBuffer), fmt, args);
+		vsnprintf_s(tempBuffer, _TRUNCATE, fmt, args);
 
 		sprintf_s(finalBuffer, "%s | %s | %s\n", 
 			timeBuffer, LogTypeStrings[static_cast<U8>(type)], tempBuffer);
