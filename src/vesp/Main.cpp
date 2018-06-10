@@ -104,7 +104,7 @@ namespace vesp
 
 			if (!graphics::Engine::Get()->GetWindow()->HasFocus())
 			{
-				S32 sleepMs = std::max(0, 100 - frameTimer.GetMilliseconds<S32>());
+				S32 sleepMs = std::max(0, 100*1000 - frameTimer.GetMicroseconds<S32>())/1000;
 				Sleep(sleepMs);
 			}
 
