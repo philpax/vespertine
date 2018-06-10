@@ -24,8 +24,6 @@ namespace vesp {
 		this->AddCommand("console.history", [&] {
 			return sol::as_table(this->history_);
 		});
-
-		// TODO: Autoexec
 	}
 
 	Console::~Console()
@@ -191,6 +189,13 @@ namespace vesp {
 	{
 		// Generate pad
 		auto pad = Repeat(' ', level * 2);
+
+		// Bail out if we're too deep in
+		if (level >= 3)
+		{
+			LogInfo("%.*s...", pad.size(), pad.data());
+			return;
+		}
 
 		// If it's a table, pretty-print it
 		if (obj.is<sol::table>())
